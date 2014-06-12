@@ -14,16 +14,21 @@ import java.nio.ByteOrder;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.net.Socket;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Channel implements Closeable {
     private final Socket socket;
     private final String name;
     private Timer pingTimer;
     private ReadThread reader;
-    private AtomicInteger requestCounter = new AtomicInteger(0);
+    private AtomicLong requestCounter = new AtomicLong(0);
+    private Map<Long, ResultProcessor> requests = new ConcurrentHashMap<Long, ResultProcessor>();
 
     private class PingThread extends TimerTask {
         JSONObject msg;
@@ -55,11 +60,13 @@ public class Channel implements Closeable {
                     CastChannel.CastMessage message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
                         JSONObject parsed = (JSONObject) JSONValue.parse(message.getPayloadUtf8());
-                        if (parsed.get("type") != null && parsed.get("type").equals("PONG")) {
-                            // TODO register heartbeat
-                            continue;
+                        Long requestId = (Long) parsed.get("requestId");
+                        if (requestId != null) {
+                            ResultProcessor rp = requests.remove(requestId);
+                            if (rp != null) {
+                                rp.put(parsed);
+                            }
                         }
-                        System.out.println(parsed.toJSONString());
                     } else {
                         System.out.println(message.getPayloadType());
                     }
@@ -67,6 +74,36 @@ public class Channel implements Closeable {
                     // TODO logging
                     ioex.printStackTrace();
                 }
+            }
+        }
+    }
+
+    private static class ResultProcessor {
+        AtomicReference<JSONObject> json = new AtomicReference<JSONObject>();
+
+        private ResultProcessor() {
+        }
+
+        public void put(JSONObject json) {
+            synchronized (this) {
+                this.json.set(json);
+                this.notify();
+            }
+        }
+
+        public JSONObject get() {
+            if (json.get() != null) {
+                return json.get();
+            }
+            synchronized (this) {
+                // TODO put timeout to constant
+                try {
+                    this.wait(1 * 1000);
+                } catch (InterruptedException ie) {
+                    // TODO either move to the 'throws' or put some logging here
+                    ie.printStackTrace();
+                }
+                return json.get();
             }
         }
     }
@@ -131,15 +168,17 @@ public class Channel implements Closeable {
         reader.start();
     }
 
-    private int write(String namespace, JSONObject message) throws IOException {
-        int requestId = -1;
-        if (!message.get("type").equals("PING") || message.get("type").equals("CONNECT"))
-        {
-            requestId = requestCounter.getAndIncrement();
-            message.put("requestId", requestId);
-        }
+    private JSONObject send(String namespace, JSONObject message) throws IOException {
+        long requestId = requestCounter.getAndIncrement();
+        message.put("requestId", requestId);
+        ResultProcessor rp = new ResultProcessor();
+        requests.put(requestId, rp);
+        write(namespace, message);
+        return rp.get();
+    }
+
+    private void write(String namespace, JSONObject message) throws IOException {
         write(namespace, message.toJSONString());
-        return requestId;
     }
 
     private void write(String namespace, String message) throws IOException {
@@ -169,25 +208,21 @@ public class Channel implements Closeable {
         return CastChannel.CastMessage.parseFrom(buf);
     }
 
-    public void deviceGetStatus() throws IOException {
+    public JSONObject deviceGetStatus() throws IOException {
         JSONObject msg = new JSONObject();
         msg.put("type", "GET_STATUS");
 
-        write("urn:x-cast:com.google.cast.receiver", msg);
-
-        // TODO create a dispatching reader in READ thread
+        return send("urn:x-cast:com.google.cast.receiver", msg);
     }
 
-    public void deviceGetAppAvailability(String appId) throws IOException {
+    public JSONObject deviceGetAppAvailability(String appId) throws IOException {
         JSONObject msg = new JSONObject();
         msg.put("type", "GET_APP_AVAILABILITY");
         JSONArray apps = new JSONArray();
         apps.add(appId);
         msg.put("appId", apps);
 
-        write("urn:x-cast:com.google.cast.receiver", msg);
-
-        // TODO create a dispatching reader in READ thread
+        return send("urn:x-cast:com.google.cast.receiver", msg);
     }
 
     @Override
