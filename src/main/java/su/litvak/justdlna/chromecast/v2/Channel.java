@@ -43,7 +43,7 @@ public class Channel implements Closeable {
         @Override
         public void run() {
             try {
-                write("urn:x-cast:com.google.cast.tp.heartbeat", msg);
+                write("urn:x-cast:com.google.cast.tp.heartbeat", msg, "receiver-0");
             } catch (IOException ioex) {
                 // TODO logging
             }
@@ -65,6 +65,9 @@ public class Channel implements Closeable {
                             ResultProcessor rp = requests.remove(requestId);
                             if (rp != null) {
                                 rp.put(parsed);
+                            } else {
+                                // TODO warn logging
+                                System.out.println("Unable to process request ID = " + requestId + ", data: " + parsed.toJSONString());
                             }
                         }
                     } else {
@@ -72,7 +75,7 @@ public class Channel implements Closeable {
                     }
                 } catch (IOException ioex) {
                     // TODO logging
-                    ioex.printStackTrace();
+//                    ioex.printStackTrace();
                 }
             }
         }
@@ -98,9 +101,10 @@ public class Channel implements Closeable {
             synchronized (this) {
                 // TODO put timeout to constant
                 try {
-                    this.wait(1 * 1000);
+                    this.wait(5 * 1000);
                 } catch (InterruptedException ie) {
                     // TODO either move to the 'throws' or put some logging here
+                    // TODO remove this from requests (add timer or so)
                     ie.printStackTrace();
                 }
                 return json.get();
@@ -147,15 +151,13 @@ public class Channel implements Closeable {
         PingThread pingThread = new PingThread();
         pingThread.run();
 
-        read();
-
         /**
          * Send 'CONNECT' message to start session
          */
         JSONObject jMSG = new JSONObject();
         jMSG.put("type", "CONNECT");
         jMSG.put("origin", new JSONObject());
-        write("urn:x-cast:com.google.cast.tp.connection", jMSG);
+        write("urn:x-cast:com.google.cast.tp.connection", jMSG, "receiver-0");
 
         /**
          * Start ping/pong and reader thread
@@ -168,24 +170,24 @@ public class Channel implements Closeable {
         reader.start();
     }
 
-    private JSONObject send(String namespace, JSONObject message) throws IOException {
+    private JSONObject send(String namespace, JSONObject message, String destinationId) throws IOException {
         long requestId = requestCounter.getAndIncrement();
         message.put("requestId", requestId);
         ResultProcessor rp = new ResultProcessor();
         requests.put(requestId, rp);
-        write(namespace, message);
+        write(namespace, message, destinationId);
         return rp.get();
     }
 
-    private void write(String namespace, JSONObject message) throws IOException {
-        write(namespace, message.toJSONString());
+    private void write(String namespace, JSONObject message, String destinationId) throws IOException {
+        write(namespace, message.toJSONString(), destinationId);
     }
 
-    private void write(String namespace, String message) throws IOException {
+    private void write(String namespace, String message, String destinationId) throws IOException {
         CastChannel.CastMessage msg = CastChannel.CastMessage.newBuilder()
                 .setProtocolVersion(CastChannel.CastMessage.ProtocolVersion.CASTV2_1_0)
                 .setSourceId(name)
-                .setDestinationId("receiver-0")
+                .setDestinationId(destinationId)
                 .setNamespace(namespace)
                 .setPayloadType(CastChannel.CastMessage.PayloadType.STRING)
                 .setPayloadUtf8(message)
@@ -212,7 +214,7 @@ public class Channel implements Closeable {
         JSONObject msg = new JSONObject();
         msg.put("type", "GET_STATUS");
 
-        return send("urn:x-cast:com.google.cast.receiver", msg);
+        return send("urn:x-cast:com.google.cast.receiver", msg, "receiver-0");
     }
 
     public JSONObject deviceGetAppAvailability(String appId) throws IOException {
@@ -222,7 +224,47 @@ public class Channel implements Closeable {
         apps.add(appId);
         msg.put("appId", apps);
 
-        return send("urn:x-cast:com.google.cast.receiver", msg);
+        return send("urn:x-cast:com.google.cast.receiver", msg, "receiver-0");
+    }
+
+    public JSONObject appLaunch(String appId) throws IOException {
+        JSONObject msg = new JSONObject();
+        msg.put("type", "LAUNCH");
+        msg.put("appId", appId);
+
+        return send("urn:x-cast:com.google.cast.receiver", msg, "receiver-0");
+    }
+
+    public JSONObject play(String sessionId, String url, String destinationId) throws IOException {
+        JSONObject jMSG = new JSONObject();
+        jMSG.put("type", "CONNECT");
+        jMSG.put("origin", new JSONObject());
+        write("urn:x-cast:com.google.cast.tp.connection", jMSG, destinationId);
+
+        JSONObject msg = new JSONObject();
+        msg.put("type", "LOAD");
+        msg.put("sessionId", sessionId);
+
+        JSONObject media = new JSONObject();
+        media.put("contentId", url);
+        media.put("streamType", "buffered");
+        media.put("contentType", "video/mp4");
+
+        msg.put("media", media);
+        msg.put("autoplay", true);
+        msg.put("currentTime", 0);
+
+        JSONObject customData = new JSONObject();
+        JSONObject payload = new JSONObject();
+        payload.put("title:", "Big Buck Bunny");
+        payload.put("thumb", "images/BigBuckBunny.jpg");
+        customData.put("payload", payload);
+
+        msg.put("customData", customData);
+
+        System.out.println(msg.toJSONString());
+
+        return send("urn:x-cast:com.google.cast.media", msg, destinationId);
     }
 
     @Override
