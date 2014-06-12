@@ -16,13 +16,14 @@ import java.security.SecureRandom;
 import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Channel implements Closeable {
     private final Socket socket;
     private final String name;
     private Timer pingTimer;
     private ReadThread reader;
-    private int requestCounter;
+    private AtomicInteger requestCounter = new AtomicInteger(0);
 
     private class PingThread extends TimerTask {
         JSONObject msg;
@@ -134,7 +135,7 @@ public class Channel implements Closeable {
         int requestId = -1;
         if (!message.get("type").equals("PING") || message.get("type").equals("CONNECT"))
         {
-            requestId = requestCounter++;
+            requestId = requestCounter.getAndIncrement();
             message.put("requestId", requestId);
         }
         write(namespace, message.toJSONString());
