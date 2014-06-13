@@ -7,8 +7,21 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>api-v2</name>
-    <url>http://maven.apache.org</url>
+    <name>ChromeCast Java API v2</name>
+    <description>Java implementation of ChromeCast V2 protocol client</description>
+    <url>https://github.com/vitalidze/chromecast-java-api-v2</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/vitalidze/chromecast-java-api-v2.git</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
