@@ -11,7 +11,7 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "PONG", value = Response.Pong.class),
                @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = Response.Status.class),
                @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class)})
-class Response {
+abstract class Response {
     @JsonProperty
     Long requestId;
 
