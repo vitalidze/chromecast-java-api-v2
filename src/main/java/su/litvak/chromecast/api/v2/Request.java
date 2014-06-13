@@ -27,6 +27,15 @@ abstract class Request extends Message {
         }
     }
 
+    static class Stop extends Request {
+        @JsonProperty
+        final String sessionId;
+
+        Stop(String sessionId) {
+            this.sessionId = sessionId;
+        }
+    }
+
     static Status status() {
         return new Status();
     }
@@ -37,5 +46,9 @@ abstract class Request extends Message {
 
     static Launch launch(String appId) {
         return new Launch(appId);
+    }
+
+    static Stop stop(String sessionId) {
+        return new Stop(sessionId);
     }
 }

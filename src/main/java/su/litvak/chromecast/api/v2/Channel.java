@@ -14,29 +14,61 @@ import java.nio.ByteOrder;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.net.Socket;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 class Channel implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(Channel.class);
+    /**
+     * Period for sending ping requests (in ms)
+     */
+    private static final long PING_PERIOD = 30 * 1000;
+    /**
+     * How much time to wait until request is processed
+     */
+    private static final long REQUEST_TIMEOUT = 30 * 1000;
 
+    private final static String DEFAULT_RECEIVER_ID = "receiver-0";
+
+    /**
+     * Single socket instance for transfers
+     */
     private final Socket socket;
+    /**
+     * Name of sender used in this channel
+     */
     private final String name;
+    /**
+     * Timer for PING requests
+     */
     private Timer pingTimer;
+    /**
+     * Thread for processing incoming requests
+     */
     private ReadThread reader;
+    /**
+     * Counter for producing request numbers
+     */
     private AtomicLong requestCounter = new AtomicLong(0);
+    /**
+     * Processors of requests by their identifiers
+     */
     private Map<Long, ResultProcessor> requests = new ConcurrentHashMap<Long, ResultProcessor>();
+    /**
+     * Single mapper object for marshalling JSON
+     */
     private final ObjectMapper jsonMapper = new ObjectMapper();
+    /**
+     * Destination ids of sessions opened within this channel
+     */
+    private Set<String> sessions = new HashSet<String>();
 
     private class PingThread extends TimerTask {
         @Override
         public void run() {
             try {
-                write("urn:x-cast:com.google.cast.tp.heartbeat", Message.ping(), "receiver-0");
+                write("urn:x-cast:com.google.cast.tp.heartbeat", Message.ping(), DEFAULT_RECEIVER_ID);
             } catch (IOException ioex) {
                 LOG.warn("Error while sending 'PING': {}", ioex.getLocalizedMessage());
             }
@@ -75,32 +107,26 @@ class Channel implements Closeable {
     }
 
     private class ResultProcessor<T extends Response> {
-        AtomicReference<T> result = new AtomicReference<T>();
-
-        private ResultProcessor() {
-        }
+        T result;
 
         public void put(Response result) {
             synchronized (this) {
-                this.result.set((T) result);
+                this.result = (T) result;
                 this.notify();
             }
         }
 
         public T get() {
-            if (result.get() != null) {
-                return result.get();
-            }
             synchronized (this) {
-                // TODO put timeout to constant
+                if (result != null) {
+                    return result;
+                }
                 try {
-                    this.wait(5 * 1000);
+                    this.wait(REQUEST_TIMEOUT);
                 } catch (InterruptedException ie) {
-                    // TODO either move to the 'throws' or put some logging here
-                    // TODO remove this from requests (add timer or so)
                     ie.printStackTrace();
                 }
-                return result.get();
+                return result;
             }
         }
     }
@@ -123,7 +149,7 @@ class Channel implements Closeable {
                 .build();
 
         CastChannel.CastMessage msg = CastChannel.CastMessage.newBuilder()
-                .setDestinationId("receiver-0")
+                .setDestinationId(DEFAULT_RECEIVER_ID)
                 .setNamespace("urn:x-cast:com.google.cast.tp.deviceauth")
                 .setPayloadType(CastChannel.CastMessage.PayloadType.BINARY)
                 .setProtocolVersion(CastChannel.CastMessage.ProtocolVersion.CASTV2_1_0)
@@ -147,14 +173,13 @@ class Channel implements Closeable {
         /**
          * Send 'CONNECT' message to start session
          */
-        write("urn:x-cast:com.google.cast.tp.connection", Message.connect(), "receiver-0");
+        write("urn:x-cast:com.google.cast.tp.connection", Message.connect(), DEFAULT_RECEIVER_ID);
 
         /**
          * Start ping/pong and reader thread
          */
         pingTimer = new Timer(name + " PING");
-        // TODO move PING interval to constants
-        pingTimer.schedule(pingThread, 5 * 1000, 30 * 1000);
+        pingTimer.schedule(pingThread, 1000, PING_PERIOD);
 
         reader = new ReadThread();
         reader.start();
@@ -165,7 +190,11 @@ class Channel implements Closeable {
         ResultProcessor<T> rp = new ResultProcessor<T>();
         requests.put(message.requestId, rp);
         write(namespace, message, destinationId);
-        return rp.get();
+        try {
+            return rp.get();
+        } finally {
+            requests.remove(message.requestId);
+        }
     }
 
     private void write(String namespace, Message message, String destinationId) throws IOException {
@@ -211,8 +240,25 @@ class Channel implements Closeable {
     }
 
     public Status launch(String appId) throws IOException {
-        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.launch(appId), "receiver-0");
+        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.launch(appId), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
+    }
+
+    public Response stop(String sessionId) throws IOException {
+        return send("urn:x-cast:com.google.cast.receiver", Request.stop(sessionId), DEFAULT_RECEIVER_ID);
+    }
+
+    private void startSession(String destinationId) throws IOException {
+        if (!sessions.contains(destinationId)) {
+            write("urn:x-cast:com.google.cast.tp.connection", Message.connect(), destinationId);
+            sessions.add(destinationId);
+        }
+    }
+
+    public Response play(String sessionId, String destinationId, String url) throws IOException {
+        startSession(destinationId);
+
+        return null;
     }
 
 //    public JSONObject play(String sessionId, String url, String destinationId) throws IOException {
