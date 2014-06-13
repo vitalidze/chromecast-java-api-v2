@@ -3,6 +3,8 @@ package su.litvak.chromecast.api.v2;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -23,6 +25,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Channel implements Closeable {
+    private static final Logger LOG = LoggerFactory.getLogger(Channel.class);
+
     private final Socket socket;
     private final String name;
     private Timer pingTimer;
@@ -45,7 +49,7 @@ public class Channel implements Closeable {
             try {
                 write("urn:x-cast:com.google.cast.tp.heartbeat", msg, "receiver-0");
             } catch (IOException ioex) {
-                // TODO logging
+                LOG.warn("Error while sending 'PING': {}", ioex.getLocalizedMessage());
             }
         }
     }
@@ -66,16 +70,14 @@ public class Channel implements Closeable {
                             if (rp != null) {
                                 rp.put(parsed);
                             } else {
-                                // TODO warn logging
-                                System.out.println("Unable to process request ID = " + requestId + ", data: " + parsed.toJSONString());
+                                LOG.warn("Unable to process request ID = {}, data: {}", requestId, parsed.toJSONString());
                             }
                         }
                     } else {
                         System.out.println(message.getPayloadType());
                     }
                 } catch (IOException ioex) {
-                    // TODO logging
-//                    ioex.printStackTrace();
+                    LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
                 }
             }
         }
@@ -261,8 +263,6 @@ public class Channel implements Closeable {
         customData.put("payload", payload);
 
         msg.put("customData", customData);
-
-        System.out.println(msg.toJSONString());
 
         return send("urn:x-cast:com.google.cast.media", msg, destinationId);
     }
