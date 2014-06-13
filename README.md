@@ -14,7 +14,7 @@ The only available option for now is to build library from sources:
 
 2) Change to the cloned repo folder and run `mvn install`
 
-    $ cd chromecast-java-api-v2.git
+    $ cd chromecast-java-api-v2
     $ mvn install
 
 3) Then it could be included into project's `pom.xml` from local repository:
