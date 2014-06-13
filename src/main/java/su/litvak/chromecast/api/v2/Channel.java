@@ -114,11 +114,11 @@ public class Channel implements Closeable {
         }
     }
 
-    public Channel(String host) throws IOException, GeneralSecurityException {
+    Channel(String host) throws IOException, GeneralSecurityException {
         this(host, 8009);
     }
 
-    public Channel(String host, int port) throws IOException, GeneralSecurityException {
+    Channel(String host, int port) throws IOException, GeneralSecurityException {
         SSLContext sc = SSLContext.getInstance("SSL");
         sc.init(null, new TrustManager[] { new X509TrustAllManager() }, new SecureRandom());
         this.socket = sc.getSocketFactory().createSocket(host, port);
