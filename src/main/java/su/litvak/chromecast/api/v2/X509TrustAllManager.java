@@ -1,4 +1,4 @@
-package su.litvak.justdlna.chromecast.v2;
+package su.litvak.chromecast.api.v2;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;

@@ -1,4 +1,4 @@
-package su.litvak.justdlna.chromecast.v2;
+package su.litvak.chromecast.api.v2;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
