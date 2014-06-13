@@ -1,8 +1,6 @@
 package su.litvak.chromecast.api.v2;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +18,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,21 +30,13 @@ public class Channel implements Closeable {
     private ReadThread reader;
     private AtomicLong requestCounter = new AtomicLong(0);
     private Map<Long, ResultProcessor> requests = new ConcurrentHashMap<Long, ResultProcessor>();
+    private final ObjectMapper jsonMapper = new ObjectMapper();
 
     private class PingThread extends TimerTask {
-        JSONObject msg;
-
-        PingThread()
-        {
-            msg = new JSONObject();
-            msg.put("type", "PING");
-        }
-
-
         @Override
         public void run() {
             try {
-                write("urn:x-cast:com.google.cast.tp.heartbeat", msg, "receiver-0");
+                write("urn:x-cast:com.google.cast.tp.heartbeat", Message.ping(), "receiver-0");
             } catch (IOException ioex) {
                 LOG.warn("Error while sending 'PING': {}", ioex.getLocalizedMessage());
             }
@@ -63,42 +52,44 @@ public class Channel implements Closeable {
                 try {
                     CastChannel.CastMessage message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
-                        JSONObject parsed = (JSONObject) JSONValue.parse(message.getPayloadUtf8());
-                        Long requestId = (Long) parsed.get("requestId");
-                        if (requestId != null) {
-                            ResultProcessor rp = requests.remove(requestId);
+                        System.out.println(" <-- " + message.getPayloadUtf8());
+                        final String jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
+                        Response parsed = jsonMapper.readValue(jsonMSG, Response.class);
+                        if (parsed.requestId != null) {
+                            ResultProcessor rp = requests.remove(parsed.requestId);
                             if (rp != null) {
                                 rp.put(parsed);
                             } else {
-                                LOG.warn("Unable to process request ID = {}, data: {}", requestId, parsed.toJSONString());
+                                LOG.warn("Unable to process request ID = {}, data: {}", parsed.requestId, jsonMSG);
                             }
                         }
                     } else {
-                        System.out.println(message.getPayloadType());
+                        LOG.warn("Received unexpected {} message", message.getPayloadType());
                     }
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
+                    System.out.println(ioex.getLocalizedMessage());
                 }
             }
         }
     }
 
-    private static class ResultProcessor {
-        AtomicReference<JSONObject> json = new AtomicReference<JSONObject>();
+    private class ResultProcessor<T extends Response> {
+        AtomicReference<T> result = new AtomicReference<T>();
 
         private ResultProcessor() {
         }
 
-        public void put(JSONObject json) {
+        public void put(Response result) {
             synchronized (this) {
-                this.json.set(json);
+                this.result.set((T) result);
                 this.notify();
             }
         }
 
-        public JSONObject get() {
-            if (json.get() != null) {
-                return json.get();
+        public T get() {
+            if (result.get() != null) {
+                return result.get();
             }
             synchronized (this) {
                 // TODO put timeout to constant
@@ -109,7 +100,7 @@ public class Channel implements Closeable {
                     // TODO remove this from requests (add timer or so)
                     ie.printStackTrace();
                 }
-                return json.get();
+                return result.get();
             }
         }
     }
@@ -156,10 +147,7 @@ public class Channel implements Closeable {
         /**
          * Send 'CONNECT' message to start session
          */
-        JSONObject jMSG = new JSONObject();
-        jMSG.put("type", "CONNECT");
-        jMSG.put("origin", new JSONObject());
-        write("urn:x-cast:com.google.cast.tp.connection", jMSG, "receiver-0");
+        write("urn:x-cast:com.google.cast.tp.connection", Message.connect(), "receiver-0");
 
         /**
          * Start ping/pong and reader thread
@@ -172,17 +160,17 @@ public class Channel implements Closeable {
         reader.start();
     }
 
-    private JSONObject send(String namespace, JSONObject message, String destinationId) throws IOException {
-        long requestId = requestCounter.getAndIncrement();
-        message.put("requestId", requestId);
-        ResultProcessor rp = new ResultProcessor();
-        requests.put(requestId, rp);
+    private <T extends Response> T send(String namespace, Request message, String destinationId) throws IOException {
+        message.requestId = requestCounter.getAndIncrement();
+        ResultProcessor<T> rp = new ResultProcessor<T>();
+        requests.put(message.requestId, rp);
         write(namespace, message, destinationId);
         return rp.get();
     }
 
-    private void write(String namespace, JSONObject message, String destinationId) throws IOException {
-        write(namespace, message.toJSONString(), destinationId);
+    private void write(String namespace, Message message, String destinationId) throws IOException {
+        System.out.println(" --> " + jsonMapper.writeValueAsString(message));
+        write(namespace, jsonMapper.writeValueAsString(message), destinationId);
     }
 
     private void write(String namespace, String message, String destinationId) throws IOException {
@@ -212,60 +200,50 @@ public class Channel implements Closeable {
         return CastChannel.CastMessage.parseFrom(buf);
     }
 
-    public JSONObject deviceGetStatus() throws IOException {
-        JSONObject msg = new JSONObject();
-        msg.put("type", "GET_STATUS");
-
-        return send("urn:x-cast:com.google.cast.receiver", msg, "receiver-0");
+    public Status getStatus() throws IOException {
+        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.status(), "receiver-0");
+        return status == null ? null : status.status;
     }
 
-    public JSONObject deviceGetAppAvailability(String appId) throws IOException {
-        JSONObject msg = new JSONObject();
-        msg.put("type", "GET_APP_AVAILABILITY");
-        JSONArray apps = new JSONArray();
-        apps.add(appId);
-        msg.put("appId", apps);
-
-        return send("urn:x-cast:com.google.cast.receiver", msg, "receiver-0");
+    public boolean isAppAvailable(String appId) throws IOException {
+        Response.AppAvailability availability = send("urn:x-cast:com.google.cast.receiver", Request.appAvailability(appId), "receiver-0");
+        return availability != null && "APP_AVAILABLE".equals(availability.availability.get(appId));
     }
 
-    public JSONObject appLaunch(String appId) throws IOException {
-        JSONObject msg = new JSONObject();
-        msg.put("type", "LAUNCH");
-        msg.put("appId", appId);
-
-        return send("urn:x-cast:com.google.cast.receiver", msg, "receiver-0");
+    public Status launch(String appId) throws IOException {
+        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.launch(appId), "receiver-0");
+        return status == null ? null : status.status;
     }
 
-    public JSONObject play(String sessionId, String url, String destinationId) throws IOException {
-        JSONObject jMSG = new JSONObject();
-        jMSG.put("type", "CONNECT");
-        jMSG.put("origin", new JSONObject());
-        write("urn:x-cast:com.google.cast.tp.connection", jMSG, destinationId);
-
-        JSONObject msg = new JSONObject();
-        msg.put("type", "LOAD");
-        msg.put("sessionId", sessionId);
-
-        JSONObject media = new JSONObject();
-        media.put("contentId", url);
-        media.put("streamType", "buffered");
-        media.put("contentType", "video/mp4");
-
-        msg.put("media", media);
-        msg.put("autoplay", true);
-        msg.put("currentTime", 0);
-
-        JSONObject customData = new JSONObject();
-        JSONObject payload = new JSONObject();
-        payload.put("title:", "Big Buck Bunny");
-        payload.put("thumb", "images/BigBuckBunny.jpg");
-        customData.put("payload", payload);
-
-        msg.put("customData", customData);
-
-        return send("urn:x-cast:com.google.cast.media", msg, destinationId);
-    }
+//    public JSONObject play(String sessionId, String url, String destinationId) throws IOException {
+//        JSONObject jMSG = new JSONObject();
+//        jMSG.put("type", "CONNECT");
+//        jMSG.put("origin", new JSONObject());
+//        write("urn:x-cast:com.google.cast.tp.connection", jMSG, destinationId);
+//
+//        JSONObject msg = new JSONObject();
+//        msg.put("type", "LOAD");
+//        msg.put("sessionId", sessionId);
+//
+//        JSONObject media = new JSONObject();
+//        media.put("contentId", url);
+//        media.put("streamType", "buffered");
+//        media.put("contentType", "video/mp4");
+//
+//        msg.put("media", media);
+//        msg.put("autoplay", true);
+//        msg.put("currentTime", 0);
+//
+//        JSONObject customData = new JSONObject();
+//        JSONObject payload = new JSONObject();
+//        payload.put("title:", "Big Buck Bunny");
+//        payload.put("thumb", "images/BigBuckBunny.jpg");
+//        customData.put("payload", payload);
+//
+//        msg.put("customData", customData);
+//
+//        return send("urn:x-cast:com.google.cast.media", msg, destinationId);
+//    }
 
     @Override
     public void close() throws IOException {
