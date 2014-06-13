@@ -58,6 +58,12 @@ if (chromecast.isAppAvailable("APP_ID") && status.getRunningApp("F6A9FD85") == n
 chromecast.disconnect();
 ```
 
+Finally, stop device discovery:
+
+```java
+ChromeCasts.stopDiscovery();
+```
+
 This is it for now. I am focused on media playment, so sending URL to play on ChromeCast device is the next step of implementation.
 
 Useful links
