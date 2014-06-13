@@ -55,4 +55,31 @@ public class ChromeCast {
         channel.close();
         channel = null;
     }
+
+    /**
+     * @return  current chromecast status - volume, running applications, etc.
+     * @throws IOException
+     */
+    public Status getStatus() throws IOException {
+        return channel.getStatus();
+    }
+
+    /**
+     * @param appId    application identifier
+     * @return  true if application is available to this chromecast device, false otherwise
+     * @throws IOException
+     */
+    public boolean isAppAvailable(String appId) throws IOException {
+        return channel.isAppAvailable(appId);
+    }
+
+    /**
+     * @param appId    application identifier
+     * @return  application descriptor if app successfully launched, null otherwise
+     * @throws IOException
+     */
+    public Application launchApp(String appId) throws IOException {
+        Status status = channel.launch(appId);
+        return status == null ? null : status.getRunningApp(appId);
+    }
 }

@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Channel implements Closeable {
+class Channel implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(Channel.class);
 
     private final Socket socket;
