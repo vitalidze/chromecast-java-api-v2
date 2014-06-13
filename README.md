@@ -51,10 +51,10 @@ chromecast.connect();
 // Get device status
 Status status = chromecast.getStatus();
 // Run application if it's not already running
-if (chromecast.isAppAvailable("APP_ID") && status.getRunningApp("F6A9FD85") == null) {
-  Application app = chromecastlaunchApp("F6A9FD85");
+if (chromecast.isAppAvailable("APP_ID") && status.getRunningApp("APP_ID") == null) {
+  Application app = chromecastlaunchApp("APP_ID");
 }
-// Disconnect from chromecast
+// Disconnect from device
 chromecast.disconnect();
 ```
 
