@@ -11,7 +11,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
                @JsonSubTypes.Type(name = "CONNECT", value = Message.Connect.class),
                @JsonSubTypes.Type(name = "GET_STATUS", value = Request.Status.class),
                @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Request.AppAvailability.class),
-               @JsonSubTypes.Type(name = "LAUNCH", value = Request.Launch.class)})
+               @JsonSubTypes.Type(name = "LAUNCH", value = Request.Launch.class),
+               @JsonSubTypes.Type(name = "STOP", value = Request.Stop.class)})
 abstract class Message {
     static class Ping extends Message {}
     static class Pong extends Message {}

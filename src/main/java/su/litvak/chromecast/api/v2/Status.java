@@ -18,12 +18,7 @@ public class Status {
         this.activeInput = activeInput;
     }
 
-    public Application getRunningApp(String appId) {
-        for (Application application : applications) {
-            if (appId.equals(application.id)) {
-                return application;
-            }
-        }
-        return null;
+    public Application getRunningApp() {
+        return applications.isEmpty() ? null : applications.get(0);
     }
 }

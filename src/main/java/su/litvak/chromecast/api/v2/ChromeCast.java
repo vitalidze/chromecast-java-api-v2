@@ -24,6 +24,10 @@ public class ChromeCast {
         this.application = serviceInfo.getApplication();
     }
 
+    public ChromeCast(String address) {
+        this(address, 8009);
+    }
+
     public ChromeCast(String address, int port) {
         this.address = address;
         this.port = port;
@@ -108,6 +112,27 @@ public class ChromeCast {
      */
     public Application launchApp(String appId) throws IOException {
         Status status = channel.launch(appId);
-        return status == null ? null : status.getRunningApp(appId);
+        return status == null ? null : status.getRunningApp();
+    }
+
+    /**
+     * Stops currently running application
+     *
+     * @throws IOException
+     */
+    public void stopApp() throws IOException {
+        Status status = getStatus();
+        if (status == null) {
+            return;
+        }
+        stopApp(status.getRunningApp().sessionId);
+    }
+
+    /**
+     * @param sessionId application session identifier
+     * @throws IOException
+     */
+    public void stopApp(String sessionId) throws IOException {
+        channel.stop(sessionId);
     }
 }

@@ -10,13 +10,22 @@ import java.util.Map;
 @JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = Response.Ping.class),
                @JsonSubTypes.Type(name = "PONG", value = Response.Pong.class),
                @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = Response.Status.class),
-               @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class)})
+               @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class),
+               @JsonSubTypes.Type(name = "INVALID_REQUEST", value = Response.Invalid.class)})
 abstract class Response {
     @JsonProperty
     Long requestId;
 
     static class Ping extends Response {}
     static class Pong extends Response {}
+
+    static class Invalid extends Response {
+        final String reason;
+
+        Invalid(@JsonProperty("reason") String reason) {
+            this.reason = reason;
+        }
+    }
 
     static class Status extends Response {
         final su.litvak.chromecast.api.v2.Status status;

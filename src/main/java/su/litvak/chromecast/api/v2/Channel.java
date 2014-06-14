@@ -191,7 +191,12 @@ class Channel implements Closeable {
         requests.put(message.requestId, rp);
         write(namespace, message, destinationId);
         try {
-            return rp.get();
+            T response = rp.get();
+            if (response instanceof Response.Invalid) {
+                Response.Invalid invalid = (Response.Invalid) response;
+                throw new IOException("Invalid request: " + invalid.reason);
+            }
+            return response;
         } finally {
             requests.remove(message.requestId);
         }
@@ -244,8 +249,9 @@ class Channel implements Closeable {
         return status == null ? null : status.status;
     }
 
-    public Response stop(String sessionId) throws IOException {
-        return send("urn:x-cast:com.google.cast.receiver", Request.stop(sessionId), DEFAULT_RECEIVER_ID);
+    public Status stop(String sessionId) throws IOException {
+        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.stop(sessionId), DEFAULT_RECEIVER_ID);
+        return status == null ? null : status.status;
     }
 
     private void startSession(String destinationId) throws IOException {
