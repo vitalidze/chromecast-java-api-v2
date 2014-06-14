@@ -12,13 +12,15 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = Response.Status.class),
                @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class),
                @JsonSubTypes.Type(name = "INVALID_REQUEST", value = Response.Invalid.class),
-               @JsonSubTypes.Type(name = "MEDIA_STATUS", value = Response.MediaStatus.class)})
+               @JsonSubTypes.Type(name = "MEDIA_STATUS", value = Response.MediaStatus.class),
+               @JsonSubTypes.Type(name = "CLOSE", value = Response.Close.class)})
 abstract class Response {
     @JsonProperty
     Long requestId;
 
     static class Ping extends Response {}
     static class Pong extends Response {}
+    static class Close extends Response {}
 
     static class Invalid extends Response {
         final String reason;
