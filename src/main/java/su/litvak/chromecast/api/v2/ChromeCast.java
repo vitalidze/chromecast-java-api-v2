@@ -97,6 +97,15 @@ public class ChromeCast {
     }
 
     /**
+     * @return  descriptor of currently running application
+     * @throws IOException
+     */
+    public Application getRunningApp() throws IOException {
+        Status status = getStatus();
+        return status.getRunningApp();
+    }
+
+    /**
      * @param appId    application identifier
      * @return  true if application is available to this chromecast device, false otherwise
      * @throws IOException
@@ -131,19 +140,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public void stopApp() throws IOException {
-        Status status = getStatus();
-        if (status == null) {
-            return;
-        }
-        stopApp(status.getRunningApp().sessionId);
-    }
-
-    /**
-     * @param sessionId application session identifier
-     * @throws IOException
-     */
-    public void stopApp(String sessionId) throws IOException {
-        channel.stop(sessionId);
+        channel.stop(getRunningApp().sessionId);
     }
 
     /**
@@ -151,5 +148,47 @@ public class ChromeCast {
      */
     public void setVolume(float level) throws IOException {
         channel.setVolume(new Volume(level, false));
+    }
+
+    /**
+     * @return  current media status, state, time, playback rate, etc.
+     * @throws IOException
+     */
+    public MediaStatus getMediaStatus() throws IOException {
+        return channel.getMediaStatus(getRunningApp().transportId);
+    }
+
+    /**
+     * Resume paused media playback
+     *
+     * @throws IOException
+     */
+    public void play() throws IOException {
+        Status status = getStatus();
+        MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
+        channel.play(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId);
+    }
+
+    /**
+     * Pause current playback
+     *
+     * @throws IOException
+     */
+    public void pause() throws IOException {
+        Status status = getStatus();
+        MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
+        channel.pause(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId);
+    }
+
+    /**
+     * Moves current playback time point to specified value
+     *
+     * @param time    time point between zero and media duration
+     * @throws IOException
+     */
+    public void seek(double time) throws IOException {
+        Status status = getStatus();
+        MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
+        channel.seek(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId, time);
     }
 }
