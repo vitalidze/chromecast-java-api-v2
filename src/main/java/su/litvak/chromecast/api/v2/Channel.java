@@ -290,9 +290,15 @@ class Channel implements Closeable {
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
-    public Status setVolume(Volume volume) throws IOException{
+    public Status setVolume(Volume volume) throws IOException {
         Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.setVolume(volume), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
+    }
+
+    public MediaStatus getMediaStatus(String destinationId) throws IOException {
+        startSession(destinationId);
+        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.status(), destinationId);
+        return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
     @Override
