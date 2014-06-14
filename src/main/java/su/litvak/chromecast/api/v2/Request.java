@@ -8,8 +8,7 @@ abstract class Request extends Message {
     @JsonProperty
     Long requestId;
 
-    static class Status extends Request {
-    }
+    static class Status extends Request {}
 
     static class AppAvailability extends Request {
         @JsonProperty
@@ -63,6 +62,30 @@ abstract class Request extends Message {
         }
     }
 
+    abstract static class MediaRequest extends Request {
+        @JsonProperty
+        final long mediaSessionId;
+        @JsonProperty
+        final String sessionId;
+
+        MediaRequest(long mediaSessionId, String sessionId) {
+            this.mediaSessionId = mediaSessionId;
+            this.sessionId = sessionId;
+        }
+    }
+
+    static class Play extends MediaRequest {
+        Play(long mediaSessionId, String sessionId) {
+            super(mediaSessionId, sessionId);
+        }
+    }
+
+    static class Pause extends MediaRequest {
+        Pause(long mediaSessionId, String sessionId) {
+            super(mediaSessionId, sessionId);
+        }
+    }
+
     static Status status() {
         return new Status();
     }
@@ -81,5 +104,13 @@ abstract class Request extends Message {
 
     static Load load(String sessionId, Media media, boolean autoplay, long currentTime, Map<String, String> customData) {
         return new Load(sessionId, media, autoplay, currentTime, customData);
+    }
+
+    static Play play(String sessionId, long mediaSessionId) {
+        return new Play(mediaSessionId, sessionId);
+    }
+
+    static Pause pause(String sessionId, long mediaSessionId) {
+        return new Pause(mediaSessionId, sessionId);
     }
 }

@@ -95,6 +95,8 @@ class Channel implements Closeable {
                             } else {
                                 LOG.warn("Unable to process request ID = {}, data: {}", parsed.requestId, jsonMSG);
                             }
+                        } else if (parsed instanceof Response.Ping) {
+                            write("urn:x-cast:com.google.cast.tp.heartbeat", Message.pong(), DEFAULT_RECEIVER_ID);
                         }
                     } else {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
@@ -264,11 +266,31 @@ class Channel implements Closeable {
         }
     }
 
-    public MediaStatus play(String destinationId, String sessionId, Media media, boolean autoplay, long currentTime, Map<String, String> customData) throws IOException {
+    public MediaStatus load(String destinationId, String sessionId, Media media, boolean autoplay, long currentTime, Map<String, String> customData) throws IOException {
         startSession(destinationId);
         Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.load(sessionId, media, autoplay, currentTime, customData), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
+
+    public MediaStatus play(String destinationId, String sessionId, long mediaSessionId) throws IOException {
+        startSession(destinationId);
+        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.play(sessionId, mediaSessionId), destinationId);
+        return status == null || status.statuses.length == 0 ? null : status.statuses[0];
+    }
+
+    public MediaStatus pause(String destinationId, String sessionId, long mediaSessionId) throws IOException {
+        startSession(destinationId);
+        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.pause(sessionId, mediaSessionId), destinationId);
+        return status == null || status.statuses.length == 0 ? null : status.statuses[0];
+    }
+
+    // TODO
+    // SEEK
+    //  [140608 23:59:15.74] [421345.114s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.media","data":"{\"currentTime\":132.21844655833334,\"mediaSessionId\":1,\"sessionId\":\"17DBB594-B53E-5F3A-0968-7267D4EBB215\",\"requestId\":36424111,\"type\":\"SEEK\"}","sourceId":"client-68893","destinationId":"web-1"}
+//    [140608 23:59:19.73] [421349.104s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.media","data":"{\"currentTime\":267.41926409166666,\"mediaSessionId\":1,\"sessionId\":\"17DBB594-B53E-5F3A-0968-7267D4EBB215\",\"requestId\":36424112,\"type\":\"SEEK\"}","sourceId":"client-68893","destinationId":"web-1"}
+//    SET_VOLUME
+//     [140608 23:59:23.89] [421353.257s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.receiver","data":"{\"type\":\"SET_VOLUME\",\"requestId\":36424113,\"volume\":{\"level\":0.665},\"expectedVolume\":{\"level\":1,\"muted\":false}}","sourceId":"client-68893","destinationId":"receiver-0"}
+
 
     @Override
     public void close() throws IOException {
