@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class Status {
-    final Volume volume;
-    final List<Application> applications;
-    final boolean activeInput;
+    public final Volume volume;
+    public final List<Application> applications;
+    public final boolean activeInput;
 
     Status(@JsonProperty("volume") Volume volume,
            @JsonProperty("applications") List<Application> applications,

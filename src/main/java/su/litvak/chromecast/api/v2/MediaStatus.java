@@ -3,17 +3,19 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class MediaStatus {
-    final long mediaSessionId;
-    final int playbackRate;
-    final String playerState;
-    final float currentTime;
-    final int supportedMediaCommands;
-    final Volume volume;
-    final Media media;
+    public enum PlayerState { BUFFERING, PLAYING, PAUSED }
 
-    public MediaStatus(@JsonProperty("mediaSessionId") long mediaSessionId,
+    public final long mediaSessionId;
+    public final int playbackRate;
+    public final PlayerState playerState;
+    public final float currentTime;
+    public final int supportedMediaCommands;
+    public final Volume volume;
+    public final Media media;
+
+    MediaStatus(@JsonProperty("mediaSessionId") long mediaSessionId,
                        @JsonProperty("playbackRate") int playbackRate,
-                       @JsonProperty("playerState") String playerState,
+                       @JsonProperty("playerState") PlayerState playerState,
                        @JsonProperty("currentTime") float currentTime,
                        @JsonProperty("supportedMediaCommands") int supportedMediaCommands,
                        @JsonProperty("volume") Volume volume,
