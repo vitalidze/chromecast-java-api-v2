@@ -266,7 +266,7 @@ class Channel implements Closeable {
         }
     }
 
-    public MediaStatus load(String destinationId, String sessionId, Media media, boolean autoplay, long currentTime, Map<String, String> customData) throws IOException {
+    public MediaStatus load(String destinationId, String sessionId, Media media, boolean autoplay, double currentTime, Map<String, String> customData) throws IOException {
         startSession(destinationId);
         Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.load(sessionId, media, autoplay, currentTime, customData), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
@@ -284,16 +284,16 @@ class Channel implements Closeable {
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
+    public MediaStatus seek(String destinationId, String sessionId, long mediaSessionId, double currentTime) throws IOException {
+        startSession(destinationId);
+        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.seek(sessionId, mediaSessionId, currentTime), destinationId);
+        return status == null || status.statuses.length == 0 ? null : status.statuses[0];
+    }
+
     public Status setVolume(Volume volume) throws IOException{
         Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.setVolume(volume), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
     }
-
-    // TODO
-    // SEEK
-    //  [140608 23:59:15.74] [421345.114s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.media","data":"{\"currentTime\":132.21844655833334,\"mediaSessionId\":1,\"sessionId\":\"17DBB594-B53E-5F3A-0968-7267D4EBB215\",\"requestId\":36424111,\"type\":\"SEEK\"}","sourceId":"client-68893","destinationId":"web-1"}
-//    [140608 23:59:19.73] [421349.104s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.media","data":"{\"currentTime\":267.41926409166666,\"mediaSessionId\":1,\"sessionId\":\"17DBB594-B53E-5F3A-0968-7267D4EBB215\",\"requestId\":36424112,\"type\":\"SEEK\"}","sourceId":"client-68893","destinationId":"web-1"}
-
 
     @Override
     public void close() throws IOException {

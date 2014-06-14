@@ -45,11 +45,11 @@ abstract class Request extends Message {
         @JsonProperty
         final boolean autoplay;
         @JsonProperty
-        final long currentTime;
+        final double currentTime;
         @JsonProperty
         final Object customData;
 
-        Load(String sessionId, Media media, boolean autoplay, long currentTime, final Map<String, String> customData) {
+        Load(String sessionId, Media media, boolean autoplay, double currentTime, final Map<String, String> customData) {
             this.sessionId = sessionId;
             this.media = media;
             this.autoplay = autoplay;
@@ -86,6 +86,16 @@ abstract class Request extends Message {
         }
     }
 
+    static class Seek extends MediaRequest {
+        @JsonProperty
+        final double currentTime;
+
+        Seek(long mediaSessionId, String sessionId, double currentTime) {
+            super(mediaSessionId, sessionId);
+            this.currentTime = currentTime;
+        }
+    }
+
     static class SetVolume extends Request {
         @JsonProperty
         final Volume volume;
@@ -111,7 +121,7 @@ abstract class Request extends Message {
         return new Stop(sessionId);
     }
 
-    static Load load(String sessionId, Media media, boolean autoplay, long currentTime, Map<String, String> customData) {
+    static Load load(String sessionId, Media media, boolean autoplay, double currentTime, Map<String, String> customData) {
         return new Load(sessionId, media, autoplay, currentTime, customData);
     }
 
@@ -121,6 +131,10 @@ abstract class Request extends Message {
 
     static Pause pause(String sessionId, long mediaSessionId) {
         return new Pause(mediaSessionId, sessionId);
+    }
+
+    static Seek seek(String sessionId, long mediaSessionId, double currentTime) {
+        return new Seek(mediaSessionId, sessionId, currentTime);
     }
 
     static SetVolume setVolume(Volume volume) {
