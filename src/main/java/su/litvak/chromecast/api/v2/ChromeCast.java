@@ -106,6 +106,16 @@ public class ChromeCast {
     }
 
     /**
+     * @param appId application identifier
+     * @return  true if application with specified identifier is running now
+     * @throws IOException
+     */
+    public boolean isAppRunning(String appId) throws IOException {
+        Status status = getStatus();
+        return status != null && status.getRunningApp() != null && appId.equals(status.getRunningApp().id);
+    }
+
+    /**
      * @param appId    application identifier
      * @return  application descriptor if app successfully launched, null otherwise
      * @throws IOException
