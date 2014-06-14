@@ -145,4 +145,11 @@ public class ChromeCast {
     public void stopApp(String sessionId) throws IOException {
         channel.stop(sessionId);
     }
+
+    /**
+     * @param level volume level from 0 to 1 to set
+     */
+    public void setVolume(float level) throws IOException {
+        channel.setVolume(new Volume(level, false));
+    }
 }
