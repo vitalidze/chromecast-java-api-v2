@@ -11,7 +11,8 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "PONG", value = Response.Pong.class),
                @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = Response.Status.class),
                @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class),
-               @JsonSubTypes.Type(name = "INVALID_REQUEST", value = Response.Invalid.class)})
+               @JsonSubTypes.Type(name = "INVALID_REQUEST", value = Response.Invalid.class),
+               @JsonSubTypes.Type(name = "MEDIA_STATUS", value = Response.MediaStatus.class)})
 abstract class Response {
     @JsonProperty
     Long requestId;
@@ -32,6 +33,14 @@ abstract class Response {
 
         Status(@JsonProperty("status") su.litvak.chromecast.api.v2.Status status) {
             this.status = status;
+        }
+    }
+
+    static class MediaStatus extends Response {
+        final su.litvak.chromecast.api.v2.MediaStatus statuses[];
+
+        MediaStatus(@JsonProperty("status") su.litvak.chromecast.api.v2.MediaStatus status[]) {
+            this.statuses = status;
         }
     }
 

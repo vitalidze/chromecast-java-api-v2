@@ -1,5 +1,6 @@
 package su.litvak.chromecast.api.v2;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,9 +99,11 @@ class Channel implements Closeable {
                     } else {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
                     }
+                } catch (InvalidProtocolBufferException ipbe) {
+                    LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
-                    System.out.println(ioex.getLocalizedMessage());
+                    System.out.println(ioex.getClass() + " :: " + ioex.getLocalizedMessage());
                 }
             }
         }
@@ -261,41 +264,11 @@ class Channel implements Closeable {
         }
     }
 
-    public Response play(String sessionId, String destinationId, String url) throws IOException {
+    public MediaStatus play(String destinationId, String sessionId, Media media, boolean autoplay, long currentTime, Map<String, String> customData) throws IOException {
         startSession(destinationId);
-
-        return null;
+        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.load(sessionId, media, autoplay, currentTime, customData), destinationId);
+        return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
-
-//    public JSONObject play(String sessionId, String url, String destinationId) throws IOException {
-//        JSONObject jMSG = new JSONObject();
-//        jMSG.put("type", "CONNECT");
-//        jMSG.put("origin", new JSONObject());
-//        write("urn:x-cast:com.google.cast.tp.connection", jMSG, destinationId);
-//
-//        JSONObject msg = new JSONObject();
-//        msg.put("type", "LOAD");
-//        msg.put("sessionId", sessionId);
-//
-//        JSONObject media = new JSONObject();
-//        media.put("contentId", url);
-//        media.put("streamType", "buffered");
-//        media.put("contentType", "video/mp4");
-//
-//        msg.put("media", media);
-//        msg.put("autoplay", true);
-//        msg.put("currentTime", 0);
-//
-//        JSONObject customData = new JSONObject();
-//        JSONObject payload = new JSONObject();
-//        payload.put("title:", "Big Buck Bunny");
-//        payload.put("thumb", "images/BigBuckBunny.jpg");
-//        customData.put("payload", payload);
-//
-//        msg.put("customData", customData);
-//
-//        return send("urn:x-cast:com.google.cast.media", msg, destinationId);
-//    }
 
     @Override
     public void close() throws IOException {
