@@ -51,9 +51,21 @@ chromecast.connect();
 // Get device status
 Status status = chromecast.getStatus();
 // Run application if it's not already running
-if (chromecast.isAppAvailable("APP_ID") && status.getRunningApp("APP_ID") == null) {
+if (chromecast.isAppAvailable("APP_ID") && !status.isAppRunning("APP_ID")) {
   Application app = chromecastlaunchApp("APP_ID");
 }
+```
+
+Current running application may be stopped by calling `stopApp()` method without arguments:
+
+```java
+// Stop currently running application
+chromecast.stopApp();
+```
+
+Don't forget to close connection to ChromeCast device by calling `disconnect()`:
+
+```java
 // Disconnect from device
 chromecast.disconnect();
 ```
@@ -62,6 +74,12 @@ Finally, stop device discovery:
 
 ```java
 ChromeCasts.stopDiscovery();
+```
+
+Alternatively, ChromeCast device object may be created without discovery if address of chromecast device is known:
+
+```java
+ChromeCast chromecast = new ChromeCast("192.168.10.36");
 ```
 
 This is it for now. I am focused on media playment, so sending URL to play on ChromeCast device is the next step of implementation.
