@@ -284,12 +284,15 @@ class Channel implements Closeable {
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
+    public Status setVolume(Volume volume) throws IOException{
+        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.setVolume(volume), DEFAULT_RECEIVER_ID);
+        return status == null ? null : status.status;
+    }
+
     // TODO
     // SEEK
     //  [140608 23:59:15.74] [421345.114s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.media","data":"{\"currentTime\":132.21844655833334,\"mediaSessionId\":1,\"sessionId\":\"17DBB594-B53E-5F3A-0968-7267D4EBB215\",\"requestId\":36424111,\"type\":\"SEEK\"}","sourceId":"client-68893","destinationId":"web-1"}
 //    [140608 23:59:19.73] [421349.104s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.media","data":"{\"currentTime\":267.41926409166666,\"mediaSessionId\":1,\"sessionId\":\"17DBB594-B53E-5F3A-0968-7267D4EBB215\",\"requestId\":36424112,\"type\":\"SEEK\"}","sourceId":"client-68893","destinationId":"web-1"}
-//    SET_VOLUME
-//     [140608 23:59:23.89] [421353.257s] [cv2.CastChannelService] [FINE] ....message was: {"namespace_":"urn:x-cast:com.google.cast.receiver","data":"{\"type\":\"SET_VOLUME\",\"requestId\":36424113,\"volume\":{\"level\":0.665},\"expectedVolume\":{\"level\":1,\"muted\":false}}","sourceId":"client-68893","destinationId":"receiver-0"}
 
 
     @Override

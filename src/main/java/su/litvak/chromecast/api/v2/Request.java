@@ -86,6 +86,15 @@ abstract class Request extends Message {
         }
     }
 
+    static class SetVolume extends Request {
+        @JsonProperty
+        final Volume volume;
+
+        SetVolume(Volume volume) {
+            this.volume = volume;
+        }
+    }
+
     static Status status() {
         return new Status();
     }
@@ -112,5 +121,9 @@ abstract class Request extends Message {
 
     static Pause pause(String sessionId, long mediaSessionId) {
         return new Pause(mediaSessionId, sessionId);
+    }
+
+    static SetVolume setVolume(Volume volume) {
+        return new SetVolume(volume);
     }
 }
