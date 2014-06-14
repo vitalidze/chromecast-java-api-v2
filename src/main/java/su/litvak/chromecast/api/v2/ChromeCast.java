@@ -8,42 +8,70 @@ import java.security.GeneralSecurityException;
 public class ChromeCast {
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
 
-    private final JmDNS mDNS;
-    private final String name;
+    private String name;
+    private final String address;
+    private final int port;
+    private String appsURL;
+    private String application;
     private Channel channel;
 
     public ChromeCast(JmDNS mDNS, String name) {
-        this.mDNS = mDNS;
         this.name = name;
+        ServiceInfo serviceInfo = mDNS.getServiceInfo(SERVICE_TYPE, name);
+        this.address = serviceInfo.getInet4Addresses()[0].getHostAddress();
+        this.port = serviceInfo.getPort();
+        this.appsURL = serviceInfo.getURLs().length == 0 ? null : serviceInfo.getURLs()[0];
+        this.application = serviceInfo.getApplication();
+    }
+
+    public ChromeCast(String address, int port) {
+        this.address = address;
+        this.port = port;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getIpAddress() {
-        return getServiceInfo().getInet4Addresses()[0].getHostAddress();
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public int getPort() {
-        return getServiceInfo().getPort();
+        return port;
     }
 
-    public String getAppsUrl() {
-        return getServiceInfo().getURLs()[0];
+    public String getAppsURL() {
+        return appsURL;
+    }
+
+    public void setAppsURL(String appsURL) {
+        this.appsURL = appsURL;
     }
 
     public String getApplication() {
-        return getServiceInfo().getApplication();
+        return application;
     }
 
-    private ServiceInfo getServiceInfo() {
-        return mDNS.getServiceInfo(SERVICE_TYPE, name);
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public synchronized void connect() throws IOException, GeneralSecurityException {
         if (channel == null) {
-            channel = new Channel(getIpAddress(), getPort());
+            channel = new Channel(getAddress(), getPort());
         }
     }
 
