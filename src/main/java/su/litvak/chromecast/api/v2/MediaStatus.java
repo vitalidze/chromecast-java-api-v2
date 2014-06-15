@@ -3,7 +3,7 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class MediaStatus {
-    public enum PlayerState { BUFFERING, PLAYING, PAUSED }
+    public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
 
     public final long mediaSessionId;
     public final int playbackRate;
