@@ -13,7 +13,9 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class),
                @JsonSubTypes.Type(name = "INVALID_REQUEST", value = Response.Invalid.class),
                @JsonSubTypes.Type(name = "MEDIA_STATUS", value = Response.MediaStatus.class),
-               @JsonSubTypes.Type(name = "CLOSE", value = Response.Close.class)})
+               @JsonSubTypes.Type(name = "CLOSE", value = Response.Close.class),
+               @JsonSubTypes.Type(name = "LOAD_FAILED", value = Response.LoadFailed.class),
+               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = Response.LaunchError.class)})
 abstract class Response {
     @JsonProperty
     Long requestId;
@@ -21,11 +23,20 @@ abstract class Response {
     static class Ping extends Response {}
     static class Pong extends Response {}
     static class Close extends Response {}
+    static class LoadFailed extends Response {}
 
     static class Invalid extends Response {
         final String reason;
 
         Invalid(@JsonProperty("reason") String reason) {
+            this.reason = reason;
+        }
+    }
+
+    static class LaunchError extends Response {
+        final String reason;
+
+        LaunchError(@JsonProperty("reason") String reason) {
             this.reason = reason;
         }
     }

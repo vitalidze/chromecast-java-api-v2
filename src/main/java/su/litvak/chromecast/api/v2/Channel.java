@@ -200,6 +200,11 @@ class Channel implements Closeable {
             if (response instanceof Response.Invalid) {
                 Response.Invalid invalid = (Response.Invalid) response;
                 throw new IOException("Invalid request: " + invalid.reason);
+            } else if (response instanceof Response.LoadFailed) {
+                throw new IOException("Unable to load media");
+            } else if (response instanceof Response.LaunchError) {
+                Response.LaunchError launchError = (Response.LaunchError) response;
+                throw new IOException("Application launch error: " + launchError.reason);
             }
             return response;
         } finally {
