@@ -4,6 +4,8 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChromeCast {
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
@@ -190,5 +192,32 @@ public class ChromeCast {
         Status status = getStatus();
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
         channel.seek(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId, time);
+    }
+
+    /**
+     * Loads and starts playing media in specified URL
+     *
+     * @param url    media url
+     * @throws IOException
+     */
+    public void load(String url) throws IOException {
+        load(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), null, url, null);
+    }
+
+    /**
+     * Loads and starts playing specified media
+     *
+     * @param title name to be displayed
+     * @param thumb url of video thumbnail to be displayed, relative to media url
+     * @param url   media url
+     * @param contentType    MIME content type
+     * @throws IOException
+     */
+    public void load(String title, String thumb, String url, String contentType) throws IOException {
+        Status status = getStatus();
+        Map<String, String> customData = new HashMap<String, String>(2);
+        customData.put("title:", title);
+        customData.put("thumb", thumb);
+        channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
     }
 }
