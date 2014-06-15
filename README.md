@@ -52,8 +52,41 @@ chromecast.connect();
 Status status = chromecast.getStatus();
 // Run application if it's not already running
 if (chromecast.isAppAvailable("APP_ID") && !status.isAppRunning("APP_ID")) {
-  Application app = chromecastlaunchApp("APP_ID");
+  Application app = chromecast.launchApp("APP_ID");
 }
+```
+
+To start playing media in currently running media receiver:
+
+```java
+// play media URL directly
+chromecast.load("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+// play media URL with additional parameters, such as media title and thumbnail image
+chromecast.load("Big Buck Bunny",           // Media title
+                "images/BigBuckBunny.jpg",  // URL to thumbnail based on media URL
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // media URL
+                "video/mp4" // media content type
+                );
+```
+
+Then playback may be controlled with following methods:
+
+```java
+// pause playback
+chromecast.pause();
+// continute playback
+chromecast.play();
+// rewind (move to specified position (in seconds)
+chromecast.seek(120);
+// update volume
+chromecast.setVolume(0.5);
+```
+
+Also there are utility methods to get current chromecast status (running app, etc.) and currently played media status:
+
+```java
+Status status = chromecast.getStatus();
+MediaStatus mediaStatus = chromecast.getMediaStatus();
 ```
 
 Current running application may be stopped by calling `stopApp()` method without arguments:
@@ -82,12 +115,14 @@ Alternatively, ChromeCast device object may be created without discovery if addr
 ChromeCast chromecast = new ChromeCast("192.168.10.36");
 ```
 
-This is it for now. I am focused on media playment, so sending URL to play on ChromeCast device is the next step of implementation.
+This is it for now. It covers all my needs, but if someone is interested in more methods, I am open to make improvements.
 
 Useful links
 ------------
 
 * [Implementation of V1 protocol in Node.js](https://github.com/wearefractal/nodecast)
+* [Console application implementing V1 protocol in java](https://github.com/entertailion/Caster)
+* [GUI application in java using V1 protocol to send media from local machine to ChromeCast](https://github.com/entertailion/Fling)
 * [Implementation of V2 protocol in Node.js](https://github.com/vincentbernat/nodecastor)
 
 License
