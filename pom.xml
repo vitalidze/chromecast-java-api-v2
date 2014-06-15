@@ -20,7 +20,8 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/vitalidze/chromecast-java-api-v2.git</url>
+        <url>https://github.com/vitalidze/chromecast-java-api-v2</url>
+        <connection>https://github.com/vitalidze/chromecast-java-api-v2.git</connection>
     </scm>
 
     <properties>
@@ -52,4 +53,12 @@
             <version>[1.7.2,)</version>
         </dependency>
     </dependencies>
+
+    <developers>
+        <developer>
+            <id>vitaly</id>
+            <name>Vitaly Litvak</name>
+            <email>vitavaque@gmail.com</email>
+        </developer>
+    </developers>
 </project>
