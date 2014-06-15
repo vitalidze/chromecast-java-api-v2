@@ -85,7 +85,7 @@ class Channel implements Closeable {
                 try {
                     CastChannel.CastMessage message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
-                        System.out.println(" <-- " + message.getPayloadUtf8());
+                        LOG.debug(" <-- {}", message.getPayloadUtf8());
                         final String jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
                         Response parsed = jsonMapper.readValue(jsonMSG, Response.class);
                         if (parsed.requestId != null) {
@@ -208,11 +208,11 @@ class Channel implements Closeable {
     }
 
     private void write(String namespace, Message message, String destinationId) throws IOException {
-        System.out.println(" --> " + jsonMapper.writeValueAsString(message));
         write(namespace, jsonMapper.writeValueAsString(message), destinationId);
     }
 
     private void write(String namespace, String message, String destinationId) throws IOException {
+        LOG.debug(" --> {}", message);
         CastChannel.CastMessage msg = CastChannel.CastMessage.newBuilder()
                 .setProtocolVersion(CastChannel.CastMessage.ProtocolVersion.CASTV2_1_0)
                 .setSourceId(name)
