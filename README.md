@@ -6,7 +6,34 @@ At the moment I have started implementing this library, there was a java [implem
 Install
 -------
 
-The only available option for now is to build library from sources:
+Library is available in maven central. Put lines below into you project's `pom.xml` file:
+
+```xml
+<dependencies>
+...
+  <dependency>
+    <groupId>su.litvak.chromecast</groupId>
+    <artifactId>api-v2</artifactId>
+    <version>0.0.1</version>
+  </dependency>
+...
+</dependencies>
+```
+
+Or to `build.gradle` (`mavenCentral()` repository should be included in appropriate block):
+
+```groovy
+dependencies {
+// ...
+    runtime 'su.litvak.chromecast:api-v2:0.0.1'
+// ...
+}
+```
+
+Build
+-----
+
+To build library from sources:
 
 1) Clone github repo
 
@@ -25,7 +52,7 @@ The only available option for now is to build library from sources:
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
   </dependency>
 ...
 </dependencies>
