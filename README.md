@@ -151,6 +151,8 @@ Useful links
 * [Console application implementing V1 protocol in java](https://github.com/entertailion/Caster)
 * [GUI application in java using V1 protocol to send media from local machine to ChromeCast](https://github.com/entertailion/Fling)
 * [Implementation of V2 protocol in Node.js](https://github.com/vincentbernat/nodecastor)
+* [CastV2 protocol description](https://github.com/thibauts/node-castv2#protocol-description)
+* [CastV2 media player implementation in Node.js](https://github.com/thibauts/node-castv2-client)
 
 License
 -------
