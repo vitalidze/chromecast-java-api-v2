@@ -20,6 +20,9 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Current ChromeCast device status
+ */
 public class Status {
     public final Volume volume;
     public final List<Application> applications;

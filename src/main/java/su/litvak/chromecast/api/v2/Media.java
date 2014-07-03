@@ -17,6 +17,9 @@ package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Media streamed on ChromeCast device
+ */
 public class Media {
     @JsonProperty("contentId")
     public final String url;

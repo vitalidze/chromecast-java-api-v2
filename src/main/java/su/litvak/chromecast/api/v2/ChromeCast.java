@@ -22,6 +22,9 @@ import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * ChromeCast device - main object used for interaction with ChromeCast dongle.
+ */
 public class ChromeCast {
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
 
@@ -80,14 +83,6 @@ public class ChromeCast {
 
     public void setApplication(String application) {
         this.application = application;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 
     public synchronized void connect() throws IOException, GeneralSecurityException {

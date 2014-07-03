@@ -20,6 +20,9 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Application descriptor
+ */
 public class Application {
     public final String id;
     public final String name;

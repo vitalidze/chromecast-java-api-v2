@@ -19,6 +19,9 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Map;
 
+/**
+ * Parent class for transport object representing messages sent TO ChromeCast device
+ */
 abstract class Request extends Message {
     @JsonProperty
     Long requestId;

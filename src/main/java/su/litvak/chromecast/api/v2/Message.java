@@ -20,6 +20,9 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+/**
+ * Parent class for transport objects used to communicate with ChromeCast
+ */
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = Message.Ping.class),
                @JsonSubTypes.Type(name = "PONG", value = Message.Pong.class),

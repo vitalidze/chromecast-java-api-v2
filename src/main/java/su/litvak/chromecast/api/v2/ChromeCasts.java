@@ -21,6 +21,9 @@ import javax.jmdns.ServiceListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Utility class that discovers ChromeCast devices and holds references to all of them.
+ */
 public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListener {
     private final static ChromeCasts INSTANCE = new ChromeCasts();
 
@@ -57,14 +60,23 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
     public void serviceResolved(ServiceEvent event) {
     }
 
+    /**
+     * Starts ChromeCast device discovery
+     */
     public static void startDiscovery() throws IOException {
         INSTANCE._startDiscovery();
     }
 
+    /**
+     * Stops ChromeCast device discovery
+     */
     public static void stopDiscovery() throws IOException {
         INSTANCE._stopDiscovery();
     }
 
+    /**
+     * @return  singleton container holding all discovered devices
+     */
     public static ChromeCasts get() {
         return INSTANCE;
     }

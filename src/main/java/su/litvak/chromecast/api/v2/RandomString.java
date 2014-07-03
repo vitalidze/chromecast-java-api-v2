@@ -17,6 +17,9 @@ package su.litvak.chromecast.api.v2;
 
 import java.util.Random;
 
+/**
+ * Utility class for generating random strings of human-readable characters
+ */
 public class RandomString {
     private static char[] symbols;
 

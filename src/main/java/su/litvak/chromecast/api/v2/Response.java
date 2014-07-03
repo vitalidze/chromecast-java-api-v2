@@ -21,6 +21,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import java.util.Map;
 
+/**
+ * Parent class for transport object representing messages received FROM ChromeCast device
+ */
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property = "responseType")
 @JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = Response.Ping.class),
                @JsonSubTypes.Type(name = "PONG", value = Response.Pong.class),

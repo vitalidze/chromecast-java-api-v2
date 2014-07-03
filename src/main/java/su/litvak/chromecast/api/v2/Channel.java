@@ -34,6 +34,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Internal class for low-level communication with ChromeCast device.
+ * Should never be used directly, use {@link su.litvak.chromecast.api.v2.ChromeCast} methods instead
+ */
 class Channel implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(Channel.class);
     /**
@@ -163,7 +167,13 @@ class Channel implements Closeable {
         connect();
     }
 
+    /**
+     * Establish connection to the ChromeCast device
+     */
     private void connect() throws IOException {
+        /**
+         * Authenticate
+         */
         CastChannel.DeviceAuthMessage authMessage = CastChannel.DeviceAuthMessage.newBuilder()
                 .setChallenge(CastChannel.AuthChallenge.newBuilder().build())
                 .build();
@@ -334,12 +344,18 @@ class Channel implements Closeable {
         }
     }
 
+    /**
+     * Converts specified byte array in Big Endian to int
+     */
     private static int fromArray(byte[] payload){
         ByteBuffer buffer = ByteBuffer.wrap(payload);
         buffer.order(ByteOrder.BIG_ENDIAN);
         return buffer.getInt();
     }
 
+    /**
+     * Converts specified int to byte array in Big Endian
+     */
     private static byte[] toArray(int value){
         ByteBuffer buffer = ByteBuffer.allocate(4);
         buffer.order(ByteOrder.BIG_ENDIAN);

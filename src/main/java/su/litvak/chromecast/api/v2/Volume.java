@@ -17,6 +17,9 @@ package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Volume settings
+ */
 public class Volume {
     @JsonProperty
     public final float level;

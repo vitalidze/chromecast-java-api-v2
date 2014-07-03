@@ -17,7 +17,13 @@ package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Current media player status - which media is played, volume, time position, etc.
+ */
 public class MediaStatus {
+    /**
+     * Playback status
+     */
     public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
 
     public final long mediaSessionId;
