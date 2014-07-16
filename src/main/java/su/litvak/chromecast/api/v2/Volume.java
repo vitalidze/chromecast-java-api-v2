@@ -16,17 +16,19 @@
 package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Volume settings
  */
 public class Volume {
     @JsonProperty
-    public final float level;
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    public final Float level;
     @JsonProperty
     public final boolean muted;
 
-    public Volume(@JsonProperty("level") float level,
+    public Volume(@JsonProperty("level") Float level,
                   @JsonProperty("muted") boolean muted) {
         this.level = level;
         this.muted = muted;

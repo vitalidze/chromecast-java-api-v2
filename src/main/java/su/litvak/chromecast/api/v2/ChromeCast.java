@@ -163,6 +163,13 @@ public class ChromeCast {
     }
 
     /**
+     * @param muted is to mute or not
+     */
+    public void setMuted(boolean muted) throws IOException {
+        channel.setVolume(new Volume(null, muted));
+    }
+
+    /**
      * @return  current media status, state, time, playback rate, etc.
      * @throws IOException
      */
