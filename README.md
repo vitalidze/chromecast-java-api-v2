@@ -107,6 +107,10 @@ chromecast.play();
 chromecast.seek(120);
 // update volume
 chromecast.setVolume(0.5);
+// mute
+chromecast.setMuted(true);
+// unmute (will set up volume to value before muting)
+chromecast.setMuted(false);
 ```
 
 Also there are utility methods to get current chromecast status (running app, etc.) and currently played media status:
