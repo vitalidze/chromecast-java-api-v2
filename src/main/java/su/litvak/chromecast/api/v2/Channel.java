@@ -262,10 +262,20 @@ class Channel implements Closeable {
     private CastChannel.CastMessage read() throws IOException {
         InputStream is = socket.getInputStream();
         byte[] buf = new byte[4];
-        is.read(buf);
+
+        int read = 0;
+        while (read < buf.length) {
+            buf[read++] = (byte) is.read();
+        }
+
         int size = fromArray(buf);
         buf = new byte[size];
-        is.read(buf);
+        read = 0;
+        while (read < size) {
+            int nowRead = is.read(buf, read, buf.length - read);
+            read += nowRead;
+        }
+
         return CastChannel.CastMessage.parseFrom(buf);
     }
 
