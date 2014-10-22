@@ -14,7 +14,7 @@ Library is available in maven central. Put lines below into you project's `pom.x
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
   </dependency>
 ...
 </dependencies>
@@ -25,7 +25,7 @@ Or to `build.gradle` (`mavenCentral()` repository should be included in appropri
 ```groovy
 dependencies {
 // ...
-    runtime 'su.litvak.chromecast:api-v2:0.0.2'
+    runtime 'su.litvak.chromecast:api-v2:0.0.3'
 // ...
 }
 ```
@@ -52,7 +52,7 @@ To build library from sources:
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
   </dependency>
 ...
 </dependencies>
@@ -101,12 +101,12 @@ Then playback may be controlled with following methods:
 ```java
 // pause playback
 chromecast.pause();
-// continute playback
+// continue playback
 chromecast.play();
 // rewind (move to specified position (in seconds)
 chromecast.seek(120);
 // update volume
-chromecast.setVolume(0.5);
+chromecast.setVolume(0.5f);
 // mute
 chromecast.setMuted(true);
 // unmute (will set up volume to value before muting)
@@ -157,6 +157,8 @@ Useful links
 * [Implementation of V2 protocol in Node.js](https://github.com/vincentbernat/nodecastor)
 * [CastV2 protocol description](https://github.com/thibauts/node-castv2#protocol-description)
 * [CastV2 media player implementation in Node.js](https://github.com/thibauts/node-castv2-client)
+* [Library for Python 2 and 3 to communicate with the Google Chromecast](https://github.com/balloob/pychromecast)
+* [CastV2 API protocol POC implementation in Python](https://github.com/minektur/chromecast-python-poc)
 
 License
 -------
