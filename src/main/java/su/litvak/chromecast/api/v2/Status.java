@@ -27,16 +27,23 @@ public class Status {
     public final Volume volume;
     public final List<Application> applications;
     public final boolean activeInput;
+    public final boolean standBy;
 
     Status(@JsonProperty("volume") Volume volume,
            @JsonProperty("applications") List<Application> applications,
-           @JsonProperty("isActiveInput") boolean activeInput) {
+           @JsonProperty("isActiveInput") boolean activeInput,
+           @JsonProperty("isStandBy") boolean standBy) {
         this.volume = volume;
         this.applications = applications == null ? Collections.<Application>emptyList() : applications;
         this.activeInput = activeInput;
+        this.standBy = standBy;
     }
 
     public Application getRunningApp() {
         return applications.isEmpty() ? null : applications.get(0);
+    }
+
+    public boolean isAppRunning(String appId) {
+        return getRunningApp() != null && getRunningApp().id.equals(appId);
     }
 }
