@@ -99,6 +99,10 @@ public class ChromeCast {
         channel.close();
         channel = null;
     }
+    
+    public boolean isConnected(){
+    	return (channel != null && channel.isConnected());
+    }
 
     /**
      * @return  current chromecast status - volume, running applications, etc.
