@@ -63,6 +63,24 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements
 
 	@Override
 	public void serviceRemoved(ServiceEvent event) {
+		if (ChromeCast.SERVICE_TYPE.equals(event.getType())) {
+			// We have a ChromeCast device unregistering
+			List<ChromeCast> copy = new ArrayList<ChromeCast>(this);
+			ChromeCast deviceRemoved = null;
+			// Probably better keep a map to better lookup devices
+			for (ChromeCast device : copy) {
+				if (device.getName().equals(event.getInfo().getName())) {
+					deviceRemoved = device;
+					this.remove(device);
+					break;
+				}
+			}
+			if (deviceRemoved != null) {
+				for (ChromeCastsListener listener : listeners) {
+					listener.chromeCastRemoved(deviceRemoved);
+				}
+			}
+		}
 	}
 
 	@Override
