@@ -20,64 +20,85 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Utility class that discovers ChromeCast devices and holds references to all of them.
+ * Utility class that discovers ChromeCast devices and holds references to all
+ * of them.
  */
-public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListener {
-    private final static ChromeCasts INSTANCE = new ChromeCasts();
+public class ChromeCasts extends ArrayList<ChromeCast> implements
+		ServiceListener {
+	private final static ChromeCasts INSTANCE = new ChromeCasts();
 
-    private JmDNS mDNS;
+	private JmDNS mDNS;
 
-    private ChromeCasts() {
-    }
+	private List<ChromeCastsListener> listeners = new ArrayList<ChromeCastsListener>();
 
-    private void _startDiscovery() throws IOException {
-        if (mDNS == null) {
-            mDNS = JmDNS.create();
-            mDNS.addServiceListener(ChromeCast.SERVICE_TYPE, this);
-        }
-    }
+	private ChromeCasts() {
+	}
 
-    private void _stopDiscovery() throws IOException {
-        if (mDNS != null) {
-            mDNS.close();
-        }
-    }
+	private void _startDiscovery() throws IOException {
+		if (mDNS == null) {
+			mDNS = JmDNS.create();
+			mDNS.addServiceListener(ChromeCast.SERVICE_TYPE, this);
+		}
+	}
 
-    @Override
-    public void serviceAdded(ServiceEvent event) {
-        if (event.getInfo() != null) {
-            add(new ChromeCast(mDNS, event.getInfo().getName()));
-        }
-    }
+	private void _stopDiscovery() throws IOException {
+		if (mDNS != null) {
+			mDNS.close();
+		}
+	}
 
-    @Override
-    public void serviceRemoved(ServiceEvent event) {
-    }
+	@Override
+	public void serviceAdded(ServiceEvent event) {
+		if (event.getInfo() != null) {
+			ChromeCast device = new ChromeCast(mDNS, event.getInfo().getName());
+			add(device);
+			for (ChromeCastsListener listener : listeners) {
+				listener.newChromeCastDiscovered(device);
+			}
+		}
+	}
 
-    @Override
-    public void serviceResolved(ServiceEvent event) {
-    }
+	@Override
+	public void serviceRemoved(ServiceEvent event) {
+	}
 
-    /**
-     * Starts ChromeCast device discovery
-     */
-    public static void startDiscovery() throws IOException {
-        INSTANCE._startDiscovery();
-    }
+	@Override
+	public void serviceResolved(ServiceEvent event) {
+	}
 
-    /**
-     * Stops ChromeCast device discovery
-     */
-    public static void stopDiscovery() throws IOException {
-        INSTANCE._stopDiscovery();
-    }
+	/**
+	 * Starts ChromeCast device discovery
+	 */
+	public static void startDiscovery() throws IOException {
+		INSTANCE._startDiscovery();
+	}
 
-    /**
-     * @return  singleton container holding all discovered devices
-     */
-    public static ChromeCasts get() {
-        return INSTANCE;
-    }
+	/**
+	 * Stops ChromeCast device discovery
+	 */
+	public static void stopDiscovery() throws IOException {
+		INSTANCE._stopDiscovery();
+	}
+
+	/**
+	 * @return singleton container holding all discovered devices
+	 */
+	public static ChromeCasts get() {
+		return INSTANCE;
+	}
+
+	public static void registerListener(ChromeCastsListener listener) {
+		if (listener != null) {
+			INSTANCE.listeners.add(listener);
+		}
+	}
+
+	public static void unregisterListener(ChromeCastsListener listener) {
+		if (listener != null) {
+			INSTANCE.listeners.remove(listener);
+		}
+	}
 }
