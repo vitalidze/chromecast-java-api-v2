@@ -217,7 +217,7 @@ public class ChromeCast {
 	 */
 	public void play() throws IOException {
 		Status status = getStatus();
-		if(status == null){
+		if (status == null) {
 			return;
 		}
 		MediaStatus mediaStatus = channel
@@ -233,7 +233,7 @@ public class ChromeCast {
 	 */
 	public void pause() throws IOException {
 		Status status = getStatus();
-		if(status == null){
+		if (status == null) {
 			return;
 		}
 		MediaStatus mediaStatus = channel
@@ -251,7 +251,7 @@ public class ChromeCast {
 	 */
 	public void seek(double time) throws IOException {
 		Status status = getStatus();
-		if(status == null){
+		if (status == null) {
 			return;
 		}
 		MediaStatus mediaStatus = channel
@@ -289,7 +289,7 @@ public class ChromeCast {
 	public void load(String title, String thumb, String url, String contentType)
 			throws IOException {
 		Status status = getStatus();
-		if(status == null){
+		if (status == null) {
 			return;
 		}
 		Map<String, String> customData = new HashMap<String, String>(2);
