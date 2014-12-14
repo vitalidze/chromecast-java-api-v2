@@ -60,6 +60,7 @@ abstract class Response {
     }
 
     static class Status extends Response {
+        @JsonProperty
         final su.litvak.chromecast.api.v2.Status status;
 
         Status(@JsonProperty("status") su.litvak.chromecast.api.v2.Status status) {

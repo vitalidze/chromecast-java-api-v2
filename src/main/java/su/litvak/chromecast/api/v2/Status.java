@@ -15,6 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Collections;
@@ -39,6 +40,7 @@ public class Status {
         this.standBy = standBy;
     }
 
+    @JsonIgnore
     public Application getRunningApp() {
         return applications.isEmpty() ? null : applications.get(0);
     }

@@ -15,29 +15,46 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import static org.junit.Assert.*;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 public class ConnectionLostTest {
     MockedChromeCast chromeCastStub;
+    ChromeCast cast = new ChromeCast("localhost");
 
     @Before
     public void initMockedCast() throws Exception {
         chromeCastStub = new MockedChromeCast();
+        cast.connect();
+        chromeCastStub.close();
+        // ensure that chrome cast disconnected
+        int retry = 0;
+        while (cast.isConnected() && retry++ < 25) {
+            Thread.sleep(50);
+        }
+        assertTrue("ChromeCast wasn't properly disconnected", retry < 25);
+    }
+
+    @Test(expected = ConnectException.class)
+    public void testDisconnect() throws Exception {
+        assertNull(cast.getStatus());
     }
 
     @Test
-    public void test() throws Exception {
-        ChromeCast cast = new ChromeCast("localhost");
-        cast.connect();
-        cast.disconnect();
+    public void testReconnect() throws Exception {
+        chromeCastStub = new MockedChromeCast();
+        assertNotNull(cast.getStatus());
     }
 
     @After
     public void shutdown() throws IOException {
+        cast.disconnect();
         chromeCastStub.close();
     }
 }

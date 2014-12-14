@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.*;
+import java.util.Collections;
 
 public class MockedChromeCast {
     final ServerSocket socket;
@@ -100,6 +101,11 @@ public class MockedChromeCast {
                 Message json = jsonMapper.readValue(message.getPayloadUtf8(), Message.class);
                 Response response = handleJSON(json);
                 if (response != null) {
+                    if (json instanceof Request) {
+                        Request request = (Request) json;
+                        response.requestId = request.requestId;
+                    }
+
                     write(clientSocket,
                             CastChannel.CastMessage.newBuilder()
                                     .setProtocolVersion(message.getProtocolVersion())
@@ -120,6 +126,9 @@ public class MockedChromeCast {
         Response handleJSON(Message message) {
             if (message instanceof Message.Ping) {
                 return new Response.Pong();
+            } else if (message instanceof Request.Status) {
+                Status status = new Status(new Volume(1f, false), Collections.<Application>emptyList(), false, true);
+                return new Response.Status(status);
             }
             return null;
         }
@@ -130,7 +139,11 @@ public class MockedChromeCast {
 
             int read = 0;
             while (read < buf.length) {
-                buf[read++] = (byte) is.read();
+                int nextByte = is.read();
+                if (nextByte == -1) {
+                    throw new ChromeCastException("Remote socket was closed");
+                }
+                buf[read++] = (byte) nextByte;
             }
 
             int size = fromArray(buf);
@@ -138,6 +151,9 @@ public class MockedChromeCast {
             read = 0;
             while (read < size) {
                 int nowRead = is.read(buf, read, buf.length - read);
+                if (nowRead == -1) {
+                    throw new ChromeCastException("Remote socket was closed");
+                }
                 read += nowRead;
             }
 
