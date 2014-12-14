@@ -33,6 +33,7 @@ public class MediaStatus {
     public final int supportedMediaCommands;
     public final Volume volume;
     public final Media media;
+    public final String idleReason;
 
     MediaStatus(@JsonProperty("mediaSessionId") long mediaSessionId,
                        @JsonProperty("playbackRate") int playbackRate,
@@ -40,7 +41,8 @@ public class MediaStatus {
                        @JsonProperty("currentTime") float currentTime,
                        @JsonProperty("supportedMediaCommands") int supportedMediaCommands,
                        @JsonProperty("volume") Volume volume,
-                       @JsonProperty("media") Media media) {
+                       @JsonProperty("media") Media media,
+                       @JsonProperty("idleReason") String idleReason) {
         this.mediaSessionId = mediaSessionId;
         this.playbackRate = playbackRate;
         this.playerState = playerState;
@@ -48,5 +50,6 @@ public class MediaStatus {
         this.supportedMediaCommands = supportedMediaCommands;
         this.volume = volume;
         this.media = media;
+        this.idleReason = idleReason;
     }
 }
