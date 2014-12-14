@@ -28,6 +28,7 @@ import javax.net.ssl.TrustManager;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.net.Socket;
@@ -55,7 +56,11 @@ class Channel implements Closeable {
     /**
      * Single socket instance for transfers
      */
-    private final Socket socket;
+    private Socket socket;
+    /**
+     * Address of ChromeCast
+     */
+    private final InetSocketAddress address;
     /**
      * Name of sender used in this channel
      */
@@ -84,6 +89,10 @@ class Channel implements Closeable {
      * Destination ids of sessions opened within this channel
      */
     private Set<String> sessions = new HashSet<String>();
+    /**
+     * Indicates that this channel was closed (explicitly, by remote host or for some connectivity issue)
+     */
+    private volatile boolean closed;
 
     private class PingThread extends TimerTask {
         @Override
@@ -101,7 +110,7 @@ class Channel implements Closeable {
 
         @Override
         public void run() {
-            while (!stop && isConnected()) {
+            while (!stop) {
                 try {
                     CastChannel.CastMessage message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
@@ -125,7 +134,11 @@ class Channel implements Closeable {
                     LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
-                    System.out.println(ioex.getClass() + " :: " + ioex.getLocalizedMessage());
+                    try {
+                        close();
+                    } catch (IOException e) {
+                        LOG.warn("Error while closing channel: {}", ioex.getLocalizedMessage());
+                    }
                 }
             }
         }
@@ -161,9 +174,7 @@ class Channel implements Closeable {
     }
 
     Channel(String host, int port) throws IOException, GeneralSecurityException {
-        SSLContext sc = SSLContext.getInstance("SSL");
-        sc.init(null, new TrustManager[] { new X509TrustAllManager() }, new SecureRandom());
-        this.socket = sc.getSocketFactory().createSocket(host, port);
+        this.address = new InetSocketAddress(host, port);
         this.name = "sender-" + new RandomString(10).nextString();
         connect();
     }
@@ -171,7 +182,13 @@ class Channel implements Closeable {
     /**
      * Establish connection to the ChromeCast device
      */
-    private void connect() throws IOException {
+    private void connect() throws IOException, GeneralSecurityException {
+        if (socket == null || socket.isClosed()) {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, new TrustManager[] { new X509TrustAllManager() }, new SecureRandom());
+            socket = sc.getSocketFactory().createSocket();
+            socket.connect(address);
+        }
         /**
          * Authenticate
          */
@@ -192,7 +209,7 @@ class Channel implements Closeable {
         CastChannel.CastMessage response = read();
         CastChannel.DeviceAuthMessage authResponse = CastChannel.DeviceAuthMessage.parseFrom(response.getPayloadBinary());
         if (authResponse.hasError()) {
-            throw new IOException("Authentication failed: " + authResponse.getError().getErrorType().toString());
+            throw new ChromeCastException("Authentication failed: " + authResponse.getError().getErrorType().toString());
         }
 
         /**
@@ -214,9 +231,22 @@ class Channel implements Closeable {
 
         reader = new ReadThread();
         reader.start();
+
+        closed = false;
     }
 
     private <T extends Response> T send(String namespace, Request message, String destinationId) throws IOException {
+        /**
+         * Try to reconnect
+         */
+        if (isClosed()) {
+            try {
+                connect();
+            } catch (GeneralSecurityException gse) {
+                throw new ChromeCastException("Unexpected security exception", gse);
+            }
+        }
+
         message.requestId = requestCounter.getAndIncrement();
         ResultProcessor<T> rp = new ResultProcessor<T>();
         requests.put(message.requestId, rp);
@@ -225,12 +255,12 @@ class Channel implements Closeable {
             T response = rp.get();
             if (response instanceof Response.Invalid) {
                 Response.Invalid invalid = (Response.Invalid) response;
-                throw new IOException("Invalid request: " + invalid.reason);
+                throw new ChromeCastException("Invalid request: " + invalid.reason);
             } else if (response instanceof Response.LoadFailed) {
-                throw new IOException("Unable to load media");
+                throw new ChromeCastException("Unable to load media");
             } else if (response instanceof Response.LaunchError) {
                 Response.LaunchError launchError = (Response.LaunchError) response;
-                throw new IOException("Application launch error: " + launchError.reason);
+                throw new ChromeCastException("Application launch error: " + launchError.reason);
             }
             return response;
         } finally {
@@ -266,7 +296,11 @@ class Channel implements Closeable {
 
         int read = 0;
         while (read < buf.length) {
-            buf[read++] = (byte) is.read();
+            int nextByte = is.read();
+            if (nextByte == -1) {
+                throw new ChromeCastException("Remote socket closed");
+            }
+            buf[read++] = (byte) nextByte;
         }
 
         int size = fromArray(buf);
@@ -274,6 +308,9 @@ class Channel implements Closeable {
         read = 0;
         while (read < size) {
             int nowRead = is.read(buf, read, buf.length - read);
+            if (nowRead == -1) {
+                throw new ChromeCastException("Remote socket closed");
+            }
             read += nowRead;
         }
 
@@ -342,13 +379,9 @@ class Channel implements Closeable {
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
-    public boolean isConnected() {
-        // TODO: Verify if this check is sufficient
-        return (socket != null && socket.isConnected() && !socket.isClosed());
-    }
-
     @Override
     public void close() throws IOException {
+        closed = true;
         if (pingTimer != null) {
             pingTimer.cancel();
         }
@@ -358,5 +391,9 @@ class Channel implements Closeable {
         if (socket != null) {
             socket.close();
         }
+    }
+
+    public boolean isClosed() {
+        return closed;
     }
 }

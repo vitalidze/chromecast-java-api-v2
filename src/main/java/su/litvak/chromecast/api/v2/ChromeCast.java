@@ -101,7 +101,7 @@ public class ChromeCast {
     }
 
     public boolean isConnected() {
-        return (channel != null && channel.isConnected());
+        return (channel != null && !channel.isClosed());
     }
 
     /**
@@ -109,9 +109,6 @@ public class ChromeCast {
      * @throws IOException
      */
     public Status getStatus() throws IOException {
-        if (channel == null) {
-            return null;
-        }
         return channel.getStatus();
     }
 
@@ -121,9 +118,6 @@ public class ChromeCast {
      */
     public Application getRunningApp() throws IOException {
         Status status = getStatus();
-        if (status == null) {
-            return null;
-        }
         return status.getRunningApp();
     }
 
@@ -133,9 +127,6 @@ public class ChromeCast {
      * @throws IOException
      */
     public boolean isAppAvailable(String appId) throws IOException {
-        if (channel == null) {
-            return false;
-        }
         return channel.isAppAvailable(appId);
     }
 
@@ -146,7 +137,7 @@ public class ChromeCast {
      */
     public boolean isAppRunning(String appId) throws IOException {
         Status status = getStatus();
-        return status != null && status.getRunningApp() != null && appId.equals(status.getRunningApp().id);
+        return status.getRunningApp() != null && appId.equals(status.getRunningApp().id);
     }
 
     /**
@@ -165,27 +156,21 @@ public class ChromeCast {
      * @throws IOException
      */
     public void stopApp() throws IOException {
-        if (channel != null) {
-            channel.stop(getRunningApp().sessionId);
-        }
+        channel.stop(getRunningApp().sessionId);
     }
 
     /**
      * @param level volume level from 0 to 1 to set
      */
     public void setVolume(float level) throws IOException {
-        if (channel != null) {
-            channel.setVolume(new Volume(level, false));
-        }
+        channel.setVolume(new Volume(level, false));
     }
 
     /**
      * @param muted is to mute or not
      */
     public void setMuted(boolean muted) throws IOException {
-        if (channel != null) {
-            channel.setVolume(new Volume(null, muted));
-        }
+        channel.setVolume(new Volume(null, muted));
     }
 
     /**
@@ -193,11 +178,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public MediaStatus getMediaStatus() throws IOException {
-        if (channel != null) {
-            return channel.getMediaStatus(getRunningApp().transportId);
-        } else {
-            return null;
-        }
+        return channel.getMediaStatus(getRunningApp().transportId);
     }
 
     /**
@@ -207,9 +188,6 @@ public class ChromeCast {
      */
     public void play() throws IOException {
         Status status = getStatus();
-        if (status == null) {
-            return;
-        }
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
         channel.play(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId);
     }
@@ -221,9 +199,6 @@ public class ChromeCast {
      */
     public void pause() throws IOException {
         Status status = getStatus();
-        if (status == null) {
-            return;
-        }
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
         channel.pause(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId);
     }
@@ -231,15 +206,11 @@ public class ChromeCast {
     /**
      * Moves current playback time point to specified value
      * 
-     * @param time
-     *            time point between zero and media duration
+     * @param time time point between zero and media duration
      * @throws IOException
      */
     public void seek(double time) throws IOException {
         Status status = getStatus();
-        if (status == null) {
-            return;
-        }
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
         channel.seek(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId, time);
     }
@@ -265,9 +236,6 @@ public class ChromeCast {
      */
     public void load(String title, String thumb, String url, String contentType) throws IOException {
         Status status = getStatus();
-        if (status == null) {
-            return;
-        }
         Map<String, String> customData = new HashMap<String, String>(2);
         customData.put("title:", title);
         customData.put("thumb", thumb);
