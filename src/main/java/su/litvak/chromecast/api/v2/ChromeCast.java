@@ -189,6 +189,9 @@ public class ChromeCast {
     public void play() throws IOException {
         Status status = getStatus();
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
+        if (mediaStatus == null) {
+            throw new ChromeCastException("ChromeCast has invalid state to resume media playback");
+        }
         channel.play(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId);
     }
 
@@ -200,6 +203,9 @@ public class ChromeCast {
     public void pause() throws IOException {
         Status status = getStatus();
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
+        if (mediaStatus == null) {
+            throw new ChromeCastException("ChromeCast has invalid state to pause media playback");
+        }
         channel.pause(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId);
     }
 
@@ -212,6 +218,9 @@ public class ChromeCast {
     public void seek(double time) throws IOException {
         Status status = getStatus();
         MediaStatus mediaStatus = channel.getMediaStatus(status.getRunningApp().transportId);
+        if (mediaStatus == null) {
+            throw new ChromeCastException("ChromeCast has invalid state to seek media playback");
+        }
         channel.seek(status.getRunningApp().transportId, status.getRunningApp().sessionId, mediaStatus.mediaSessionId, time);
     }
 
