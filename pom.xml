@@ -3,7 +3,7 @@
 
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.0.5</version>
     <packaging>jar</packaging>
 
     <name>ChromeCast Java API v2</name>
@@ -21,7 +21,7 @@
     <scm>
         <url>https://github.com/vitalidze/chromecast-java-api-v2</url>
         <connection>scm:git:https://github.com/vitalidze/chromecast-java-api-v2.git</connection>
-      <tag>HEAD</tag>
+      <tag>v0.0.5</tag>
   </scm>
 
     <properties>
