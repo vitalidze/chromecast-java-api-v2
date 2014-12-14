@@ -15,6 +15,9 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import static su.litvak.chromecast.api.v2.Util.fromArray;
+import static su.litvak.chromecast.api.v2.Util.toArray;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -25,8 +28,6 @@ import javax.net.ssl.TrustManager;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.net.Socket;
@@ -100,7 +101,7 @@ class Channel implements Closeable {
 
         @Override
         public void run() {
-            while (!stop) {
+            while (!stop && isConnected()) {
                 try {
                     CastChannel.CastMessage message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
@@ -357,25 +358,5 @@ class Channel implements Closeable {
         if (socket != null) {
             socket.close();
         }
-    }
-
-    /**
-     * Converts specified byte array in Big Endian to int
-     */
-    private static int fromArray(byte[] payload) {
-        ByteBuffer buffer = ByteBuffer.wrap(payload);
-        buffer.order(ByteOrder.BIG_ENDIAN);
-        return buffer.getInt();
-    }
-
-    /**
-     * Converts specified int to byte array in Big Endian
-     */
-    private static byte[] toArray(int value) {
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        buffer.order(ByteOrder.BIG_ENDIAN);
-        buffer.putInt(value);
-        buffer.flip();
-        return buffer.array();
     }
 }
