@@ -45,6 +45,7 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
     private void _stopDiscovery() throws IOException {
         if (mDNS != null) {
             mDNS.close();
+            mDNS = null;
         }
     }
 
@@ -97,6 +98,14 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
      */
     public static void stopDiscovery() throws IOException {
         INSTANCE._stopDiscovery();
+    }
+
+    /**
+     * Restarts discovery by sequentially calling 'stop' and 'start' methods
+     */
+    public static void restartDiscovery() throws IOException {
+        stopDiscovery();
+        startDiscovery();
     }
 
     /**
