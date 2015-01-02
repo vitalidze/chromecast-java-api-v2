@@ -14,7 +14,7 @@ Library is available in maven central. Put lines below into you project's `pom.x
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
   </dependency>
 ...
 </dependencies>
@@ -25,7 +25,7 @@ Or to `build.gradle` (`mavenCentral()` repository should be included in appropri
 ```groovy
 dependencies {
 // ...
-    runtime 'su.litvak.chromecast:api-v2:0.0.5'
+    runtime 'su.litvak.chromecast:api-v2:0.0.6'
 // ...
 }
 ```
@@ -52,7 +52,7 @@ To build library from sources:
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.7-SNAPSHOT</version>
   </dependency>
 ...
 </dependencies>
