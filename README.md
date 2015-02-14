@@ -160,6 +160,12 @@ Useful links
 * [Library for Python 2 and 3 to communicate with the Google Chromecast](https://github.com/balloob/pychromecast)
 * [CastV2 API protocol POC implementation in Python](https://github.com/minektur/chromecast-python-poc)
 
+Projects using library
+----------------------
+
+* [UniversalMediaServer](https://github.com/UniversalMediaServer/UniversalMediaServer) - powerful server application that serves media to various types of receivers (including ChromeCast)
+* [chromecastplayer](https://github.com/neocdtv/chromecastplayer) - simple media player with swing UI
+
 License
 -------
 
