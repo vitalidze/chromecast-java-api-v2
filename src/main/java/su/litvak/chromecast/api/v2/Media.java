@@ -16,23 +16,50 @@
 package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-
+import org.codehaus.jackson.annotate.JsonIgnore;
 /**
  * Media streamed on ChromeCast device
  */
 public class Media {
+    @JsonIgnore
+    public String metadata;
+
     @JsonProperty("contentId")
     public final String url;
+
+    @JsonIgnore
+    public Double duration;
+
+    @JsonIgnore
+    public String streamType = "buffered";
+
     @JsonProperty
     public final String contentType;
-    @JsonProperty
-    public String streamType = "buffered";
-    @JsonProperty
-    public Double duration;
+
+    @JsonIgnore
+    public String customData;
+
+    public Media() {
+        this.url = "n/a";
+        this.contentType = "n/a";
+    }
 
     public Media(@JsonProperty("contentId") String url,
                  @JsonProperty("contentType") String contentType) {
         this.url = url;
         this.contentType = contentType;
     }
+
+    // public Media(@JsonProperty("contentId") String url,
+    //              @JsonProperty("duration") Double duration,
+    //              // @JsonProperty("metadata") MetaData metadata,
+    //              @JsonProperty("streamType") String streamType,
+    //              @JsonProperty("contentType") String contentType) {
+    //     this.url = url;
+    //     this.duration = duration;
+    //     // this.metadata = metadata;
+    //     this.streamType = streamType;
+    //     this.contentType = contentType;
+
+    // }
 }

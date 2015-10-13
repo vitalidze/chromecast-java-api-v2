@@ -111,18 +111,27 @@ class Channel implements Closeable {
         @Override
         public void run() {
             while (!stop) {
+                CastChannel.CastMessage message = null;
                 try {
-                    CastChannel.CastMessage message = read();
+                    message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
-                        LOG.debug(" <-- {}", message.getPayloadUtf8());
+
                         final String jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
+                        if (!jsonMSG.contains("responseType")) {
+                            LOG.warn(" <-- {Skipping}", jsonMSG);
+                            continue;
+                        }
                         Response parsed = jsonMapper.readValue(jsonMSG, Response.class);
                         if (parsed.requestId != null) {
                             ResultProcessor rp = requests.remove(parsed.requestId);
                             if (rp != null) {
                                 rp.put(parsed);
                             } else {
-                                LOG.warn("Unable to process request ID = {}, data: {}", parsed.requestId, jsonMSG);
+                                if (parsed.requestId != 0) {
+                                    // Status events are sent with a requestid of zero
+                                    // https://developers.google.com/cast/docs/reference/messages
+                                    LOG.warn("Unable to process request ID = {}, data: {}", parsed.requestId, jsonMSG);
+                                }
                             }
                         } else if (parsed instanceof Response.Ping) {
                             write("urn:x-cast:com.google.cast.tp.heartbeat", Message.pong(), DEFAULT_RECEIVER_ID);
@@ -134,11 +143,12 @@ class Channel implements Closeable {
                     LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
-                    try {
-                        close();
-                    } catch (IOException e) {
-                        LOG.warn("Error while closing channel: {}", ioex.getLocalizedMessage());
-                    }
+                    LOG.warn(" <-- {}", message.getPayloadUtf8());
+                    // try {
+                    //     close();
+                    // } catch (IOException e) {
+                    //     LOG.warn("Error while closing channel: {}", ioex.getLocalizedMessage());
+                    // }
                 }
             }
         }
@@ -273,7 +283,7 @@ class Channel implements Closeable {
     }
 
     private void write(String namespace, String message, String destinationId) throws IOException {
-        LOG.debug(" --> {}", message);
+        LOG.warn(" --> {}", message);
         CastChannel.CastMessage msg = CastChannel.CastMessage.newBuilder()
                 .setProtocolVersion(CastChannel.CastMessage.ProtocolVersion.CASTV2_1_0)
                 .setSourceId(name)

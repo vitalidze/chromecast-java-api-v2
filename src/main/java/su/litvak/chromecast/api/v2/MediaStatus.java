@@ -16,6 +16,7 @@
 package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * Current media player status - which media is played, volume, time position, etc.
@@ -25,31 +26,48 @@ public class MediaStatus {
      * Playback status
      */
     public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
+    public enum RepeatState { REPEAT_OFF, REPEAT_ON }
 
-    public final long mediaSessionId;
-    public final int playbackRate;
-    public final PlayerState playerState;
     public final float currentTime;
+    public final int playbackRate;
     public final int supportedMediaCommands;
-    public final Volume volume;
+    public final PlayerState playerState;
     public final Media media;
-    public final String idleReason;
 
-    MediaStatus(@JsonProperty("mediaSessionId") long mediaSessionId,
+
+    public Volume volume;
+
+    public long mediaSessionId = -1L;
+
+    RepeatState repeatMode = RepeatState.REPEAT_OFF;
+
+    @JsonIgnore
+    public int currentItemId;
+
+    @JsonIgnore
+    public int items;
+
+    @JsonIgnore
+    public String customData;
+
+    MediaStatus(       @JsonProperty("currentTime") float currentTime,
                        @JsonProperty("playbackRate") int playbackRate,
-                       @JsonProperty("playerState") PlayerState playerState,
-                       @JsonProperty("currentTime") float currentTime,
                        @JsonProperty("supportedMediaCommands") int supportedMediaCommands,
-                       @JsonProperty("volume") Volume volume,
+                       @JsonProperty("playerState") PlayerState playerState,
                        @JsonProperty("media") Media media,
-                       @JsonProperty("idleReason") String idleReason) {
-        this.mediaSessionId = mediaSessionId;
-        this.playbackRate = playbackRate;
-        this.playerState = playerState;
+                       @JsonProperty("mediaSessionId") long mediaSessionId,
+                       @JsonProperty("volume") Volume volume,
+                       @JsonProperty("repeatMode") RepeatState repeatMode
+
+
+                ) {
         this.currentTime = currentTime;
+        this.playbackRate = playbackRate;
         this.supportedMediaCommands = supportedMediaCommands;
-        this.volume = volume;
+        this.playerState = playerState;
         this.media = media;
-        this.idleReason = idleReason;
+        this.mediaSessionId = mediaSessionId;
+        this.volume = volume;
+        this.repeatMode = repeatMode;
     }
 }

@@ -16,6 +16,7 @@
 package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -27,10 +28,24 @@ public class Volume {
     public final Float level;
     @JsonProperty
     public final boolean muted;
+    // @JsonProperty
+    // public int increment;
+
+    public Volume() {
+        level = new Float(-1);
+        muted = false;
+    }
 
     public Volume(@JsonProperty("level") Float level,
                   @JsonProperty("muted") boolean muted) {
         this.level = level;
         this.muted = muted;
     }
+    // public Volume(@JsonProperty("level") Float level,
+    //               @JsonProperty("muted") boolean muted,
+    //               @JsonProperty("increment") int increment) {
+    //     this.level = level;
+    //     this.muted = muted;
+    //     this.increment = increment;
+    // }
 }
