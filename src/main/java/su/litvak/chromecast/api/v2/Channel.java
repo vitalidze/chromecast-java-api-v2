@@ -143,7 +143,11 @@ class Channel implements Closeable {
                     LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
-                    LOG.warn(" <-- {}", message.getPayloadUtf8());
+                    String temp;
+                    if (message != null &&  message.getPayloadUtf8() != null) {
+                        temp = message.getPayloadUtf8();
+                    } else { temp = " null payload in message ";}
+                    LOG.warn(" <-- {}", temp);
                     // try {
                     //     close();
                     // } catch (IOException e) {
