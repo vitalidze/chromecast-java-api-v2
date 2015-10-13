@@ -28,8 +28,6 @@ public class Volume {
     public final Float level;
     @JsonProperty
     public final boolean muted;
-    // @JsonProperty
-    // public int increment;
 
     public Volume() {
         level = new Float(-1);
@@ -41,11 +39,4 @@ public class Volume {
         this.level = level;
         this.muted = muted;
     }
-    // public Volume(@JsonProperty("level") Float level,
-    //               @JsonProperty("muted") boolean muted,
-    //               @JsonProperty("increment") int increment) {
-    //     this.level = level;
-    //     this.muted = muted;
-    //     this.increment = increment;
-    // }
 }

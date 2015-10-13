@@ -283,7 +283,7 @@ class Channel implements Closeable {
     }
 
     private void write(String namespace, String message, String destinationId) throws IOException {
-        LOG.warn(" --> {}", message);
+        LOG.debug(" --> {}", message);
         CastChannel.CastMessage msg = CastChannel.CastMessage.newBuilder()
                 .setProtocolVersion(CastChannel.CastMessage.ProtocolVersion.CASTV2_1_0)
                 .setSourceId(name)
