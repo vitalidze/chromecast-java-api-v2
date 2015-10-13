@@ -76,7 +76,7 @@ class Channel implements Closeable {
     /**
      * Counter for producing request numbers
      */
-    private AtomicLong requestCounter = new AtomicLong(0);
+    private AtomicLong requestCounter = new AtomicLong(1);
     /**
      * Processors of requests by their identifiers
      */
@@ -260,6 +260,7 @@ class Channel implements Closeable {
         message.requestId = requestCounter.getAndIncrement();
         ResultProcessor<T> rp = new ResultProcessor<T>();
         requests.put(message.requestId, rp);
+
         write(namespace, message, destinationId);
         try {
             T response = rp.get();
