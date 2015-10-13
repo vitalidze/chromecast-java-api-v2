@@ -50,16 +50,14 @@ public class Media {
         this.contentType = contentType;
     }
 
-    // public Media(@JsonProperty("contentId") String url,
-    //              @JsonProperty("duration") Double duration,
-    //              // @JsonProperty("metadata") MetaData metadata,
-    //              @JsonProperty("streamType") String streamType,
-    //              @JsonProperty("contentType") String contentType) {
-    //     this.url = url;
-    //     this.duration = duration;
-    //     // this.metadata = metadata;
-    //     this.streamType = streamType;
-    //     this.contentType = contentType;
+    public Media(@JsonProperty("contentId") String url,
+                 @JsonProperty("duration") Double duration,
+                 @JsonProperty("streamType") String streamType,
+                 @JsonProperty("contentType") String contentType) {
+        this.url = url;
+        this.duration = duration;
+        this.streamType = streamType;
+        this.contentType = contentType;
 
-    // }
+    }
 }

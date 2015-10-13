@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * ChromeCast device - main object used for interaction with ChromeCast dongle.
  */
-public class ChromeCast  {
+public class ChromeCast {
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
 
     private String name;
@@ -183,7 +183,6 @@ public class ChromeCast  {
 
     /**
      * Resume paused media playback
-     *
      * @throws IOException
      */
     public void play() throws IOException {
@@ -197,7 +196,6 @@ public class ChromeCast  {
 
     /**
      * Pause current playback
-     *
      * @throws IOException
      */
     public void pause() throws IOException {
@@ -211,7 +209,6 @@ public class ChromeCast  {
 
     /**
      * Moves current playback time point to specified value
-     *
      * @param time time point between zero and media duration
      * @throws IOException
      */

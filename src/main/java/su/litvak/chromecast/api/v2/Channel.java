@@ -115,12 +115,13 @@ class Channel implements Closeable {
                 try {
                     message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
-
+                        LOG.debug(" <-- {}",  message.getPayloadUtf8());
                         final String jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
                         if (!jsonMSG.contains("responseType")) {
                             LOG.warn(" <-- {Skipping}", jsonMSG);
                             continue;
                         }
+
                         Response parsed = jsonMapper.readValue(jsonMSG, Response.class);
                         if (parsed.requestId != null) {
                             ResultProcessor rp = requests.remove(parsed.requestId);
