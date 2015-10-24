@@ -147,13 +147,15 @@ class Channel implements Closeable {
                     String temp;
                     if (message != null &&  message.getPayloadUtf8() != null) {
                         temp = message.getPayloadUtf8();
-                    } else { temp = " null payload in message ";}
+                    } else {
+                        temp = " null payload in message ";
+                    }
                     LOG.warn(" <-- {}", temp);
-                    // try {
-                    //     close();
-                    // } catch (IOException e) {
-                    //     LOG.warn("Error while closing channel: {}", ioex.getLocalizedMessage());
-                    // }
+                    try {
+                        close();
+                    } catch (IOException e) {
+                        LOG.warn("Error while closing channel: {}", ioex.getLocalizedMessage());
+                    }
                 }
             }
         }
