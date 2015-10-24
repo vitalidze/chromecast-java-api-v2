@@ -15,43 +15,58 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import java.util.Collections;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Current media player status - which media is played, volume, time position, etc.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class MediaStatus {
     /**
      * Playback status
      */
     public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
 
+    /**
+     * https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode
+     */
+    public enum RepeatMode { REPEAT_OFF, REPEAT_ALL, REPEAT_SINGLE, REPEAT_ALL_AND_SHUFFLE }
+
     public final long mediaSessionId;
     public final int playbackRate;
     public final PlayerState playerState;
+    public final int currentItemId;
     public final float currentTime;
+    public final List<Item> items;
     public final int supportedMediaCommands;
     public final Volume volume;
     public final Media media;
+    public final RepeatMode repeatMode;
     public final String idleReason;
 
     MediaStatus(@JsonProperty("mediaSessionId") long mediaSessionId,
                        @JsonProperty("playbackRate") int playbackRate,
                        @JsonProperty("playerState") PlayerState playerState,
+                       @JsonProperty("currentItemId") int currentItemId,
                        @JsonProperty("currentTime") float currentTime,
+                       @JsonProperty("items") List<Item> items,
                        @JsonProperty("supportedMediaCommands") int supportedMediaCommands,
                        @JsonProperty("volume") Volume volume,
                        @JsonProperty("media") Media media,
+                       @JsonProperty("repeatMode") RepeatMode repeatMode,
                        @JsonProperty("idleReason") String idleReason) {
         this.mediaSessionId = mediaSessionId;
         this.playbackRate = playbackRate;
         this.playerState = playerState;
+        this.currentItemId = currentItemId;
         this.currentTime = currentTime;
+        this.items = items != null ? Collections.unmodifiableList(items) : null;
         this.supportedMediaCommands = supportedMediaCommands;
         this.volume = volume;
         this.media = media;
+        this.repeatMode = repeatMode;
         this.idleReason = idleReason;
     }
 }
