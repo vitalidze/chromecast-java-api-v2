@@ -21,7 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class MediaStatusTest {
         Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue("{\"responseType\":\"MEDIA_STATUS\",\"status\":[{\"mediaSessionId\":1,\"playbackRate\":1,\"playerState\":\"IDLE\",\"currentTime\":0,\"supportedMediaCommands\":15,\"volume\":{\"level\":1,\"muted\":false},\"media\":{\"contentId\":\"/public/Videos/Movies/FileB.mp4\",\"contentType\":\"video/transcode\",\"streamType\":\"buffered\",\"duration\":null},\"idleReason\":\"ERROR\"}],\"requestId\":28}", Response.class);
         assertEquals(1, response.statuses.length);
         MediaStatus mediaStatus = response.statuses[0];
-        assertEquals("ERROR", mediaStatus.idleReason);
+        assertEquals(MediaStatus.IdleReason.ERROR, mediaStatus.idleReason);
     }
 
     @Test
@@ -59,16 +59,14 @@ public class MediaStatusTest {
         assertEquals((Integer) 1, mediaStatus.currentItemId);
         assertEquals(0f, mediaStatus.currentTime, 0f);
 
-        final Media media = new Media("http://192.168.1.6:8192/audio-123-mp3", "audio/mpeg", 389.355102d);
+        final Media media = new Media("http://192.168.1.6:8192/audio-123-mp3", "audio/mpeg", 389.355102d, Media.StreamType.buffered);
 
         final Map<String, String> payload = new HashMap<String, String>();
         payload.put("thumb", null);
         payload.put("title", "Example Track Title");
         final Map<String, Object> customData = new HashMap<String, Object>();
         customData.put("payload", payload);
-        assertEquals(Arrays.asList(new Item[] {
-                new Item(true, customData, 1, media)
-        }), mediaStatus.items);
+        assertEquals(Collections.singletonList(new Item(true, customData, 1, media)), mediaStatus.items);
 
         assertEquals(media, mediaStatus.media);
         assertEquals(1, mediaStatus.mediaSessionId);

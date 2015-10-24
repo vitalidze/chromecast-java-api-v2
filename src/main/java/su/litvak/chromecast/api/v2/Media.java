@@ -16,25 +16,37 @@
 package su.litvak.chromecast.api.v2;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonIgnore;
 /**
  * Media streamed on ChromeCast device
+ *
+ * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation</a>
  */
 public class Media {
+
+    /**
+     * Stream type
+     *
+     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType</a>
+     */
+    public enum StreamType { buffered, live, none }
+
     @JsonIgnore
-    public String metadata;
+    public final Map<String, Object> metadata;
 
     @JsonProperty("contentId")
     public final String url;
 
     @JsonIgnore
-    public Double duration;
+    public final Double duration;
 
     @JsonIgnore
-    public String streamType = "buffered";
+    public final StreamType streamType;
 
     @JsonProperty
     public final String contentType;
@@ -42,18 +54,36 @@ public class Media {
     @JsonIgnore
     public final Map<String, Object> customData;
 
+    @JsonIgnore
+    public final Map<String, Object> textTrackStyle;
+
+    @JsonIgnore
+    public final List<Track> tracks;
+
     public Media(String url, String contentType) {
         this(url, contentType, null, null);
+    }
+
+    public Media(String url, String contentType, Double duration, StreamType streamType) {
+        this(url, contentType, duration, streamType, null, null, null, null);
     }
 
     public Media(@JsonProperty("contentId") String url,
                  @JsonProperty("contentType") String contentType,
                  @JsonProperty("duration") Double duration,
-                 @JsonProperty("streamType") String streamType,) {
+                 @JsonProperty("streamType") StreamType streamType,
+                 @JsonProperty("customData") Map<String, Object> customData,
+                 @JsonProperty("metadata") Map<String, Object> metadata,
+                 @JsonProperty("textTrackStyle") Map<String, Object> textTrackStyle,
+                 @JsonProperty("tracks") List<Track> tracks) {
         this.url = url;
         this.contentType = contentType;
         this.duration = duration;
         this.streamType = streamType;
+        this.customData = customData == null ? null : Collections.unmodifiableMap(customData);
+        this.metadata = metadata == null ? null : Collections.unmodifiableMap(metadata);
+        this.textTrackStyle = textTrackStyle == null ? null : Collections.unmodifiableMap(textTrackStyle);
+        this.tracks = tracks == null ? null : Collections.unmodifiableList(tracks);
     }
 
     @Override

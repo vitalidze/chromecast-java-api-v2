@@ -11,21 +11,21 @@ public class Item {
     public final boolean autoplay;
     public final Map<String, Object> customData;
     public final Media media;
-    public final int itemId;
+    public final long id;
 
     public Item (@JsonProperty("autoplay") boolean autoplay,
             @JsonProperty("customData") Map<String, Object> customData,
-            @JsonProperty("itemId") int itemId,
+            @JsonProperty("itemId") long id,
             @JsonProperty("media") Media media) {
         this.autoplay = autoplay;
         this.customData = customData != null ? Collections.unmodifiableMap(customData) : null;
-        this.itemId = itemId;
+        this.id = id;
         this.media = media;
     }
 
     @Override
     public int hashCode () {
-        return Arrays.hashCode(new Object[] { this.autoplay, this.customData, this.itemId, this.media });
+        return Arrays.hashCode(new Object[] { this.autoplay, this.customData, this.id, this.media });
     }
 
     @Override
@@ -36,13 +36,13 @@ public class Item {
         final Item that = (Item) obj;
         return this.autoplay == that.autoplay &&
                 this.customData == null ? that.customData == null : this.customData.equals(that.customData) &&
-                this.itemId == that.itemId &&
+                this.id == that.id &&
                 this.media == null ? that.media == null : this.media.equals(that.media);
     }
 
     @Override
     public String toString () {
-        return String.format("Item{%s, %s}", this.itemId, this.media);
+        return String.format("Item{%s, %s}", this.id, this.media);
     }
 
 }
