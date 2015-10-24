@@ -15,8 +15,11 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * Current media player status - which media is played, volume, time position, etc.
@@ -24,49 +27,58 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class MediaStatus {
     /**
      * Playback status
-     * https://developers.google.com/cast/docs/reference/messages#MediaStatus
      */
-    public enum PlayerState { IDLE, PLAYING, BUFFERING, PAUSED }
-    public enum RepeatState { REPEAT_OFF, REPEAT_ON }
-    public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR }
+    public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
 
-    public long mediaSessionId;
-    public final Media media;
+    /**
+     * https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode
+     */
+    public enum RepeatMode { REPEAT_OFF, REPEAT_ALL, REPEAT_SINGLE, REPEAT_ALL_AND_SHUFFLE }
+
+    public final List<Integer> activeTrackIds;
+    public final long mediaSessionId;
     public final int playbackRate;
     public final PlayerState playerState;
-    public IdleReason idleReason = IdleReason.ERROR;
-    public final double currentTime;
+    public final Integer currentItemId;
+    public final float currentTime;
+    public final Map<String, Object> customData;
+    public final Integer loadingItemId;
+    public final List<Item> items;
+    public final Integer preloadedItemId;
     public final int supportedMediaCommands;
-    public Volume volume;
+    public final Volume volume;
+    public final Media media;
+    public final RepeatMode repeatMode;
+    public final String idleReason;
 
-    public RepeatState repeatMode = RepeatState.REPEAT_OFF;
-
-    @JsonIgnore
-    public int currentItemId;
-
-    @JsonIgnore
-    public int items;
-
-    @JsonIgnore
-    public String customData;
-
-    MediaStatus(       @JsonProperty("mediaSessionId") long mediaSessionId,
-                       @JsonProperty("media") Media media,
+    MediaStatus(@JsonProperty("activeTrackIds") List<Integer> activeTrackIds,
+                       @JsonProperty("mediaSessionId") long mediaSessionId,
                        @JsonProperty("playbackRate") int playbackRate,
                        @JsonProperty("playerState") PlayerState playerState,
-                       @JsonProperty("idleReason") IdleReason idleReason,
-                       @JsonProperty("currentTime") double currentTime,
+                       @JsonProperty("currentItemId") Integer currentItemId,
+                       @JsonProperty("currentTime") float currentTime,
+                       @JsonProperty("customData") Map<String, Object> customData,
+                       @JsonProperty("loadingItemId") Integer loadingItemId,
+                       @JsonProperty("items") List<Item> items,
+                       @JsonProperty("preloadedItemId") Integer preloadedItemId,
                        @JsonProperty("supportedMediaCommands") int supportedMediaCommands,
                        @JsonProperty("volume") Volume volume,
-                       @JsonProperty("repeatMode") RepeatState repeatMode
-                ) {
-        this.currentTime = currentTime;
-        this.playbackRate = playbackRate;
-        this.supportedMediaCommands = supportedMediaCommands;
-        this.playerState = playerState;
-        this.media = media;
+                       @JsonProperty("media") Media media,
+                       @JsonProperty("repeatMode") RepeatMode repeatMode,
+                       @JsonProperty("idleReason") String idleReason) {
+        this.activeTrackIds = activeTrackIds != null ? Collections.unmodifiableList(activeTrackIds) : null;
         this.mediaSessionId = mediaSessionId;
+        this.playbackRate = playbackRate;
+        this.playerState = playerState;
+        this.currentItemId = currentItemId;
+        this.currentTime = currentTime;
+        this.customData = customData != null ? Collections.unmodifiableMap(customData) : null;
+        this.loadingItemId = loadingItemId;
+        this.items = items != null ? Collections.unmodifiableList(items) : null;
+        this.preloadedItemId = preloadedItemId;
+        this.supportedMediaCommands = supportedMediaCommands;
         this.volume = volume;
+        this.media = media;
         this.repeatMode = repeatMode;
         this.idleReason = idleReason;
     }

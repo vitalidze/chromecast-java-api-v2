@@ -15,6 +15,9 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonIgnore;
 /**
@@ -37,27 +40,42 @@ public class Media {
     public final String contentType;
 
     @JsonIgnore
-    public String customData;
+    public final Map<String, Object> customData;
 
-    public Media() {
-        this.url = "n/a";
-        this.contentType = "n/a";
+    public Media(String url, String contentType) {
+        this(url, contentType, null, null);
     }
 
     public Media(@JsonProperty("contentId") String url,
-                 @JsonProperty("contentType") String contentType) {
+                 @JsonProperty("contentType") String contentType,
+                 @JsonProperty("duration") Double duration,
+                 @JsonProperty("streamType") String streamType,) {
         this.url = url;
         this.contentType = contentType;
-    }
-
-    public Media(@JsonProperty("contentId") String url,
-                 @JsonProperty("duration") Double duration,
-                 @JsonProperty("streamType") String streamType,
-                 @JsonProperty("contentType") String contentType) {
-        this.url = url;
         this.duration = duration;
         this.streamType = streamType;
-        this.contentType = contentType;
-
     }
+
+    @Override
+    public int hashCode () {
+        return Arrays.hashCode(new Object[] { this.url, this.contentType, this.streamType, this.duration });
+    }
+
+    @Override
+    public boolean equals (final Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof Media)) return false;
+        final Media that = (Media) obj;
+        return this.url == null ? that.url == null : this.url.equals(that.url) &&
+                this.contentType == null ? that.contentType == null : this.contentType.equals(that.contentType) &&
+                this.streamType == null ? that.streamType == null : this.streamType.equals(that.streamType) &&
+                this.duration == null ? that.duration == null : this.duration.equals(that.duration);
+    }
+
+    @Override
+    public String toString () {
+        return String.format("Media{%s, %s, %s}", this.url, this.contentType, this.duration);
+    }
+
 }
