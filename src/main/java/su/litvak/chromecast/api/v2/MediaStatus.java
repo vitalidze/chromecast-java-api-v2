@@ -37,7 +37,7 @@ public class MediaStatus {
     public final long mediaSessionId;
     public final int playbackRate;
     public final PlayerState playerState;
-    public final int currentItemId;
+    public final Integer currentItemId;
     public final float currentTime;
     public final List<Item> items;
     public final int supportedMediaCommands;
@@ -49,7 +49,7 @@ public class MediaStatus {
     MediaStatus(@JsonProperty("mediaSessionId") long mediaSessionId,
                        @JsonProperty("playbackRate") int playbackRate,
                        @JsonProperty("playerState") PlayerState playerState,
-                       @JsonProperty("currentItemId") int currentItemId,
+                       @JsonProperty("currentItemId") Integer currentItemId,
                        @JsonProperty("currentTime") float currentTime,
                        @JsonProperty("items") List<Item> items,
                        @JsonProperty("supportedMediaCommands") int supportedMediaCommands,

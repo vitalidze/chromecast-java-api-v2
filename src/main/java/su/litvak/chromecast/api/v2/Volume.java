@@ -15,6 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.util.Arrays;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -33,4 +35,25 @@ public class Volume {
         this.level = level;
         this.muted = muted;
     }
+
+    @Override
+    public int hashCode () {
+        return Arrays.hashCode(new Object[] { this.level, this.muted });
+    }
+
+    @Override
+    public boolean equals (final Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof Volume)) return false;
+        final Volume that = (Volume) obj;
+        return this.level == null ? that.level == null : this.level.equals(that.level) &&
+                this.muted == that.muted;
+    }
+
+    @Override
+    public String toString () {
+        return String.format("Volue{%s, %s}", this.level, this.muted);
+    }
+
 }

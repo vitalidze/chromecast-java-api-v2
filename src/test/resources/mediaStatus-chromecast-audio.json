@@ -1,0 +1,43 @@
+{
+    "requestId": 3,
+    "status": [
+        {
+            "currentItemId": 1,
+            "currentTime": 0,
+            "items": [
+                {
+                    "autoplay": true,
+                    "customData": {
+                        "payload": {
+                            "thumb": null,
+                            "title:": "Example Track Title"
+                        }
+                    },
+                    "itemId": 1,
+                    "media": {
+                        "contentId": "http://192.168.1.6:8192/audio-123-mp3",
+                        "contentType": "audio/mpeg",
+                        "duration": 389.355102,
+                        "streamType": "buffered"
+                    }
+                }
+            ],
+            "media": {
+                "contentId": "http://192.168.1.6:8192/audio-123-mp3",
+                "contentType": "audio/mpeg",
+                "duration": 389.355102,
+                "streamType": "buffered"
+            },
+            "mediaSessionId": 1,
+            "playbackRate": 1,
+            "playerState": "BUFFERING",
+            "repeatMode": "REPEAT_OFF",
+            "supportedMediaCommands": 15,
+            "volume": {
+                "level": 1,
+                "muted": false
+            }
+        }
+    ],
+    "type": "MEDIA_STATUS"
+}
