@@ -15,11 +15,13 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Current media player status - which media is played, volume, time position, etc.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MediaStatus {
     /**
      * Playback status
