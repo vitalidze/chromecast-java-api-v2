@@ -55,7 +55,7 @@ public class Volume {
 
     @Override
     public int hashCode () {
-        return Arrays.hashCode(new Object[] { this.level, this.muted });
+        return Arrays.hashCode(new Object[] { this.level, this.muted, this.increment });
     }
 
     @Override
@@ -65,12 +65,13 @@ public class Volume {
         if (!(obj instanceof Volume)) return false;
         final Volume that = (Volume) obj;
         return this.level == null ? that.level == null : this.level.equals(that.level) &&
-                this.muted == that.muted;
+                this.muted == that.muted &&
+                this.increment == null ? that.increment == null : this.increment.equals(that.increment);
     }
 
     @Override
     public String toString () {
-        return String.format("Volue{%s, %s}", this.level, this.muted);
+        return String.format("Volume{%s, %s, %s}", this.level, this.muted, this.increment);
     }
 
 }
