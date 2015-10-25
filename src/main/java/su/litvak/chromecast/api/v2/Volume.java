@@ -31,15 +31,20 @@ public class Volume {
     @JsonProperty
     public final boolean muted;
 
+    @JsonProperty
+    public final Float increment;
     public Volume() {
         level = new Float(-1);
         muted = false;
+        increment = new Float(0.05);
     }
 
     public Volume(@JsonProperty("level") Float level,
-                  @JsonProperty("muted") boolean muted) {
+                  @JsonProperty("muted") boolean muted
+                  @JsonProperty("increment") Float increment) {
         this.level = level;
         this.muted = muted;
+        this.increment = increment
     }
 
     @Override
