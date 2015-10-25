@@ -25,6 +25,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * Volume settings
  */
 public class Volume {
+    final static Float default_increment = new Float(0.05);
     @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Float level;
@@ -33,18 +34,23 @@ public class Volume {
 
     @JsonProperty
     public final Float increment;
+
     public Volume() {
         level = new Float(-1);
         muted = false;
-        increment = new Float(0.05);
+        increment = default_increment;
     }
 
     public Volume(@JsonProperty("level") Float level,
-                  @JsonProperty("muted") boolean muted
+                  @JsonProperty("muted") boolean muted,
                   @JsonProperty("increment") Float increment) {
         this.level = level;
         this.muted = muted;
-        this.increment = increment
+        if (increment != null && increment > 0f) {
+            this.increment = increment;
+        } else {
+            this.increment = default_increment;
+        }
     }
 
     @Override
