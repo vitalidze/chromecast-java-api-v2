@@ -34,7 +34,7 @@ public class Media {
      *
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType</a>
      */
-    public enum StreamType { buffered, live, none }
+    public enum StreamType {buffered, live, none }
 
     @JsonIgnore
     public final Map<String, Object> metadata;

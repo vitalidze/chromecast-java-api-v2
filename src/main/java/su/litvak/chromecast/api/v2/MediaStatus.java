@@ -43,8 +43,9 @@ public class MediaStatus {
      * The reason for the player to be in IDLE state.
      *
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason</a>
+     * Pandora is known to use 'COMPLETED' when the app timesout
      */
-    public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR }
+    public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR, COMPLETED}
 
     public final List<Integer> activeTrackIds;
     public final long mediaSessionId;
