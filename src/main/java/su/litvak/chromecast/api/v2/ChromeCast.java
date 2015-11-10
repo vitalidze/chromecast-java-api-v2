@@ -291,13 +291,10 @@ public class ChromeCast implements Closeable {
 
 		Application runningApp = status.getRunningApp();
 
-		// Load the DashCast receiver if it's not already running
-		if (!isAppRunning(DASHCAST_APP_ID)) {
-			LOG.debug("Starting DashCast");
-			runningApp = launchApp(DASHCAST_APP_ID);
-			if (runningApp == null) {
-				throw new RuntimeException("Unable load DashCast app, id: " + DASHCAST_APP_ID);
-			}
+		LOG.debug("(Re)loading the DashCast receiver");
+		runningApp = launchApp(DASHCAST_APP_ID);
+		if (runningApp == null) {
+			throw new RuntimeException("Unable load DashCast app, id: " + DASHCAST_APP_ID);
 		}
 
 		channel.castUrl(runningApp.transportId, url.toString(), force, reloadTimeMs != null, reloadTimeMs == null ? 0 : reloadTimeMs);
