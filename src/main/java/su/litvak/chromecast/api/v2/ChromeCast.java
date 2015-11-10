@@ -15,18 +15,30 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
+import java.io.Closeable;
 import java.io.IOException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * ChromeCast device - main object used for interaction with ChromeCast dongle.
  */
-public class ChromeCast {
+public class ChromeCast implements Closeable {
+    private static final Logger LOG = LoggerFactory.getLogger(ChromeCast.class);
+    
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
+
+    // DashCast constants
+    static final String DASHCAST_APP_ID = "5C3F0A3C";
+    static final String DASHCAST_NS = "urn:x-cast:es.offd.dashcast";
 
     private String name;
     private final String address;
@@ -247,4 +259,47 @@ public class ChromeCast {
         customData.put("thumb", thumb);
         channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
     }
+
+	@Override
+	public void close() throws IOException {
+		disconnect();		
+	}
+	
+	/**
+	 * Use DashCast to stream the contents of a URL to ChromeCast.
+	 * 
+	 * If {@code force} is true, DashCast will try to load the target {@code url}
+	 * directly, instead of in an iframe. This cuts the control connection,
+	 * meaning that automatic reloading is not possible.
+	 * 
+	 * @param url
+	 *           the URL to stream
+	 * @param force
+	 *           force direct load
+	 * @param reloadTimeMs
+	 *           optional reload interval. Doesn't work if {@code force} is
+	 *           <code>true</code>
+	 * @throws IOException
+	 */
+	public void castUrl(URL url, boolean force, Integer reloadTimeMs) throws IOException {
+		Status status = getStatus();
+
+		// Check for DashCast
+		if (!isAppAvailable(DASHCAST_APP_ID)) {
+			throw new RuntimeException("Unable to locate DashCast app, id: " + DASHCAST_APP_ID);
+		}
+
+		Application runningApp = status.getRunningApp();
+
+		// Load the DashCast receiver if it's not already running
+		if (!isAppRunning(DASHCAST_APP_ID)) {
+			LOG.debug("Starting DashCast");
+			runningApp = launchApp(DASHCAST_APP_ID);
+			if (runningApp == null) {
+				throw new RuntimeException("Unable load DashCast app, id: " + DASHCAST_APP_ID);
+			}
+		}
+
+		channel.castUrl(runningApp.transportId, url.toString(), force, reloadTimeMs != null, reloadTimeMs == null ? 0 : reloadTimeMs);
+	}
 }

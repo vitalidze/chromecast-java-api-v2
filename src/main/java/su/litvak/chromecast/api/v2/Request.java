@@ -122,7 +122,29 @@ abstract class Request extends Message {
             this.volume = volume;
         }
     }
+    
+    static class CastUrl extends Request {
+        @JsonProperty
+        private final String url;
 
+        @JsonProperty
+        private final boolean force;
+
+        @JsonProperty
+        private final boolean reload;
+   		
+        @JsonProperty("reload_time")
+        private final int reloadTime;
+
+        CastUrl(String url, boolean force, boolean reload, int reloadTime) {
+            super();
+            this.url = url;
+            this.force = force;
+            this.reload = reload;
+            this.reloadTime = reloadTime;
+        }
+    }
+    
     static Status status() {
         return new Status();
     }
@@ -157,5 +179,9 @@ abstract class Request extends Message {
 
     static SetVolume setVolume(Volume volume) {
         return new SetVolume(volume);
+    }
+    
+    static CastUrl castUrl(String url, boolean force, boolean reload, int reloadTime) {
+   	 return new CastUrl(url, force, reload, reloadTime);
     }
 }
