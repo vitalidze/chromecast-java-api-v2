@@ -98,7 +98,7 @@ class Channel implements Closeable {
         @Override
         public void run() {
             try {
-                write("urn:x-cast:com.google.cast.tp.heartbeat", Message.ping(), DEFAULT_RECEIVER_ID);
+                write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.ping(), DEFAULT_RECEIVER_ID);
             } catch (IOException ioex) {
                 LOG.warn("Error while sending 'PING': {}", ioex.getLocalizedMessage());
             }
@@ -122,7 +122,7 @@ class Channel implements Closeable {
                             continue;
                         }
 
-                        Response parsed = jsonMapper.readValue(jsonMSG, Response.class);
+                        StandardResponse parsed = jsonMapper.readValue(jsonMSG, StandardResponse.class);
                         if (parsed.requestId != null) {
                             ResultProcessor rp = requests.remove(parsed.requestId);
                             if (rp != null) {
@@ -134,8 +134,8 @@ class Channel implements Closeable {
                                     LOG.warn("Unable to process request ID = {}, data: {}", parsed.requestId, jsonMSG);
                                 }
                             }
-                        } else if (parsed instanceof Response.Ping) {
-                            write("urn:x-cast:com.google.cast.tp.heartbeat", Message.pong(), DEFAULT_RECEIVER_ID);
+                        } else if (parsed instanceof StandardResponse.Ping) {
+                            write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
                         }
                     } else {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
@@ -161,10 +161,10 @@ class Channel implements Closeable {
         }
     }
 
-    private class ResultProcessor<T extends Response> {
+    private class ResultProcessor<T extends StandardResponse> {
         T result;
 
-        public void put(Response result) {
+        public void put(StandardResponse result) {
             synchronized (this) {
                 this.result = (T) result;
                 this.notify();
@@ -238,7 +238,7 @@ class Channel implements Closeable {
         /**
          * Send 'CONNECT' message to start session
          */
-        write("urn:x-cast:com.google.cast.tp.connection", Message.connect(), DEFAULT_RECEIVER_ID);
+        write("urn:x-cast:com.google.cast.tp.connection", StandardMessage.connect(), DEFAULT_RECEIVER_ID);
 
         /**
          * Start ping/pong and reader thread
@@ -252,7 +252,7 @@ class Channel implements Closeable {
         closed = false;
     }
 
-    private <T extends Response> T send(String namespace, Request message, String destinationId) throws IOException {
+    private <T extends StandardResponse> T send(String namespace, StandardRequest message, String destinationId) throws IOException {
         /**
          * Try to reconnect
          */
@@ -271,13 +271,13 @@ class Channel implements Closeable {
         write(namespace, message, destinationId);
         try {
             T response = rp.get();
-            if (response instanceof Response.Invalid) {
-                Response.Invalid invalid = (Response.Invalid) response;
+            if (response instanceof StandardResponse.Invalid) {
+                StandardResponse.Invalid invalid = (StandardResponse.Invalid) response;
                 throw new ChromeCastException("Invalid request: " + invalid.reason);
-            } else if (response instanceof Response.LoadFailed) {
+            } else if (response instanceof StandardResponse.LoadFailed) {
                 throw new ChromeCastException("Unable to load media");
-            } else if (response instanceof Response.LaunchError) {
-                Response.LaunchError launchError = (Response.LaunchError) response;
+            } else if (response instanceof StandardResponse.LaunchError) {
+                StandardResponse.LaunchError launchError = (StandardResponse.LaunchError) response;
                 throw new ChromeCastException("Application launch error: " + launchError.reason);
             }
             return response;
@@ -286,7 +286,7 @@ class Channel implements Closeable {
         }
     }
 
-    private void write(String namespace, Message message, String destinationId) throws IOException {
+    private void write(String namespace, StandardMessage message, String destinationId) throws IOException {
         write(namespace, jsonMapper.writeValueAsString(message), destinationId);
     }
 
@@ -336,64 +336,64 @@ class Channel implements Closeable {
     }
 
     public Status getStatus() throws IOException {
-        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.status(), "receiver-0");
+        StandardResponse.Status status = send("urn:x-cast:com.google.cast.receiver", StandardRequest.status(), "receiver-0");
         return status == null ? null : status.status;
     }
 
     public boolean isAppAvailable(String appId) throws IOException {
-        Response.AppAvailability availability = send("urn:x-cast:com.google.cast.receiver", Request.appAvailability(appId), "receiver-0");
+        StandardResponse.AppAvailability availability = send("urn:x-cast:com.google.cast.receiver", StandardRequest.appAvailability(appId), "receiver-0");
         return availability != null && "APP_AVAILABLE".equals(availability.availability.get(appId));
     }
 
     public Status launch(String appId) throws IOException {
-        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.launch(appId), DEFAULT_RECEIVER_ID);
+        StandardResponse.Status status = send("urn:x-cast:com.google.cast.receiver", StandardRequest.launch(appId), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
     }
 
     public Status stop(String sessionId) throws IOException {
-        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.stop(sessionId), DEFAULT_RECEIVER_ID);
+        StandardResponse.Status status = send("urn:x-cast:com.google.cast.receiver", StandardRequest.stop(sessionId), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
     }
 
     private void startSession(String destinationId) throws IOException {
         if (!sessions.contains(destinationId)) {
-            write("urn:x-cast:com.google.cast.tp.connection", Message.connect(), destinationId);
+            write("urn:x-cast:com.google.cast.tp.connection", StandardMessage.connect(), destinationId);
             sessions.add(destinationId);
         }
     }
 
     public MediaStatus load(String destinationId, String sessionId, Media media, boolean autoplay, double currentTime, Map<String, String> customData) throws IOException {
         startSession(destinationId);
-        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.load(sessionId, media, autoplay, currentTime, customData), destinationId);
+        StandardResponse.MediaStatus status = send("urn:x-cast:com.google.cast.media", StandardRequest.load(sessionId, media, autoplay, currentTime, customData), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
     public MediaStatus play(String destinationId, String sessionId, long mediaSessionId) throws IOException {
         startSession(destinationId);
-        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.play(sessionId, mediaSessionId), destinationId);
+        StandardResponse.MediaStatus status = send("urn:x-cast:com.google.cast.media", StandardRequest.play(sessionId, mediaSessionId), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
     public MediaStatus pause(String destinationId, String sessionId, long mediaSessionId) throws IOException {
         startSession(destinationId);
-        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.pause(sessionId, mediaSessionId), destinationId);
+        StandardResponse.MediaStatus status = send("urn:x-cast:com.google.cast.media", StandardRequest.pause(sessionId, mediaSessionId), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
     public MediaStatus seek(String destinationId, String sessionId, long mediaSessionId, double currentTime) throws IOException {
         startSession(destinationId);
-        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.seek(sessionId, mediaSessionId, currentTime), destinationId);
+        StandardResponse.MediaStatus status = send("urn:x-cast:com.google.cast.media", StandardRequest.seek(sessionId, mediaSessionId, currentTime), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
     public Status setVolume(Volume volume) throws IOException {
-        Response.Status status = send("urn:x-cast:com.google.cast.receiver", Request.setVolume(volume), DEFAULT_RECEIVER_ID);
+        StandardResponse.Status status = send("urn:x-cast:com.google.cast.receiver", StandardRequest.setVolume(volume), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
     }
 
     public MediaStatus getMediaStatus(String destinationId) throws IOException {
         startSession(destinationId);
-        Response.MediaStatus status = send("urn:x-cast:com.google.cast.media", Request.status(), destinationId);
+        StandardResponse.MediaStatus status = send("urn:x-cast:com.google.cast.media", StandardRequest.status(), destinationId);
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 

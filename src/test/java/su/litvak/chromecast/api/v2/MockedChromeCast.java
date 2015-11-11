@@ -98,11 +98,11 @@ public class MockedChromeCast {
                                 .setPayloadBinary(response.toByteString())
                                 .build());
             } else {
-                Message json = jsonMapper.readValue(message.getPayloadUtf8(), Message.class);
-                Response response = handleJSON(json);
+                StandardMessage json = jsonMapper.readValue(message.getPayloadUtf8(), StandardMessage.class);
+                StandardResponse response = handleJSON(json);
                 if (response != null) {
-                    if (json instanceof Request) {
-                        Request request = (Request) json;
+                    if (json instanceof StandardRequest) {
+                        StandardRequest request = (StandardRequest) json;
                         response.requestId = request.requestId;
                     }
 
@@ -123,12 +123,12 @@ public class MockedChromeCast {
             return message;
         }
 
-        Response handleJSON(Message message) {
-            if (message instanceof Message.Ping) {
-                return new Response.Pong();
-            } else if (message instanceof Request.Status) {
+        StandardResponse handleJSON(StandardMessage message) {
+            if (message instanceof StandardMessage.Ping) {
+                return new StandardResponse.Pong();
+            } else if (message instanceof StandardRequest.Status) {
                 Status status = new Status(new Volume(1f, false, Volume.default_increment), Collections.<Application>emptyList(), false, true);
-                return new Response.Status(status);
+                return new StandardResponse.Status(status);
             }
             return null;
         }

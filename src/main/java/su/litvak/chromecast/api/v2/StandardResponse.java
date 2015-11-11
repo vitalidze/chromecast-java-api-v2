@@ -25,25 +25,25 @@ import java.util.Map;
  * Parent class for transport object representing messages received FROM ChromeCast device
  */
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property = "responseType")
-@JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = Response.Ping.class),
-               @JsonSubTypes.Type(name = "PONG", value = Response.Pong.class),
-               @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = Response.Status.class),
-               @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = Response.AppAvailability.class),
-               @JsonSubTypes.Type(name = "INVALID_REQUEST", value = Response.Invalid.class),
-               @JsonSubTypes.Type(name = "MEDIA_STATUS", value = Response.MediaStatus.class),
-               @JsonSubTypes.Type(name = "CLOSE", value = Response.Close.class),
-               @JsonSubTypes.Type(name = "LOAD_FAILED", value = Response.LoadFailed.class),
-               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = Response.LaunchError.class)})
-abstract class Response {
+@JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = StandardResponse.Ping.class),
+               @JsonSubTypes.Type(name = "PONG", value = StandardResponse.Pong.class),
+               @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = StandardResponse.Status.class),
+               @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = StandardResponse.AppAvailability.class),
+               @JsonSubTypes.Type(name = "INVALID_REQUEST", value = StandardResponse.Invalid.class),
+               @JsonSubTypes.Type(name = "MEDIA_STATUS", value = StandardResponse.MediaStatus.class),
+               @JsonSubTypes.Type(name = "CLOSE", value = StandardResponse.Close.class),
+               @JsonSubTypes.Type(name = "LOAD_FAILED", value = StandardResponse.LoadFailed.class),
+               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = StandardResponse.LaunchError.class)})
+abstract class StandardResponse {
     @JsonProperty
     Long requestId;
 
-    static class Ping extends Response {}
-    static class Pong extends Response {}
-    static class Close extends Response {}
-    static class LoadFailed extends Response {}
+    static class Ping extends StandardResponse {}
+    static class Pong extends StandardResponse {}
+    static class Close extends StandardResponse {}
+    static class LoadFailed extends StandardResponse {}
 
-    static class Invalid extends Response {
+    static class Invalid extends StandardResponse {
         final String reason;
 
         Invalid(@JsonProperty("reason") String reason) {
@@ -51,7 +51,7 @@ abstract class Response {
         }
     }
 
-    static class LaunchError extends Response {
+    static class LaunchError extends StandardResponse {
         final String reason;
 
         LaunchError(@JsonProperty("reason") String reason) {
@@ -59,7 +59,7 @@ abstract class Response {
         }
     }
 
-    static class Status extends Response {
+    static class Status extends StandardResponse {
         @JsonProperty
         final su.litvak.chromecast.api.v2.Status status;
 
@@ -68,7 +68,7 @@ abstract class Response {
         }
     }
 
-    static class MediaStatus extends Response {
+    static class MediaStatus extends StandardResponse {
         final su.litvak.chromecast.api.v2.MediaStatus statuses[];
 
         MediaStatus(@JsonProperty("status") su.litvak.chromecast.api.v2.MediaStatus status[]) {
@@ -76,7 +76,7 @@ abstract class Response {
         }
     }
 
-    static class AppAvailability extends Response {
+    static class AppAvailability extends StandardResponse {
         @JsonProperty
         Map<String, String> availability;
     }

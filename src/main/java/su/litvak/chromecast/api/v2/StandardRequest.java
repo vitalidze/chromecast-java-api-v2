@@ -22,13 +22,13 @@ import java.util.Map;
 /**
  * Parent class for transport object representing messages sent TO ChromeCast device
  */
-abstract class Request extends Message {
+abstract class StandardRequest extends StandardMessage {
     @JsonProperty
     Long requestId;
 
-    static class Status extends Request {}
+    static class Status extends StandardRequest {}
 
-    static class AppAvailability extends Request {
+    static class AppAvailability extends StandardRequest {
         @JsonProperty
         final String[] appId;
 
@@ -37,7 +37,7 @@ abstract class Request extends Message {
         }
     }
 
-    static class Launch extends Request {
+    static class Launch extends StandardRequest {
         @JsonProperty
         final String appId;
 
@@ -46,7 +46,7 @@ abstract class Request extends Message {
         }
     }
 
-    static class Stop extends Request {
+    static class Stop extends StandardRequest {
         @JsonProperty
         final String sessionId;
 
@@ -55,7 +55,7 @@ abstract class Request extends Message {
         }
     }
 
-    static class Load extends Request {
+    static class Load extends StandardRequest {
         @JsonProperty
         final String sessionId;
         @JsonProperty
@@ -80,7 +80,7 @@ abstract class Request extends Message {
         }
     }
 
-    abstract static class MediaRequest extends Request {
+    abstract static class MediaRequest extends StandardRequest {
         @JsonProperty
         final long mediaSessionId;
         @JsonProperty
@@ -114,7 +114,7 @@ abstract class Request extends Message {
         }
     }
 
-    static class SetVolume extends Request {
+    static class SetVolume extends StandardRequest {
         @JsonProperty
         final Volume volume;
 

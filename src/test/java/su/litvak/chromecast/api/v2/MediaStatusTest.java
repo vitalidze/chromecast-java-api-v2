@@ -36,7 +36,7 @@ public class MediaStatusTest {
 
     @Test
     public void testDeserializationWithIdleReason() throws Exception {
-        Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue("{\"responseType\":\"MEDIA_STATUS\",\"status\":[{\"mediaSessionId\":1,\"playbackRate\":1,\"playerState\":\"IDLE\",\"currentTime\":0,\"supportedMediaCommands\":15,\"volume\":{\"level\":1,\"muted\":false},\"media\":{\"contentId\":\"/public/Videos/Movies/FileB.mp4\",\"contentType\":\"video/transcode\",\"streamType\":\"buffered\",\"duration\":null},\"idleReason\":\"ERROR\"}],\"requestId\":28}", Response.class);
+        StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue("{\"responseType\":\"MEDIA_STATUS\",\"status\":[{\"mediaSessionId\":1,\"playbackRate\":1,\"playerState\":\"IDLE\",\"currentTime\":0,\"supportedMediaCommands\":15,\"volume\":{\"level\":1,\"muted\":false},\"media\":{\"contentId\":\"/public/Videos/Movies/FileB.mp4\",\"contentType\":\"video/transcode\",\"streamType\":\"buffered\",\"duration\":null},\"idleReason\":\"ERROR\"}],\"requestId\":28}", StandardResponse.class);
         assertEquals(1, response.statuses.length);
         MediaStatus mediaStatus = response.statuses[0];
         assertEquals(MediaStatus.IdleReason.ERROR, mediaStatus.idleReason);
@@ -44,7 +44,7 @@ public class MediaStatusTest {
 
     @Test
     public void testDeserializationWithoutIdleReason() throws Exception {
-        Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue("{\"responseType\":\"MEDIA_STATUS\",\"status\":[{\"mediaSessionId\":1,\"playbackRate\":1,\"playerState\":\"IDLE\",\"currentTime\":0,\"supportedMediaCommands\":15,\"volume\":{\"level\":1,\"muted\":false},\"media\":{\"contentId\":\"/public/Videos/Movies/FileB.mp4\",\"contentType\":\"video/transcode\",\"streamType\":\"buffered\",\"duration\":null}}],\"requestId\":28}", Response.class);
+        StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue("{\"responseType\":\"MEDIA_STATUS\",\"status\":[{\"mediaSessionId\":1,\"playbackRate\":1,\"playerState\":\"IDLE\",\"currentTime\":0,\"supportedMediaCommands\":15,\"volume\":{\"level\":1,\"muted\":false},\"media\":{\"contentId\":\"/public/Videos/Movies/FileB.mp4\",\"contentType\":\"video/transcode\",\"streamType\":\"buffered\",\"duration\":null}}],\"requestId\":28}", StandardResponse.class);
         assertEquals(1, response.statuses.length);
         MediaStatus mediaStatus = response.statuses[0];
         assertNull(mediaStatus.idleReason);
@@ -53,7 +53,7 @@ public class MediaStatusTest {
     @Test
     public void testDeserializationWithChromeCastAudioFixture() throws Exception {
         final String jsonMSG = fixtureAsString("/mediaStatus-chromecast-audio.json").replaceFirst("\"type\"", "\"responseType\"");
-        final Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue(jsonMSG, Response.class);
+        final StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue(jsonMSG, StandardResponse.class);
         assertEquals(1, response.statuses.length);
         final MediaStatus mediaStatus = response.statuses[0];
         assertEquals((Integer) 1, mediaStatus.currentItemId);
@@ -79,7 +79,7 @@ public class MediaStatusTest {
 
     @Test
     public void testDeserializationPandora() throws IOException {
-        final Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue(getClass().getResourceAsStream("/mediaStatus-pandora.json"), Response.class);
+        final StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue(getClass().getResourceAsStream("/mediaStatus-pandora.json"), StandardResponse.class);
 
         assertEquals(1, response.statuses.length);
         final MediaStatus mediaStatus = response.statuses[0];
