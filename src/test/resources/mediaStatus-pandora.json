@@ -1,0 +1,60 @@
+{"requestId":1,
+  "responseType":"MEDIA_STATUS",
+  "status":[
+    {"currentTime":16,
+      "playbackRate":1,
+      "supportedMediaCommands":29,
+      "playerState":"PLAYING",
+      "media":
+      {"metadata":
+        {"metadataType":3,
+          "albumName":"The Album",
+          "title":"And We Danced",
+          "albumArtist":"The Artist",
+          "artist":"The Artist",
+          "images":["http://img.jpg"],
+          "releaseDate":""},
+        "contentId":"http://audioURL",
+        "duration":246,
+        "streamType":"BUFFERED",
+        "contentType":"BUFFERED",
+        "customData":
+        {"status":
+        {"state":2,
+          "content_id":"2308730880869724752",
+          "content_info":
+          {"stationName":"Macklemore & Ryan Lewis Radio",
+            "stationId":"2308730880869724752",
+            "stationToken":"2308730880869724752",
+            "isQuickMix":false,
+            "supportImpressionTargeting":true,
+            "onePlaylist":false,
+            "userId":"70709840",
+            "casterName":"Steven Feldman",
+            "songName":"And We Danced",
+            "artistName":"Macklemore",
+            "albumName":"The Unplanned Mixtape",
+            "artUrl":"http://art.jpg","trackToken":"ttt","songRating":0,"songDetailUrl":"http://songDetail",
+            "allowFeedback":true,
+            "artistExplorerUrl":"http://artist",
+            "audioUrlMap":
+            {"highQuality":
+            {"audioUrl":"http://audio"}
+            }
+          },
+          "position":16,
+          "current_time":16,
+          "current":16,
+          "duration":246,
+          "volume":
+          {"level":0.6999999284744263,
+            "muted":false,
+            "increment":0.05}
+        }
+        }
+      },
+      "mediaSessionId":7,
+      "volume":{"level":0.6999999284744263,"muted":false,"increment":0.05}
+    }
+  ]
+}

@@ -30,11 +30,18 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class Media {
 
     /**
-     * Stream type
+     * <p>Stream type</p>
+     *
+     * <p>Some receivers use upper-case (like Pandora), some use lower-case (like Google Audio),
+     * duplicate elements to support both</p>
      *
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType</a>
      */
-    public enum StreamType {buffered, live, none }
+    public enum StreamType {
+        BUFFERED, buffered,
+        LIVE, live,
+        NONE, none
+    }
 
     @JsonIgnore
     public final Map<String, Object> metadata;

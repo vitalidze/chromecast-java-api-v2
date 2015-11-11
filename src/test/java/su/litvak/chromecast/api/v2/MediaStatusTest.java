@@ -51,7 +51,7 @@ public class MediaStatusTest {
     }
 
     @Test
-    public void testDeserializationWithChromeCastAudioFixture () throws Exception {
+    public void testDeserializationWithChromeCastAudioFixture() throws Exception {
         final String jsonMSG = fixtureAsString("/mediaStatus-chromecast-audio.json").replaceFirst("\"type\"", "\"responseType\"");
         final Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue(jsonMSG, Response.class);
         assertEquals(1, response.statuses.length);
@@ -59,7 +59,7 @@ public class MediaStatusTest {
         assertEquals((Integer) 1, mediaStatus.currentItemId);
         assertEquals(0f, mediaStatus.currentTime, 0f);
 
-        final Media media = new Media("http://192.168.1.6:8192/audio-123-mp3", "audio/mpeg", 389.355102d, Media.StreamType.buffered);
+        final Media media = new Media("http://192.168.1.6:8192/audio-123-mp3", "audio/mpeg", 389.355102d, Media.StreamType.BUFFERED);
 
         final Map<String, String> payload = new HashMap<String, String>();
         payload.put("thumb", null);
@@ -77,7 +77,41 @@ public class MediaStatusTest {
         assertEquals(new Volume(1f, false, Volume.default_increment), mediaStatus.volume);
     }
 
-    private String fixtureAsString (final String res) throws IOException {
+    @Test
+    public void testDeserializationPandora() throws IOException {
+        final Response.MediaStatus response = (Response.MediaStatus) jsonMapper.readValue(getClass().getResourceAsStream("/mediaStatus-pandora.json"), Response.class);
+
+        assertEquals(1, response.statuses.length);
+        final MediaStatus mediaStatus = response.statuses[0];
+        assertNull(mediaStatus.currentItemId);
+        assertEquals(16d, mediaStatus.currentTime, 0.1);
+        assertEquals(7, mediaStatus.mediaSessionId);
+        assertEquals(1, mediaStatus.playbackRate);
+        assertEquals(PlayerState.PLAYING, mediaStatus.playerState);
+        assertNull(mediaStatus.customData);
+        assertNull(mediaStatus.items);
+        assertNull(mediaStatus.preloadedItemId);
+
+        assertEquals(new Volume(0.6999999f, false, 0.05f), mediaStatus.volume);
+
+        assertNotNull(mediaStatus.media);
+        Media media = mediaStatus.media;
+        assertEquals(7, media.metadata.size());
+        assertEquals("http://audioURL", media.url);
+        assertEquals(246d, media.duration, 0.1);
+        assertEquals(Media.StreamType.BUFFERED, media.streamType);
+        assertEquals("BUFFERED", media.contentType);
+        assertNull(media.textTrackStyle);
+        assertNull(media.tracks);
+        assertEquals(1, media.customData.size());
+        assertNotNull(media.customData.get("status"));
+        Map<String, Object> status = (Map<String, Object>) media.customData.get("status");
+
+        assertEquals(8, status.size());
+        assertEquals(2, status.get("state"));
+    }
+
+    private String fixtureAsString(final String res) throws IOException {
         final InputStream is = getClass().getResourceAsStream(res);
         try {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -92,5 +126,4 @@ public class MediaStatusTest {
             is.close();
         }
     }
-
 }
