@@ -33,7 +33,8 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "MEDIA_STATUS", value = Response.MediaStatus.class),
                @JsonSubTypes.Type(name = "CLOSE", value = Response.Close.class),
                @JsonSubTypes.Type(name = "LOAD_FAILED", value = Response.LoadFailed.class),
-               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = Response.LaunchError.class)})
+               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = Response.LaunchError.class),
+               @JsonSubTypes.Type(name = "CAST_URL", value = Response.CastUrl.class)})
 abstract class Response {
     @JsonProperty
     Long requestId;
@@ -80,4 +81,18 @@ abstract class Response {
         @JsonProperty
         Map<String, String> availability;
     }
+
+    static class CastUrl extends Response {
+       @JsonProperty
+       String url;
+
+       @JsonProperty
+       boolean force;
+
+       @JsonProperty
+       boolean reload;
+  		
+       @JsonProperty("reload_time")
+       int reloadTime;
+   }
 }
