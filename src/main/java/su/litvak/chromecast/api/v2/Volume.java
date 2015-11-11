@@ -25,26 +25,37 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * Volume settings
  */
 public class Volume {
+    final static Float default_increment = new Float(0.05);
     @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Float level;
     @JsonProperty
     public final boolean muted;
 
+    @JsonProperty
+    public final Float increment;
+
     public Volume() {
         level = new Float(-1);
         muted = false;
+        increment = default_increment;
     }
 
     public Volume(@JsonProperty("level") Float level,
-                  @JsonProperty("muted") boolean muted) {
+                  @JsonProperty("muted") boolean muted,
+                  @JsonProperty("increment") Float increment) {
         this.level = level;
         this.muted = muted;
+        if (increment != null && increment > 0f) {
+            this.increment = increment;
+        } else {
+            this.increment = default_increment;
+        }
     }
 
     @Override
     public int hashCode () {
-        return Arrays.hashCode(new Object[] { this.level, this.muted });
+        return Arrays.hashCode(new Object[] { this.level, this.muted, this.increment });
     }
 
     @Override
@@ -54,12 +65,13 @@ public class Volume {
         if (!(obj instanceof Volume)) return false;
         final Volume that = (Volume) obj;
         return this.level == null ? that.level == null : this.level.equals(that.level) &&
-                this.muted == that.muted;
+                this.muted == that.muted &&
+                this.increment == null ? that.increment == null : this.increment.equals(that.increment);
     }
 
     @Override
     public String toString () {
-        return String.format("Volue{%s, %s}", this.level, this.muted);
+        return String.format("Volume{%s, %s, %s}", this.level, this.muted, this.increment);
     }
 
 }

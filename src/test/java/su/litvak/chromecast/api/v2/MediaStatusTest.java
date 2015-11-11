@@ -74,7 +74,7 @@ public class MediaStatusTest {
         assertEquals(PlayerState.BUFFERING, mediaStatus.playerState);
         assertEquals(RepeatMode.REPEAT_OFF, mediaStatus.repeatMode);
         assertEquals(15, mediaStatus.supportedMediaCommands);
-        assertEquals(new Volume(1f, false), mediaStatus.volume);
+        assertEquals(new Volume(1f, false, Volume.default_increment), mediaStatus.volume);
     }
 
     private String fixtureAsString (final String res) throws IOException {
