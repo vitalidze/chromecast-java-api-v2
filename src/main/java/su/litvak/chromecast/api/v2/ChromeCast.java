@@ -247,4 +247,25 @@ public class ChromeCast {
         customData.put("thumb", thumb);
         channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
     }
+
+    /**
+     * <p>Sends some generic request to the currently running application.</p>
+     *
+     * <p>If no application is running at the moment then exception is thrown.</p>
+     *
+     * @param namespace         request namespace
+     * @param request           request object
+     * @param responseClass     class of the response for proper deserialization
+     * @param <T>               type of response
+     * @return                  deserialized response
+     * @throws IOException
+     */
+    public <T extends Response> T send(String namespace, Request request, Class<T> responseClass) throws IOException {
+        Status status = getStatus();
+        Application runningApp = status.getRunningApp();
+        if (runningApp == null) {
+            throw new ChromeCastException("No application is running in ChromeCast");
+        }
+        return channel.sendGenericRequest(runningApp.transportId, namespace, request, responseClass);
+    }
 }

@@ -415,6 +415,11 @@ class Channel implements Closeable {
         return status == null || status.statuses.length == 0 ? null : status.statuses[0];
     }
 
+    public <T extends Response> T sendGenericRequest(String destinationId, String namespace, Request request, Class<T> responseClass) throws IOException {
+        startSession(destinationId);
+        return send(namespace, request, destinationId, responseClass);
+    }
+
     @Override
     public void close() throws IOException {
         closed = true;
