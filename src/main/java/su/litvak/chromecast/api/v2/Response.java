@@ -18,9 +18,9 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * Implementation must be a request object, which can be serialized to JSON with Jackson library
+ * Implementation must be a response object, which can be serialized to JSON with Jackson library
  */
-public interface Request extends Message {
+public interface Response {
     @JsonProperty
     Long getRequestId();
     @JsonProperty

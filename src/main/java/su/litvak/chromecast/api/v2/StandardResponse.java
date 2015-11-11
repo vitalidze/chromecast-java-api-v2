@@ -34,9 +34,18 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "CLOSE", value = StandardResponse.Close.class),
                @JsonSubTypes.Type(name = "LOAD_FAILED", value = StandardResponse.LoadFailed.class),
                @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = StandardResponse.LaunchError.class)})
-abstract class StandardResponse {
-    @JsonProperty
+abstract class StandardResponse implements Response {
     Long requestId;
+
+    @Override
+    public final Long getRequestId() {
+        return requestId;
+    }
+
+    @Override
+    public final void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
 
     static class Ping extends StandardResponse {}
     static class Pong extends StandardResponse {}
