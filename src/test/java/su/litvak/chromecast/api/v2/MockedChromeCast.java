@@ -101,9 +101,9 @@ public class MockedChromeCast {
                 StandardMessage json = jsonMapper.readValue(message.getPayloadUtf8(), StandardMessage.class);
                 StandardResponse response = handleJSON(json);
                 if (response != null) {
-                    if (json instanceof StandardRequest) {
-                        StandardRequest request = (StandardRequest) json;
-                        response.requestId = request.requestId;
+                    if (json instanceof Request) {
+                        Request request = (Request) json;
+                        response.requestId = request.getRequestId();
                     }
 
                     write(clientSocket,
@@ -123,7 +123,7 @@ public class MockedChromeCast {
             return message;
         }
 
-        StandardResponse handleJSON(StandardMessage message) {
+        StandardResponse handleJSON(Message message) {
             if (message instanceof StandardMessage.Ping) {
                 return new StandardResponse.Pong();
             } else if (message instanceof StandardRequest.Status) {

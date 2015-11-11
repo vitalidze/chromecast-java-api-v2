@@ -36,7 +36,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
                @JsonSubTypes.Type(name = "PAUSE", value = StandardRequest.Pause.class),
                @JsonSubTypes.Type(name = "SET_VOLUME", value = StandardRequest.SetVolume.class),
                @JsonSubTypes.Type(name = "SEEK", value = StandardRequest.Seek.class)})
-abstract class StandardMessage {
+abstract class StandardMessage implements Message {
     static class Ping extends StandardMessage {}
     static class Pong extends StandardMessage {}
 

@@ -22,9 +22,18 @@ import java.util.Map;
 /**
  * Parent class for transport object representing messages sent TO ChromeCast device
  */
-abstract class StandardRequest extends StandardMessage {
-    @JsonProperty
+abstract class StandardRequest extends StandardMessage implements Request {
     Long requestId;
+
+    @Override
+    public final void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
+    @Override
+    public final Long getRequestId() {
+        return requestId;
+    }
 
     static class Status extends StandardRequest {}
 

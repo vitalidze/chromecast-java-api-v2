@@ -252,7 +252,7 @@ class Channel implements Closeable {
         closed = false;
     }
 
-    private <T extends StandardResponse> T send(String namespace, StandardRequest message, String destinationId) throws IOException {
+    private <T extends StandardResponse> T send(String namespace, Request message, String destinationId) throws IOException {
         /**
          * Try to reconnect
          */
@@ -264,9 +264,13 @@ class Channel implements Closeable {
             }
         }
 
-        message.requestId = requestCounter.getAndIncrement();
+        Long requestId = requestCounter.getAndIncrement();
+        message.setRequestId(requestId);
+        if (!requestId.equals(message.getRequestId())) {
+            throw new IllegalStateException("Request Id getter/setter contract violation");
+        }
         ResultProcessor<T> rp = new ResultProcessor<T>();
-        requests.put(message.requestId, rp);
+        requests.put(requestId, rp);
 
         write(namespace, message, destinationId);
         try {
@@ -282,11 +286,11 @@ class Channel implements Closeable {
             }
             return response;
         } finally {
-            requests.remove(message.requestId);
+            requests.remove(requestId);
         }
     }
 
-    private void write(String namespace, StandardMessage message, String destinationId) throws IOException {
+    private void write(String namespace, Message message, String destinationId) throws IOException {
         write(namespace, jsonMapper.writeValueAsString(message), destinationId);
     }
 
