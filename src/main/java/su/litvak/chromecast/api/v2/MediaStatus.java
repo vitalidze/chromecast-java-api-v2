@@ -40,10 +40,11 @@ public class MediaStatus {
     public enum RepeatMode { REPEAT_OFF, REPEAT_ALL, REPEAT_SINGLE, REPEAT_ALL_AND_SHUFFLE }
 
     /**
-     * The reason for the player to be in IDLE state.
+     * <p>The reason for the player to be in IDLE state.</p>
+     *
+     * <p>Pandora is known to use 'COMPLETED' when the app timesout</p>
      *
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason</a>
-     * Pandora is known to use 'COMPLETED' when the app timesout
      */
     public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR, COMPLETED}
 
