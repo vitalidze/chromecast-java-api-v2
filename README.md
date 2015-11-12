@@ -14,7 +14,7 @@ Library is available in maven central. Put lines below into you project's `pom.x
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.7</version>
+    <version>0.9.0</version>
   </dependency>
 ...
 </dependencies>
@@ -25,7 +25,7 @@ Or to `build.gradle` (`mavenCentral()` repository should be included in appropri
 ```groovy
 dependencies {
 // ...
-    runtime 'su.litvak.chromecast:api-v2:0.0.7'
+    runtime 'su.litvak.chromecast:api-v2:0.9.0'
 // ...
 }
 ```
@@ -52,7 +52,7 @@ To build library from sources:
   <dependency>
     <groupId>su.litvak.chromecast</groupId>
     <artifactId>api-v2</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.9.1-SNAPSHOT</version>
   </dependency>
 ...
 </dependencies>
@@ -145,6 +145,51 @@ Alternatively, ChromeCast device object may be created without discovery if addr
 ```java
 ChromeCast chromecast = new ChromeCast("192.168.10.36");
 ```
+
+Since `v.0.9.0` there is a possibility to send custom requests using `send()` methods. It is required to implement at least `Request` interface for an objects being sent to the running application. If some response is expected then `Response` interface must be implemented. For example to send request to the [DashCast](https://github.com/stestagg/dashcast) application:
+
+`Request` interface implementation
+
+````java
+public class DashCastRequest implements Request {
+    @JsonProperty
+    final String url;
+    @JsonProperty
+    final boolean force;
+    @JsonProperty
+    final boolean reload;
+    @JsonProperty("reload_time")
+    final int reloadTime;
+
+    private Long requestId;
+
+    public DashCastRequest(String url,
+                           boolean force,
+                           boolean reload,
+                           int reloadTime) {
+        this.url = url;
+        this.force = force;
+        this.reload = reload;
+        this.reloadTime = reloadTime;
+    }
+
+    @Override
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    @Override
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+}
+````
+
+Sending request
+
+````java
+chromecast.send("urn:x-cast:es.offd.dashcast", new DashCastRequest("http://yandex.ru", true, false, 0));
+````
 
 This is it for now. It covers all my needs, but if someone is interested in more methods, I am open to make improvements.
 
