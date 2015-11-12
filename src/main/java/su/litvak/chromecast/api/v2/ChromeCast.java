@@ -268,4 +268,17 @@ public class ChromeCast {
         }
         return channel.sendGenericRequest(runningApp.transportId, namespace, request, responseClass);
     }
+
+    /**
+     * <p>Sends some generic request to the currently running application. No response is expected as a result of this call.</p>
+     *
+     * <p>If no application is running at the moment then exception is thrown.</p>
+     *
+     * @param namespace     request namespace
+     * @param request       request object
+     * @throws IOException
+     */
+    public void send(String namespace, Request request) throws IOException {
+        send(namespace, request, null);
+    }
 }

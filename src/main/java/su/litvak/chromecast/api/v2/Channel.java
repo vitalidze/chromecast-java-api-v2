@@ -131,7 +131,7 @@ class Channel implements Closeable {
                                 rp.put(jsonMSG);
                             } else {
                                 if (requestId != 0) {
-                                    // Status events are sent with a requestid of zero
+                                    // Status events are sent with a requestId of zero
                                     // https://developers.google.com/cast/docs/reference/messages
                                     LOG.warn("Unable to process request ID = {}, data: {}", requestId, jsonMSG);
                                 }
@@ -283,6 +283,12 @@ class Channel implements Closeable {
         if (!requestId.equals(message.getRequestId())) {
             throw new IllegalStateException("Request Id getter/setter contract violation");
         }
+
+        if (responseClass == null) {
+            write(namespace, message, destinationId);
+            return null;
+        }
+
         ResultProcessor<T> rp = new ResultProcessor<T>(responseClass);
         requests.put(requestId, rp);
 
