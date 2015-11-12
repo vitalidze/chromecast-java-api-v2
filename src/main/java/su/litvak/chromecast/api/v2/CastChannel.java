@@ -3,7 +3,7 @@
 
 package su.litvak.chromecast.api.v2;
 
-public final class CastChannel {
+final class CastChannel {
     private CastChannel() {}
     public static void registerAllExtensions(
             com.google.protobuf.ExtensionRegistryLite registry) {
