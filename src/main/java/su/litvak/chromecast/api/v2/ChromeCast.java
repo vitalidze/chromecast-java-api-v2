@@ -225,10 +225,11 @@ public class ChromeCast {
      * Loads and starts playing media in specified URL
      *
      * @param url    media url
+     * @return The new media status that resulted from loading the media.
      * @throws IOException
      */
-    public void load(String url) throws IOException {
-        load(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), null, url, null);
+    public MediaStatus load(String url) throws IOException {
+        return load(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), null, url, null);
     }
 
     /**
@@ -238,14 +239,15 @@ public class ChromeCast {
      * @param thumb url of video thumbnail to be displayed, relative to media url
      * @param url   media url
      * @param contentType    MIME content type
+     * @return The new media status that resulted from loading the media.
      * @throws IOException
      */
-    public void load(String title, String thumb, String url, String contentType) throws IOException {
+    public MediaStatus load(String title, String thumb, String url, String contentType) throws IOException {
         Status status = getStatus();
         Map<String, String> customData = new HashMap<String, String>(2);
         customData.put("title:", title);
         customData.put("thumb", thumb);
-        channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
+        return channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
     }
 
     /**
