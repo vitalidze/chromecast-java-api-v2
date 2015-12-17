@@ -54,6 +54,8 @@ class Channel implements Closeable {
 
     private final static String DEFAULT_RECEIVER_ID = "receiver-0";
 
+    private final EventListenerHolder eventListener;
+
     /**
      * Single socket instance for transfers
      */
@@ -130,7 +132,10 @@ class Channel implements Closeable {
                             if (rp != null) {
                                 rp.put(jsonMSG);
                             } else {
-                                if (requestId != 0) {
+                                if (requestId == 0) {
+                                    notifyListenersOfSpontaneousEvent(parsed);
+                                }
+                                else {
                                     // Status events are sent with a requestId of zero
                                     // https://developers.google.com/cast/docs/reference/messages
                                     LOG.warn("Unable to process request ID = {}, data: {}", requestId, jsonMSG);
@@ -196,13 +201,14 @@ class Channel implements Closeable {
         }
     }
 
-    Channel(String host) throws IOException, GeneralSecurityException {
-        this(host, 8009);
+    Channel(String host, EventListenerHolder eventListener) throws IOException, GeneralSecurityException {
+        this(host, 8009, eventListener);
     }
 
-    Channel(String host, int port) throws IOException, GeneralSecurityException {
+    Channel(String host, int port, EventListenerHolder eventListener) throws IOException, GeneralSecurityException {
         this.address = new InetSocketAddress(host, port);
         this.name = "sender-" + new RandomString(10).nextString();
+        this.eventListener = eventListener;
         connect();
     }
 
@@ -357,6 +363,12 @@ class Channel implements Closeable {
         }
 
         return CastChannel.CastMessage.parseFrom(buf);
+    }
+
+    private void notifyListenersOfSpontaneousEvent(JsonNode json) throws IOException {
+        if (this.eventListener != null) {
+            this.eventListener.deliverEvent(json);
+        }
     }
 
     public Status getStatus() throws IOException {

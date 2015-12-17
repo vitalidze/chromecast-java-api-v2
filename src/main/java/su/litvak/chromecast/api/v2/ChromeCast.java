@@ -28,6 +28,8 @@ import java.util.Map;
 public class ChromeCast {
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
 
+    private final EventListenerHolder eventListenerHolder = new EventListenerHolder();
+
     private String name;
     private final String address;
     private final int port;
@@ -87,7 +89,7 @@ public class ChromeCast {
 
     public synchronized void connect() throws IOException, GeneralSecurityException {
         if (channel == null) {
-            channel = new Channel(getAddress(), getPort());
+            channel = new Channel(getAddress(), getPort(), this.eventListenerHolder);
         }
     }
 
@@ -283,4 +285,13 @@ public class ChromeCast {
     public void send(String namespace, Request request) throws IOException {
         send(namespace, request, null);
     }
+
+    public void registerListener(final ChromeCastEventListener listener) {
+        this.eventListenerHolder.registerListener(listener);
+    }
+
+    public void unregisterListener(final ChromeCastEventListener listener) {
+        this.eventListenerHolder.unregisterListener(listener);
+    }
+
 }
