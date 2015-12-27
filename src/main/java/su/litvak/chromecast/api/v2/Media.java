@@ -43,13 +43,13 @@ public class Media {
         NONE, none
     }
 
-    @JsonIgnore
+    @JsonProperty
     public final Map<String, Object> metadata;
 
     @JsonProperty("contentId")
     public final String url;
 
-    @JsonIgnore
+    @JsonProperty
     public final Double duration;
 
     @JsonIgnore
@@ -58,7 +58,7 @@ public class Media {
     @JsonProperty
     public final String contentType;
 
-    @JsonIgnore
+    @JsonProperty
     public final Map<String, Object> customData;
 
     @JsonIgnore
