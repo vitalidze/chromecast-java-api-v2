@@ -52,7 +52,7 @@ public class Media {
     @JsonProperty
     public final Double duration;
 
-    @JsonIgnore
+    @JsonProperty
     public final StreamType streamType;
 
     @JsonProperty
