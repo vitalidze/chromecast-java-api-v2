@@ -2,7 +2,7 @@ package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.JsonNode;
 
-public interface ChromeCastEventListener {
+public interface ChromeCastSpontaneousEventListener {
 
 	void onSpontaneousMediaStatus (MediaStatus mediaStatus);
 	void onSpontaneousStatus (Status status);

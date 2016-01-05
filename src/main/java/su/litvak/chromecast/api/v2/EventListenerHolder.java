@@ -7,20 +7,20 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-class EventListenerHolder implements ChromeCastEventListener {
+class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 
 	private final ObjectMapper jsonMapper = new ObjectMapper();
-	private final Set<ChromeCastEventListener> eventListeners = new CopyOnWriteArraySet<ChromeCastEventListener>();
+	private final Set<ChromeCastSpontaneousEventListener> eventListeners = new CopyOnWriteArraySet<ChromeCastSpontaneousEventListener>();
 
 	public EventListenerHolder () {}
 
-	public void registerListener (final ChromeCastEventListener listener) {
+	public void registerListener (final ChromeCastSpontaneousEventListener listener) {
 		if (listener != null) {
 			this.eventListeners.add(listener);
 		}
 	}
 
-	public void unregisterListener (final ChromeCastEventListener listener) {
+	public void unregisterListener (final ChromeCastSpontaneousEventListener listener) {
 		if (listener != null) {
 			this.eventListeners.remove(listener);
 		}
@@ -53,21 +53,21 @@ class EventListenerHolder implements ChromeCastEventListener {
 
 	@Override
 	public void onSpontaneousMediaStatus (final MediaStatus mediaStatus) {
-		for (final ChromeCastEventListener listener : this.eventListeners) {
+		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {
 			listener.onSpontaneousMediaStatus(mediaStatus);
 		}
 	}
 
 	@Override
 	public void onSpontaneousStatus (Status status) {
-		for (final ChromeCastEventListener listener : this.eventListeners) {
+		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {
 			listener.onSpontaneousStatus(status);
 		}
 	}
 
 	@Override
 	public void onUnidentifiedSpontaneousEvent (final JsonNode event) {
-		for (final ChromeCastEventListener listener : this.eventListeners) {
+		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {
 			listener.onUnidentifiedSpontaneousEvent(event);
 		}
 	}

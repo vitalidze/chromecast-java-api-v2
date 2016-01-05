@@ -286,11 +286,11 @@ public class ChromeCast {
         send(namespace, request, null);
     }
 
-    public void registerListener(final ChromeCastEventListener listener) {
+    public void registerListener(final ChromeCastSpontaneousEventListener listener) {
         this.eventListenerHolder.registerListener(listener);
     }
 
-    public void unregisterListener(final ChromeCastEventListener listener) {
+    public void unregisterListener(final ChromeCastSpontaneousEventListener listener) {
         this.eventListenerHolder.unregisterListener(listener);
     }
 
