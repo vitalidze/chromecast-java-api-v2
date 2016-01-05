@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-public class EventListenerHolder implements ChromeCastEventListener {
+class EventListenerHolder implements ChromeCastEventListener {
 
 	private final ObjectMapper jsonMapper = new ObjectMapper();
 	private final Set<ChromeCastEventListener> eventListeners = new CopyOnWriteArraySet<ChromeCastEventListener>();
