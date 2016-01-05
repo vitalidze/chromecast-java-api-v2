@@ -7,6 +7,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.MediaStatusSpontaneousEvent;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.StatusSpontaneousEvent;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.UnknownSpontaneousEvent;
+
 class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 
 	private final ObjectMapper jsonMapper = new ObjectMapper();
@@ -40,35 +44,21 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 		 */
 		if (resp instanceof StandardResponse.MediaStatus) {
 			for (final MediaStatus ms : ((StandardResponse.MediaStatus) resp).statuses) {
-				onSpontaneousMediaStatus(ms);
+				spontaneousEventReceived(new MediaStatusSpontaneousEvent(ms));
 			}
 		}
 		else if (resp instanceof StandardResponse.Status) {
-			onSpontaneousStatus(((StandardResponse.Status) resp).status);
+			spontaneousEventReceived(new StatusSpontaneousEvent(((StandardResponse.Status) resp).status));
 		}
 		else {
-			onUnidentifiedSpontaneousEvent(json);
+			spontaneousEventReceived(new UnknownSpontaneousEvent(json));
 		}
 	}
 
 	@Override
-	public void onSpontaneousMediaStatus (final MediaStatus mediaStatus) {
+	public void spontaneousEventReceived (final ChromeCastSpontaneousEvent event) {
 		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {
-			listener.onSpontaneousMediaStatus(mediaStatus);
-		}
-	}
-
-	@Override
-	public void onSpontaneousStatus (Status status) {
-		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {
-			listener.onSpontaneousStatus(status);
-		}
-	}
-
-	@Override
-	public void onUnidentifiedSpontaneousEvent (final JsonNode event) {
-		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {
-			listener.onUnidentifiedSpontaneousEvent(event);
+			listener.spontaneousEventReceived(event);
 		}
 	}
 
