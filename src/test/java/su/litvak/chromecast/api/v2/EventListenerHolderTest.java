@@ -1,7 +1,5 @@
 package su.litvak.chromecast.api.v2;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -11,8 +9,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.MediaStatusSpontaneousEvent;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.StatusSpontaneousEvent;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
 
 public class EventListenerHolderTest {
     private final ObjectMapper jsonMapper = new ObjectMapper();
@@ -37,11 +34,10 @@ public class EventListenerHolderTest {
         this.underTest.deliverEvent(jsonMapper.readTree(json));
 
         ChromeCastSpontaneousEvent event = emittedEvents.get(0);
-        assertThat(event, instanceOf(MediaStatusSpontaneousEvent.class));
-        MediaStatusSpontaneousEvent mediaStatusEvent = (MediaStatusSpontaneousEvent) event;
 
+        assertEquals(SpontaneousEventType.MEDIA_STATUS, event.getType());
         // Is it roughly what we passed in?  More throughly tested in MediaStatusTest.
-        assertEquals(15, mediaStatusEvent.getMediaStatus().supportedMediaCommands);
+        assertEquals(15, event.getData(MediaStatus.class).supportedMediaCommands);
 
         assertEquals(1, emittedEvents.size());
     }
@@ -53,11 +49,10 @@ public class EventListenerHolderTest {
         this.underTest.deliverEvent(jsonMapper.valueToTree(status));
 
         ChromeCastSpontaneousEvent event = emittedEvents.get(0);
-        assertThat(event, instanceOf(StatusSpontaneousEvent.class));
-        StatusSpontaneousEvent statusEvent = (StatusSpontaneousEvent) event;
 
+        assertEquals(SpontaneousEventType.STATUS, event.getType());
         // Not trying to test everything, just that is basically what we passed in.
-        assertEquals(volume, statusEvent.getStatus().volume);
+        assertEquals(volume, event.getData(Status.class).volume);
 
         assertEquals(1, emittedEvents.size());
     }

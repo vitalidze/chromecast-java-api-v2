@@ -7,9 +7,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.MediaStatusSpontaneousEvent;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.StatusSpontaneousEvent;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.UnknownSpontaneousEvent;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
 
 class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 
@@ -44,14 +42,14 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 		 */
 		if (resp instanceof StandardResponse.MediaStatus) {
 			for (final MediaStatus ms : ((StandardResponse.MediaStatus) resp).statuses) {
-				spontaneousEventReceived(new MediaStatusSpontaneousEvent(ms));
+				spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.MEDIA_STATUS, ms));
 			}
 		}
 		else if (resp instanceof StandardResponse.Status) {
-			spontaneousEventReceived(new StatusSpontaneousEvent(((StandardResponse.Status) resp).status));
+			spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.STATUS, ((StandardResponse.Status) resp).status));
 		}
 		else {
-			spontaneousEventReceived(new UnknownSpontaneousEvent(json));
+			spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.UNKNOWN, json));
 		}
 	}
 
