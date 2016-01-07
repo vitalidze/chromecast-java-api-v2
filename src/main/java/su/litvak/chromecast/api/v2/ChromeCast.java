@@ -253,6 +253,18 @@ public class ChromeCast {
     }
 
     /**
+     * Loads and starts playing specified media
+     *
+     * @param media The media to load and play.  See https://developers.google.com/cast/docs/reference/messages#Load for further details.
+     * @return The new media status that resulted from loading the media.
+     * @throws IOException
+     */
+    public MediaStatus load(final Media media) throws IOException {
+        Status status = getStatus();
+        return channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, media, true, 0d, null);
+    }
+
+    /**
      * <p>Sends some generic request to the currently running application.</p>
      *
      * <p>If no application is running at the moment then exception is thrown.</p>

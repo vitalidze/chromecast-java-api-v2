@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.annotate.JsonIgnore;
 /**
  * Media streamed on ChromeCast device
@@ -43,22 +44,26 @@ public class Media {
         NONE, none
     }
 
-    @JsonIgnore
+    @JsonProperty
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Map<String, Object> metadata;
 
     @JsonProperty("contentId")
     public final String url;
 
-    @JsonIgnore
+    @JsonProperty
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Double duration;
 
-    @JsonIgnore
+    @JsonProperty
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final StreamType streamType;
 
     @JsonProperty
     public final String contentType;
 
-    @JsonIgnore
+    @JsonProperty
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Map<String, Object> customData;
 
     @JsonIgnore
