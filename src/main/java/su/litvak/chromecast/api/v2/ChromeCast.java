@@ -28,6 +28,8 @@ import java.util.Map;
 public class ChromeCast {
     public final static String SERVICE_TYPE = "_googlecast._tcp.local.";
 
+    private final EventListenerHolder eventListenerHolder = new EventListenerHolder();
+
     private String name;
     private final String address;
     private final int port;
@@ -87,7 +89,7 @@ public class ChromeCast {
 
     public synchronized void connect() throws IOException, GeneralSecurityException {
         if (channel == null) {
-            channel = new Channel(getAddress(), getPort());
+            channel = new Channel(getAddress(), getPort(), this.eventListenerHolder);
         }
     }
 
@@ -225,10 +227,11 @@ public class ChromeCast {
      * Loads and starts playing media in specified URL
      *
      * @param url    media url
+     * @return The new media status that resulted from loading the media.
      * @throws IOException
      */
-    public void load(String url) throws IOException {
-        load(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), null, url, null);
+    public MediaStatus load(String url) throws IOException {
+        return load(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), null, url, null);
     }
 
     /**
@@ -238,14 +241,15 @@ public class ChromeCast {
      * @param thumb url of video thumbnail to be displayed, relative to media url
      * @param url   media url
      * @param contentType    MIME content type
+     * @return The new media status that resulted from loading the media.
      * @throws IOException
      */
-    public void load(String title, String thumb, String url, String contentType) throws IOException {
+    public MediaStatus load(String title, String thumb, String url, String contentType) throws IOException {
         Status status = getStatus();
         Map<String, String> customData = new HashMap<String, String>(2);
         customData.put("title:", title);
         customData.put("thumb", thumb);
-        channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
+        return channel.load(status.getRunningApp().transportId, status.getRunningApp().sessionId, new Media(url, contentType), true, 0d, customData);
     }
 
     /**
@@ -281,4 +285,13 @@ public class ChromeCast {
     public void send(String namespace, Request request) throws IOException {
         send(namespace, request, null);
     }
+
+    public void registerListener(final ChromeCastSpontaneousEventListener listener) {
+        this.eventListenerHolder.registerListener(listener);
+    }
+
+    public void unregisterListener(final ChromeCastSpontaneousEventListener listener) {
+        this.eventListenerHolder.unregisterListener(listener);
+    }
+
 }

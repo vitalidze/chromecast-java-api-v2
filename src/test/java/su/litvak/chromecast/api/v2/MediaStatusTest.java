@@ -17,10 +17,7 @@ package su.litvak.chromecast.api.v2;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +49,7 @@ public class MediaStatusTest {
 
     @Test
     public void testDeserializationWithChromeCastAudioFixture() throws Exception {
-        final String jsonMSG = fixtureAsString("/mediaStatus-chromecast-audio.json").replaceFirst("\"type\"", "\"responseType\"");
+        final String jsonMSG = FixtureHelper.fixtureAsString("/mediaStatus-chromecast-audio.json").replaceFirst("\"type\"", "\"responseType\"");
         final StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue(jsonMSG, StandardResponse.class);
         assertEquals(1, response.statuses.length);
         final MediaStatus mediaStatus = response.statuses[0];
@@ -111,19 +108,4 @@ public class MediaStatusTest {
         assertEquals(2, status.get("state"));
     }
 
-    private String fixtureAsString(final String res) throws IOException {
-        final InputStream is = getClass().getResourceAsStream(res);
-        try {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            final StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            return sb.toString();
-        }
-        finally {
-            is.close();
-        }
-    }
 }
