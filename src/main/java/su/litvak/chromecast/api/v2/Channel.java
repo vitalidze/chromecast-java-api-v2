@@ -256,6 +256,9 @@ class Channel implements Closeable {
          */
         write("urn:x-cast:com.google.cast.tp.connection", StandardMessage.connect(), DEFAULT_RECEIVER_ID);
 
+        notifyListenerOfConnectionEvent(true);
+        closed = false;
+
         /**
          * Start ping/pong and reader thread
          */
@@ -265,7 +268,6 @@ class Channel implements Closeable {
         reader = new ReadThread();
         reader.start();
 
-        closed = false;
     }
 
     private <T extends StandardResponse> T sendStandard(String namespace, StandardRequest message, String destinationId) throws IOException {
@@ -365,6 +367,12 @@ class Channel implements Closeable {
         return CastChannel.CastMessage.parseFrom(buf);
     }
 
+    private void notifyListenerOfConnectionEvent(boolean connected) {
+        if (this.eventListener != null) {
+            this.eventListener.deliverEventConnectionStatus(connected);
+        }
+    }
+
     private void notifyListenersOfSpontaneousEvent(JsonNode json) throws IOException {
         if (this.eventListener != null) {
             this.eventListener.deliverEvent(json);
@@ -440,6 +448,7 @@ class Channel implements Closeable {
 
     @Override
     public void close() throws IOException {
+        notifyListenerOfConnectionEvent(false);
         closed = true;
         if (pingTimer != null) {
             pingTimer.cancel();
