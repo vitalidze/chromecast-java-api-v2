@@ -37,7 +37,7 @@ public class ChromeCastSpontaneousEvent {
 
     public ChromeCastSpontaneousEvent (final SpontaneousEventType type, final Object data) {
         if (!type.getDataClass().isAssignableFrom(data.getClass())) {
-            throw new IllegalArgumentException("Data type " + data.getClass() + " does not match type for event " + this.type.getDataClass());
+            throw new IllegalArgumentException("Data type " + data.getClass() + " does not match type for event " + type.getDataClass());
         }
         this.type = type;
         this.data = data;
