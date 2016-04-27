@@ -25,19 +25,28 @@ import java.util.List;
  * Current ChromeCast device status
  */
 public class Status {
+
     public final Volume volume;
     public final List<Application> applications;
     public final boolean activeInput;
     public final boolean standBy;
 
     Status(@JsonProperty("volume") Volume volume,
-           @JsonProperty("applications") List<Application> applications,
-           @JsonProperty("isActiveInput") boolean activeInput,
-           @JsonProperty("isStandBy") boolean standBy) {
+            @JsonProperty("applications") List<Application> applications,
+            @JsonProperty("isActiveInput") boolean activeInput,
+            @JsonProperty("isStandBy") boolean standBy) {
         this.volume = volume;
         this.applications = applications == null ? Collections.<Application>emptyList() : applications;
         this.activeInput = activeInput;
         this.standBy = standBy;
+    }
+
+    Status(@JsonProperty("volume") Volume volume,
+            @JsonProperty("applications") List<Application> applications) {
+        this.volume = volume;
+        this.applications = applications == null ? Collections.<Application>emptyList() : applications;
+        this.activeInput = false;
+        this.standBy = false;
     }
 
     @JsonIgnore
