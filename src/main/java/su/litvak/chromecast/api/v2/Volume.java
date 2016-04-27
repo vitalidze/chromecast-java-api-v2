@@ -25,7 +25,10 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * Volume settings
  */
 public class Volume {
+
     final static Float default_increment = new Float(0.05);
+    final static Double default_stepInterval = new Double(0.05);
+    final static String default_controlType = "attenuation";
     @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Float level;
@@ -33,17 +36,28 @@ public class Volume {
     public final boolean muted;
 
     @JsonProperty
+    public final String controlType;
+
+    @JsonProperty
     public final Float increment;
+
+    @JsonProperty
+    public final Double stepInterval;
 
     public Volume() {
         level = new Float(-1);
         muted = false;
         increment = default_increment;
+        stepInterval = default_stepInterval;
+        controlType = default_controlType;
     }
 
     public Volume(@JsonProperty("level") Float level,
-                  @JsonProperty("muted") boolean muted,
-                  @JsonProperty("increment") Float increment) {
+            @JsonProperty("muted") boolean muted,
+            @JsonProperty("increment") Float increment,
+            @JsonProperty("stepInterval") Double stepInterval,
+            @JsonProperty("controlType") String controlType
+    ) {
         this.level = level;
         this.muted = muted;
         if (increment != null && increment > 0f) {
@@ -51,26 +65,41 @@ public class Volume {
         } else {
             this.increment = default_increment;
         }
+        if(stepInterval!=null && stepInterval > 0d) {
+            this.stepInterval = stepInterval;
+        } else {
+            this.stepInterval = default_stepInterval;
+        }
+        this.controlType = controlType;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(new Object[]{this.level, this.muted, this.increment,
+            this.stepInterval, this.controlType});
     }
 
     @Override
-    public int hashCode () {
-        return Arrays.hashCode(new Object[] { this.level, this.muted, this.increment });
-    }
-
-    @Override
-    public boolean equals (final Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (!(obj instanceof Volume)) return false;
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Volume)) {
+            return false;
+        }
         final Volume that = (Volume) obj;
-        return this.level == null ? that.level == null : this.level.equals(that.level) &&
-                this.muted == that.muted &&
-                this.increment == null ? that.increment == null : this.increment.equals(that.increment);
+        return this.level == null ? that.level == null : this.level.equals(that.level)
+                && this.muted == that.muted
+                && this.increment == null ? that.increment == null : this.increment.equals(that.increment)
+                        && this.stepInterval == that.stepInterval
+                        && this.controlType == null ? that.controlType == null : this.controlType.equals(that.controlType);
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return String.format("Volume{%s, %s, %s}", this.level, this.muted, this.increment);
     }
 
