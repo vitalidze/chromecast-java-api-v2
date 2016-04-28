@@ -44,7 +44,8 @@ public class EventListenerHolderTest {
 
     @Test
     public void itHandlesStatusEvent () throws Exception {
-        Volume volume = new Volume(123f, false, 2f);
+        Volume volume = new Volume(123f, false, 2f, Volume.default_stepInterval,
+                Volume.default_controlType);
         StandardResponse.Status status = new StandardResponse.Status(new Status(volume, null, false, false));
         this.underTest.deliverEvent(jsonMapper.valueToTree(status));
 

@@ -81,20 +81,14 @@ public class Volume {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof Volume)) {
-            return false;
-        }
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof Volume))  return false;
         final Volume that = (Volume) obj;
         return this.level == null ? that.level == null : this.level.equals(that.level)
                 && this.muted == that.muted
                 && this.increment == null ? that.increment == null : this.increment.equals(that.increment)
-                        && this.stepInterval == that.stepInterval
+                        && this.stepInterval == null ? that.stepInterval == null : this.stepInterval.equals(that.stepInterval)
                         && this.controlType == null ? that.controlType == null : this.controlType.equals(that.controlType);
     }
 
