@@ -29,7 +29,6 @@ import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
 import su.litvak.chromecast.api.v2.MediaStatus.RepeatMode;
 
 public class MediaStatusTest {
-
     final ObjectMapper jsonMapper = new ObjectMapper();
 
     @Test

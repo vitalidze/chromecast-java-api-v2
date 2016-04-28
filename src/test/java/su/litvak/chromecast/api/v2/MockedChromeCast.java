@@ -33,7 +33,6 @@ import java.security.*;
 import java.util.Collections;
 
 public class MockedChromeCast {
-
     final ServerSocket socket;
     final ClientThread clientThread;
 
@@ -45,7 +44,7 @@ public class MockedChromeCast {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(keyStore, "changeit".toCharArray());
 
-        sc.init(keyManagerFactory.getKeyManagers(), new TrustManager[]{new X509TrustAllManager()}, new SecureRandom());
+        sc.init(keyManagerFactory.getKeyManagers(), new TrustManager[] {new X509TrustAllManager()}, new SecureRandom());
         socket = sc.getServerSocketFactory().createServerSocket(8009);
 
         clientThread = new ClientThread();
@@ -53,7 +52,6 @@ public class MockedChromeCast {
     }
 
     class ClientThread extends Thread {
-
         volatile boolean stop;
         Socket clientSocket;
         ObjectMapper jsonMapper = new ObjectMapper();
@@ -92,13 +90,13 @@ public class MockedChromeCast {
                 MessageLite response = handleBinary(CastChannel.DeviceAuthMessage.parseFrom(message.getPayloadBinary()));
                 write(clientSocket,
                         CastChannel.CastMessage.newBuilder()
-                        .setProtocolVersion(message.getProtocolVersion())
-                        .setSourceId(message.getDestinationId())
-                        .setDestinationId(message.getSourceId())
-                        .setNamespace(message.getNamespace())
-                        .setPayloadType(CastChannel.CastMessage.PayloadType.BINARY)
-                        .setPayloadBinary(response.toByteString())
-                        .build());
+                                .setProtocolVersion(message.getProtocolVersion())
+                                .setSourceId(message.getDestinationId())
+                                .setDestinationId(message.getSourceId())
+                                .setNamespace(message.getNamespace())
+                                .setPayloadType(CastChannel.CastMessage.PayloadType.BINARY)
+                                .setPayloadBinary(response.toByteString())
+                                .build());
             } else {
                 StandardMessage json = jsonMapper.readValue(message.getPayloadUtf8(), StandardMessage.class);
                 StandardResponse response = handleJSON(json);
@@ -110,13 +108,13 @@ public class MockedChromeCast {
 
                     write(clientSocket,
                             CastChannel.CastMessage.newBuilder()
-                            .setProtocolVersion(message.getProtocolVersion())
-                            .setSourceId(message.getDestinationId())
-                            .setDestinationId(message.getSourceId())
-                            .setNamespace(message.getNamespace())
-                            .setPayloadType(CastChannel.CastMessage.PayloadType.STRING)
-                            .setPayloadUtf8(jsonMapper.writeValueAsString(response))
-                            .build());
+                                    .setProtocolVersion(message.getProtocolVersion())
+                                    .setSourceId(message.getDestinationId())
+                                    .setDestinationId(message.getSourceId())
+                                    .setNamespace(message.getNamespace())
+                                    .setPayloadType(CastChannel.CastMessage.PayloadType.STRING)
+                                    .setPayloadUtf8(jsonMapper.writeValueAsString(response))
+                                    .build());
                 }
             }
         }
