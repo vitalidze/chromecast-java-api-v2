@@ -19,7 +19,6 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceListener;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +35,9 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
     private ChromeCasts() {
     }
 
-    private void _startDiscovery(InetAddress addr) throws IOException {
+    private void _startDiscovery() throws IOException {
         if (mDNS == null) {
-            if (addr != null) {
-                mDNS = JmDNS.create(addr);
-            } else {
-                mDNS = JmDNS.create();
-            }
+            mDNS = JmDNS.create();
             mDNS.addServiceListener(ChromeCast.SERVICE_TYPE, this);
         }
     }
@@ -95,14 +90,7 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
      * Starts ChromeCast device discovery
      */
     public static void startDiscovery() throws IOException {
-        INSTANCE._startDiscovery(null);
-    }
-
-    /**
-     * Starts ChromeCast device discovery using the given address/interface
-     */
-    public static void startDiscovery(InetAddress addr) throws IOException {
-        INSTANCE._startDiscovery(addr);
+        INSTANCE._startDiscovery();
     }
 
     /**
@@ -117,12 +105,7 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
      */
     public static void restartDiscovery() throws IOException {
         stopDiscovery();
-        startDiscovery(null);
-    }
-
-    public static void restartDiscovery(InetAddress addr) throws IOException {
-        stopDiscovery();
-        startDiscovery(addr);
+        startDiscovery();
     }
 
     /**

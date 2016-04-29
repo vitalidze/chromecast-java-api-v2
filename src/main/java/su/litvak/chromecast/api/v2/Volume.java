@@ -26,7 +26,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 public class Volume {
     final static Float default_increment = new Float(0.05);
-    final static Double default_stepInterval = new Double(0.05);
+    final static Double default_stepInterval = new Double(0.05000000074505806);
     final static String default_controlType = "attenuation";
     @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
