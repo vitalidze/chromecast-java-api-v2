@@ -71,7 +71,7 @@ public class Volume {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode () {
         return Arrays.hashCode(new Object[]{this.level, this.muted, this.increment,
             this.stepInterval, this.controlType});
     }
@@ -90,7 +90,7 @@ public class Volume {
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         return String.format("Volume{%s, %s, %s}", this.level, this.muted, this.increment);
     }
 

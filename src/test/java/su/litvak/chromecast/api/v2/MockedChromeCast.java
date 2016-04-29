@@ -44,7 +44,7 @@ public class MockedChromeCast {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(keyStore, "changeit".toCharArray());
 
-        sc.init(keyManagerFactory.getKeyManagers(), new TrustManager[] {new X509TrustAllManager()}, new SecureRandom());
+        sc.init(keyManagerFactory.getKeyManagers(), new TrustManager[] { new X509TrustAllManager() }, new SecureRandom());
         socket = sc.getServerSocketFactory().createServerSocket(8009);
 
         clientThread = new ClientThread();
