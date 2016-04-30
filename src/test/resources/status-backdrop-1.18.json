@@ -1,0 +1,1 @@
+{"requestId":1,"status":{"applications":[{"appId":"E8C28D3C","displayName":"Backdrop","namespaces":[{"name":"urn:x-cast:com.google.cast.sse"}],"sessionId":"1CAFD4C1-39BD...","statusText":"","transportId":"web-3"}],"isActiveInput":true,"isStandBy":false,"volume":{"level":1.0,"muted":false}},"type":"RECEIVER_STATUS"}

@@ -1,0 +1,1 @@
+{"requestId":1,"status":{"applications":[{"appId":"E8C28D3C","displayName":"Backdrop","isIdleScreen":true,"namespaces":[{"name":"urn:x-cast:com.google.cast.sse"}],"sessionId":"E5D50197-E550...","statusText":"","transportId":"web-5"}],"volume":{"controlType":"attenuation","level":1.0,"muted":false,"stepInterval":0.04}},"type":"RECEIVER_STATUS"}
