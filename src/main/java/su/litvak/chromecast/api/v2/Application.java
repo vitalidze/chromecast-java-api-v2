@@ -29,12 +29,14 @@ public class Application {
     public final String sessionId;
     public final String statusText;
     public final String transportId;
+    public final boolean isIdleScreen;
     public final List<Namespace> namespaces;
 
     public Application(@JsonProperty("appId") String id,
                        @JsonProperty("displayName") String name,
                        @JsonProperty("sessionId") String sessionId,
                        @JsonProperty("statusText") String statusText,
+                       @JsonProperty("isIdleScreen") boolean isIdleScreen,
                        @JsonProperty("transportId") String transportId,
                        @JsonProperty("namespaces") List<Namespace> namespaces) {
         this.id = id;
@@ -43,5 +45,6 @@ public class Application {
         this.statusText = statusText;
         this.transportId = transportId;
         this.namespaces = namespaces == null ? Collections.<Namespace>emptyList() : namespaces;
+        this.isIdleScreen = isIdleScreen;
     }
 }

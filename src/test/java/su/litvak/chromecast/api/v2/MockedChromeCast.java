@@ -127,7 +127,8 @@ public class MockedChromeCast {
             if (message instanceof StandardMessage.Ping) {
                 return new StandardResponse.Pong();
             } else if (message instanceof StandardRequest.Status) {
-                Status status = new Status(new Volume(1f, false, Volume.default_increment), Collections.<Application>emptyList(), false, true);
+                Status status = new Status(new Volume(1f, false, Volume.default_increment,
+                        Volume.default_stepInterval, Volume.default_controlType), Collections.<Application>emptyList(), false, true);
                 return new StandardResponse.Status(status);
             }
             return null;

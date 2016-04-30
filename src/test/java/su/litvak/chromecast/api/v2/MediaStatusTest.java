@@ -71,7 +71,8 @@ public class MediaStatusTest {
         assertEquals(PlayerState.BUFFERING, mediaStatus.playerState);
         assertEquals(RepeatMode.REPEAT_OFF, mediaStatus.repeatMode);
         assertEquals(15, mediaStatus.supportedMediaCommands);
-        assertEquals(new Volume(1f, false, Volume.default_increment), mediaStatus.volume);
+        assertEquals(new Volume(1f, false, Volume.default_increment,
+                Volume.default_stepInterval, Volume.default_controlType), mediaStatus.volume);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class MediaStatusTest {
         assertNull(mediaStatus.items);
         assertNull(mediaStatus.preloadedItemId);
 
-        assertEquals(new Volume(0.6999999f, false, 0.05f), mediaStatus.volume);
+        assertEquals(new Volume(0.6999999f, false, 0.05f, null, null), mediaStatus.volume);
 
         assertNotNull(mediaStatus.media);
         Media media = mediaStatus.media;

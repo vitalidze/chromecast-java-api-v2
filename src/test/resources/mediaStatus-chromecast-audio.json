@@ -35,7 +35,9 @@
             "supportedMediaCommands": 15,
             "volume": {
                 "level": 1,
-                "muted": false
+                "muted": false,
+                "stepInterval": 0.05000000074505806,
+                "controlType":"attenuation"                
             }
         }
     ],
