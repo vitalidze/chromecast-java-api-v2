@@ -166,7 +166,7 @@ public class ChromeCast {
      */
     public void setVolume(float level) throws IOException {
         channel.setVolume(new Volume(level, false, Volume.default_increment,
-        Volume.default_stepInterval, Volume.default_controlType));
+        Volume.default_increment.doubleValue(), Volume.default_controlType));
     }
 
     /**
@@ -174,7 +174,7 @@ public class ChromeCast {
      */
     public void setMuted(boolean muted) throws IOException {
         channel.setVolume(new Volume(null, muted, Volume.default_increment,
-        Volume.default_stepInterval, Volume.default_controlType));
+        Volume.default_increment.doubleValue(), Volume.default_controlType));
     }
 
     /**

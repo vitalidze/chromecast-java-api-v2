@@ -25,8 +25,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * Volume settings
  */
 public class Volume {
-    final static Float default_increment = new Float(0.05);
-    final static Double default_stepInterval = new Double(0.05000000074505806);
+    final static Float default_increment = 0.05f;
     final static String default_controlType = "attenuation";
     @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -45,7 +44,7 @@ public class Volume {
         level = new Float(-1);
         muted = false;
         increment = default_increment;
-        stepInterval = default_stepInterval;
+        stepInterval = default_increment.doubleValue();
         controlType = default_controlType;
     }
 
@@ -65,7 +64,7 @@ public class Volume {
         if(stepInterval!=null && stepInterval > 0d) {
             this.stepInterval = stepInterval;
         } else {
-            this.stepInterval = default_stepInterval;
+            this.stepInterval = default_increment.doubleValue();
         }
         this.controlType = controlType;
     }

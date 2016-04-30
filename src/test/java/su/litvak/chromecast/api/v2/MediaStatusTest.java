@@ -72,7 +72,7 @@ public class MediaStatusTest {
         assertEquals(RepeatMode.REPEAT_OFF, mediaStatus.repeatMode);
         assertEquals(15, mediaStatus.supportedMediaCommands);
         assertEquals(new Volume(1f, false, Volume.default_increment,
-                Volume.default_stepInterval, Volume.default_controlType), mediaStatus.volume);
+                Volume.default_increment.doubleValue(), Volume.default_controlType), mediaStatus.volume);
     }
 
     @Test
