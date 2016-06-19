@@ -53,6 +53,10 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 		}
 	}
 
+	public void deliverAppEvent (final AppEvent event) throws IOException {
+		spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.APPEVENT, event));
+	}
+
 	@Override
 	public void spontaneousEventReceived (final ChromeCastSpontaneousEvent event) {
 		for (final ChromeCastSpontaneousEventListener listener : this.eventListeners) {

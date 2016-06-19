@@ -17,6 +17,11 @@ public class ChromeCastSpontaneousEvent {
         STATUS(Status.class),
 
         /**
+         * Data type will be {@link AppEvent}.
+         */
+        APPEVENT(AppEvent.class),
+
+        /**
          * Data type will be {@link org.codehaus.jackson.JsonNode}.
          */
         UNKNOWN(JsonNode.class);

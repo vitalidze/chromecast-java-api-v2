@@ -20,6 +20,8 @@ import static su.litvak.chromecast.api.v2.Util.toArray;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,9 @@ class Channel implements Closeable {
     private final static String DEFAULT_RECEIVER_ID = "receiver-0";
 
     private final EventListenerHolder eventListener;
+
+    private static final JsonSubTypes.Type[] STANDARD_RESPONSE_TYPES =
+            StandardResponse.class.getAnnotation(JsonSubTypes.class).value();
 
     /**
      * Single socket instance for transfers
@@ -120,29 +125,43 @@ class Channel implements Closeable {
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
                         LOG.debug(" <-- {}",  message.getPayloadUtf8());
                         final String jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
-                        if (!jsonMSG.contains("responseType")) {
-                            LOG.warn(" <-- {Skipping}", jsonMSG);
+                        if (jsonMSG == null || jsonMSG.isEmpty()) {
+                            LOG.warn(" <-- Received empty message. Ignore.");
                             continue;
                         }
 
-                        JsonNode parsed = jsonMapper.readTree(jsonMSG);
-                        if (parsed.has("requestId")) {
-                            Long requestId = parsed.get("requestId").asLong();
-                            ResultProcessor rp = requests.remove(requestId);
-                            if (rp != null) {
-                                rp.put(jsonMSG);
-                            } else {
-                                if (requestId == 0) {
-                                    notifyListenersOfSpontaneousEvent(parsed);
+                        // Determine whether the message belongs to cast protocol or is a custom
+                        // message from the receiver app
+                        JsonNode parsed = null;
+                        try {
+                            parsed = jsonMapper.readTree(jsonMSG);
+                        } catch (JsonProcessingException jpex) {
+                            // Ignore
+                        }
+
+                        if (isAppEvent(parsed)) {
+                            AppEvent event = new AppEvent(
+                                    message.getNamespace(), message.getPayloadUtf8());
+                            notifyListenersAppEvent(event);
+                        } else {
+                            if (parsed.has("requestId")) {
+                                Long requestId = parsed.get("requestId").asLong();
+                                ResultProcessor rp = requests.remove(requestId);
+                                if (rp != null) {
+                                    rp.put(jsonMSG);
+                                } else {
+                                    if (requestId == 0) {
+                                        notifyListenersOfSpontaneousEvent(parsed);
+                                    }
+                                    else {
+                                        // Status events are sent with a requestId of zero
+                                        // https://developers.google.com/cast/docs/reference/messages
+                                        LOG.warn("Unable to process request ID = {}, data: {}", requestId, jsonMSG);
+                                    }
                                 }
-                                else {
-                                    // Status events are sent with a requestId of zero
-                                    // https://developers.google.com/cast/docs/reference/messages
-                                    LOG.warn("Unable to process request ID = {}, data: {}", requestId, jsonMSG);
-                                }
+                            } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
+                                write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
                             }
-                        } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
-                            write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
                         }
                     } else {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
@@ -165,6 +184,18 @@ class Channel implements Closeable {
                     }
                 }
             }
+        }
+
+        private boolean isAppEvent(JsonNode parsed) {
+            if (parsed != null && parsed.has("responseType")) {
+                String type = parsed.get("responseType").asText();
+                for (JsonSubTypes.Type t : STANDARD_RESPONSE_TYPES) {
+                    if (t.name().equals(type)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 
@@ -368,6 +399,12 @@ class Channel implements Closeable {
     private void notifyListenersOfSpontaneousEvent(JsonNode json) throws IOException {
         if (this.eventListener != null) {
             this.eventListener.deliverEvent(json);
+        }
+    }
+
+    private void notifyListenersAppEvent(AppEvent event) throws IOException {
+        if (this.eventListener != null) {
+            this.eventListener.deliverAppEvent(event);
         }
     }
 
