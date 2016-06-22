@@ -21,11 +21,12 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * And custom event sent by a receiver app.
  */
 public class AppEvent {
+    @JsonProperty
     public final String namespace;
+    @JsonProperty
     public final String message;
 
-    AppEvent(@JsonProperty("namespace") String namespace,
-            @JsonProperty("message") String message) {
+    AppEvent(String namespace, String message) {
         this.namespace = namespace;
         this.message = message;
     }
