@@ -18,7 +18,7 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * An custom event sent by a receiver app.
+ * A custom event sent by a receiver app.
  */
 public class AppEvent {
     @JsonProperty
