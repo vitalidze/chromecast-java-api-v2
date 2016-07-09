@@ -18,16 +18,11 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * An custom event sent by a receiver app.
+ * An event triggered when remote connection was closed.
  */
-public class AppEvent {
-    @JsonProperty
-    public final String namespace;
-    @JsonProperty
-    public final String message;
-
-    AppEvent(String namespace, String message) {
-        this.namespace = namespace;
-        this.message = message;
+public class Close {
+    public final boolean requestedBySender;
+    Close(@JsonProperty("requestedBySender") boolean requestedBySender) {
+        this.requestedBySender = requestedBySender;
     }
 }
