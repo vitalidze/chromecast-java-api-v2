@@ -30,4 +30,9 @@ public class AppEvent {
         this.namespace = namespace;
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return String.format("AppEvent{namespace: %s, message: %s}", this.namespace, this.message);
+    }
 }
