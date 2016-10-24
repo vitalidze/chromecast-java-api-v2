@@ -99,7 +99,9 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
     }
     
     /**
-     * Starts ChromeCast device discovery using the given address/interface
+     * Starts ChromeCast device discovery
+     *
+     * @param addr the address of the interface that should be used for discovery
      */
     public static void startDiscovery(InetAddress addr) throws IOException {
         INSTANCE._startDiscovery(addr);
@@ -122,7 +124,8 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
     
     /**
      * Restarts discovery by sequentially calling 'stop' and 'start' methods
-     * using the given address/interface
+     *
+     * @param addr the address of the interface that should be used for discovery
      */
     public static void restartDiscovery(InetAddress addr) throws IOException {
         stopDiscovery();
