@@ -135,7 +135,7 @@ public final class ChromeCasts {
      */
     public static void restartDiscovery() throws IOException {
         stopDiscovery();
-        startDiscovery(null);
+        startDiscovery();
     }
 
     /**
