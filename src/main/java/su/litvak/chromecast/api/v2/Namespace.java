@@ -23,4 +23,10 @@ public class Namespace {
     public Namespace(@JsonProperty("name") String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Namespace{%s}", this.name);
+    }
+
 }

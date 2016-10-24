@@ -39,4 +39,8 @@ public class Track {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Track{id: %d, type: %s}", this.id, this.type);
+    }
 }

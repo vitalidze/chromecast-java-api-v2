@@ -42,7 +42,7 @@ public class Item {
 
     @Override
     public String toString () {
-        return String.format("Item{%s, %s}", this.id, this.media);
+        return String.format("Item{id: %s, media: %s}", this.id, this.media);
     }
 
 }

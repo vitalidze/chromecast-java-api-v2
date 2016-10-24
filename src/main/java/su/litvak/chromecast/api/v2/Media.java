@@ -117,7 +117,7 @@ public class Media {
 
     @Override
     public String toString () {
-        return String.format("Media{%s, %s, %s}", this.url, this.contentType, this.duration);
+        return String.format("Media{url: %s, contentType: %s, duration: %s}", this.url, this.contentType, this.duration);
     }
 
 }

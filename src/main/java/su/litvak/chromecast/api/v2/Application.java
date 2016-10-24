@@ -15,6 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.util.Arrays;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Collections;
@@ -47,4 +48,13 @@ public class Application {
         this.namespaces = namespaces == null ? Collections.<Namespace>emptyList() : namespaces;
         this.isIdleScreen = isIdleScreen;
     }
+
+    @Override
+    public String toString() {
+        final String namespaces = this.namespaces == null ? "<null>" : Arrays.toString(this.namespaces.toArray());
+
+        return String.format("Application{id: %s, name: %s, sessionId: %s, statusText: %s, transportId: %s, isIdleScreen: %b, namespaces: %s}",
+                this.id, this.name, this.sessionId, this.statusText, this.transportId, this.isIdleScreen, namespaces);
+    }
+
 }

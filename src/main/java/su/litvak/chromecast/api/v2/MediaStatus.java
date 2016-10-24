@@ -15,6 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -95,4 +96,19 @@ public class MediaStatus {
         this.repeatMode = repeatMode;
         this.idleReason = idleReason;
     }
+
+    @Override
+    public String toString() {
+        final String activeTrackIds = this.activeTrackIds == null ? "<null>" : Arrays.toString(this.activeTrackIds.toArray());
+        final String items = this.items == null ? "<null>" : Arrays.toString(this.items.toArray());
+        final String customData = this.customData == null ? "<null>" : Arrays.toString(this.customData.keySet().toArray());
+
+        return String.format("Application{activeTrackIds: %s, mediaSessionId: %d, playbackRate: %d, playerState: %s, currentItemId: %s, "
+                + "currentTime: %f, customData: %s, loadingItemId: %s, items: %s, preloadedItemId: %s, supportedMediaCommands: %d, "
+                + "volume: %s, media: %s, repeatMode: %s, idleReason: %s}",
+                activeTrackIds, this.mediaSessionId, this.playbackRate, this.playerState, this.currentItemId,
+                this.currentTime, customData, this.loadingItemId, items, this.preloadedItemId,
+                this.supportedMediaCommands, this.volume, this.media, this.repeatMode, this.idleReason);
+    }
+
 }

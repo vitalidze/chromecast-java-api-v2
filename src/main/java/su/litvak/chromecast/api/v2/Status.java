@@ -15,6 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.util.Arrays;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -47,5 +48,13 @@ public class Status {
 
     public boolean isAppRunning(String appId) {
         return getRunningApp() != null && getRunningApp().id.equals(appId);
+    }
+
+    @Override
+    public String toString() {
+        final String applications = this.applications == null ? "<null>" : Arrays.toString(this.applications.toArray());
+
+        return String.format("Media{volume: %s, applications: %s, activeInput: %b, standBy; %b}",
+                this.volume, applications, this.activeInput, this.standBy);
     }
 }

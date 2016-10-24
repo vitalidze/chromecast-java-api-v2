@@ -90,7 +90,8 @@ public class Volume {
 
     @Override
     public String toString () {
-        return String.format("Volume{%s, %s, %s}", this.level, this.muted, this.increment);
+        return String.format("Volume{level: %s, muted: %b, increment: %s, stepInterval: %s, controlType: %s}",
+                this.level, this.muted, this.increment, this.stepInterval, this.controlType);
     }
 
 }
