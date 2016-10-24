@@ -103,7 +103,7 @@ public class MediaStatus {
         final String items = this.items == null ? "<null>" : Arrays.toString(this.items.toArray());
         final String customData = this.customData == null ? "<null>" : Arrays.toString(this.customData.keySet().toArray());
 
-        return String.format("Application{activeTrackIds: %s, mediaSessionId: %d, playbackRate: %d, playerState: %s, currentItemId: %s, "
+        return String.format("MediaStatus{activeTrackIds: %s, mediaSessionId: %d, playbackRate: %d, playerState: %s, currentItemId: %s, "
                 + "currentTime: %f, customData: %s, loadingItemId: %s, items: %s, preloadedItemId: %s, supportedMediaCommands: %d, "
                 + "volume: %s, media: %s, repeatMode: %s, idleReason: %s}",
                 activeTrackIds, this.mediaSessionId, this.playbackRate, this.playerState, this.currentItemId,
