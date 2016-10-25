@@ -54,7 +54,7 @@ public class MockedChromeCast {
     class ClientThread extends Thread {
         volatile boolean stop;
         Socket clientSocket;
-        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
         @Override
         public void run() {

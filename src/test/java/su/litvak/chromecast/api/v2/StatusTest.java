@@ -21,7 +21,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class StatusTest {
-    final ObjectMapper jsonMapper = new ObjectMapper();
+    final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
     @Test
     public void testDeserializationBackdrop1_18() throws Exception {

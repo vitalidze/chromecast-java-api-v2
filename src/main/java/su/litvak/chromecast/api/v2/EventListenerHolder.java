@@ -26,7 +26,7 @@ import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventTy
 
 class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 
-	private final ObjectMapper jsonMapper = new ObjectMapper();
+	private final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 	private final Set<ChromeCastSpontaneousEventListener> eventListeners = new CopyOnWriteArraySet<ChromeCastSpontaneousEventListener>();
 
 	public EventListenerHolder () {}

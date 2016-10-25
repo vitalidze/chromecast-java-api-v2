@@ -29,7 +29,7 @@ import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
 import su.litvak.chromecast.api.v2.MediaStatus.RepeatMode;
 
 public class MediaStatusTest {
-    final ObjectMapper jsonMapper = new ObjectMapper();
+    final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
     @Test
     public void testDeserializationWithIdleReason() throws Exception {
@@ -109,4 +109,17 @@ public class MediaStatusTest {
         assertEquals(2, status.get("state"));
     }
 
+    @Test
+    public void testDeserializationWithVideoInfo() throws IOException {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/mediaStatus-with-videoinfo.json").replaceFirst("\"type\"", "\"responseType\"");
+        final StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue(jsonMSG, StandardResponse.class);
+        assertEquals(1, response.statuses.length);
+    }
+
+    @Test
+    public void testDeserializationAudioWithExtraStatus() throws IOException {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/mediaStatus-audio-with-extraStatus.json").replaceFirst("\"type\"", "\"responseType\"");
+        final StandardResponse.MediaStatus response = (StandardResponse.MediaStatus) jsonMapper.readValue(jsonMSG, StandardResponse.class);
+        assertEquals(1, response.statuses.length);
+    }
 }

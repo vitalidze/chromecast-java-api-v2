@@ -92,7 +92,7 @@ class Channel implements Closeable {
     /**
      * Single mapper object for marshalling JSON
      */
-    private final ObjectMapper jsonMapper = new ObjectMapper();
+    private final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
     /**
      * Destination ids of sessions opened within this channel
      */

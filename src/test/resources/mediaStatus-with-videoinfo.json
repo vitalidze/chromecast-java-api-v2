@@ -1,0 +1,46 @@
+{
+   "type":"MEDIA_STATUS",
+   "status":[
+      {
+         "mediaSessionId":1,
+         "playbackRate":1,
+         "playerState":"BUFFERING",
+         "currentTime":0,
+         "supportedMediaCommands":15,
+         "volume":{
+            "level":1,
+            "muted":false
+         },
+         "videoInfo":{
+            "width":1280,
+            "height":720,
+            "hdrType":"sdr"
+         },
+         "media":{
+            "contentId":"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            "contentType":"video/mp4",
+            "duration":596.474195
+         },
+         "currentItemId":1,
+         "items":[
+            {
+               "itemId":1,
+               "media":{
+                  "contentId":"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                  "contentType":"video/mp4",
+                  "duration":596.474195
+               },
+               "autoplay":true,
+               "customData":{
+                  "payload":{
+                     "title:":"Big Buck Bunny",
+                     "thumb":"images/BigBuckBunny.jpg"
+                  }
+               }
+            }
+         ],
+         "repeatMode":"REPEAT_OFF"
+      }
+   ],
+   "requestId":7
+}

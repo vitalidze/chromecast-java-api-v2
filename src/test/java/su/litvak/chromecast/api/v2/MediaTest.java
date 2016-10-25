@@ -28,7 +28,7 @@ import org.junit.Test;
 import su.litvak.chromecast.api.v2.Media.StreamType;
 
 public class MediaTest {
-    final ObjectMapper jsonMapper = new ObjectMapper();
+    final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
     @Test
     public void itIncludesOptionalFieldsWhenSet () throws Exception {
