@@ -132,11 +132,13 @@ class Channel implements Closeable {
 
                         // Determine whether the message belongs to cast protocol or is a custom
                         // message from the receiver app
-                        JsonNode parsed = null;
+                        final JsonNode parsed;
                         try {
                             parsed = jsonMapper.readTree(jsonMSG);
                         } catch (JsonProcessingException jpex) {
                             // Ignore
+                            // To prevent potential null pointer access using parsed, we could continue...
+                            continue;
                         }
 
                         if (isAppEvent(parsed)) {
