@@ -26,56 +26,57 @@ import java.util.List;
 /**
  * Utility class that discovers ChromeCast devices and holds references to all of them.
  */
-public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListener {
+public class ChromeCasts {
     private final static ChromeCasts INSTANCE = new ChromeCasts();
+    private final MyServiceListener listener = new MyServiceListener();
 
     private JmDNS mDNS;
 
-    private List<ChromeCastsListener> listeners = new ArrayList<ChromeCastsListener>();
-
+    private final List<ChromeCastsListener> listeners = new ArrayList<ChromeCastsListener>();
+    private final List<ChromeCast> chromeCasts = new ArrayList<ChromeCast>();
+    
     private ChromeCasts() {
     }
-
-    private void _startDiscovery(InetAddress addr) throws IOException {
-        if (mDNS == null) {
-            if(addr != null) {
-                mDNS = JmDNS.create(addr);
-            } else {
-                mDNS = JmDNS.create();
-            }            
-            mDNS.addServiceListener(ChromeCast.SERVICE_TYPE, this);
+    
+    /** Returns a copy of the currently seen chrome casts.
+     * @return a copy of the currently seen chromecast devices.
+     */
+    public static List<ChromeCast> get() {
+        synchronized (INSTANCE.chromeCasts) {
+            return new ArrayList<ChromeCast>(INSTANCE.chromeCasts);
         }
     }
-
-    private void _stopDiscovery() throws IOException {
-        if (mDNS != null) {
-            mDNS.close();
-            mDNS = null;
-        }
-    }
-
-    @Override
-    public void serviceAdded(ServiceEvent event) {
-        if (event.getInfo() != null) {
-            ChromeCast device = new ChromeCast(mDNS, event.getInfo().getName());
-            add(device);
+    
+    /** Hidden service listener to receive callbacks.
+     * Is hidden to avoid messing with it.
+     */
+    private class MyServiceListener implements ServiceListener {
+        @Override
+        public void serviceAdded(ServiceEvent se) {
+        if (se.getInfo() != null) {
+            ChromeCast device = new ChromeCast(mDNS, se.getInfo().getName());
+            synchronized(chromeCasts) {
+                chromeCasts.add(device);
+            }
             for (ChromeCastsListener listener : listeners) {
                 listener.newChromeCastDiscovered(device);
             }
         }
-    }
+        }
 
-    @Override
-    public void serviceRemoved(ServiceEvent event) {
-        if (ChromeCast.SERVICE_TYPE.equals(event.getType())) {
+        @Override
+        public void serviceRemoved(ServiceEvent se) {
+        if (ChromeCast.SERVICE_TYPE.equals(se.getType())) {
             // We have a ChromeCast device unregistering
-            List<ChromeCast> copy = new ArrayList<ChromeCast>(this);
+            List<ChromeCast> copy = list();
             ChromeCast deviceRemoved = null;
             // Probably better keep a map to better lookup devices
             for (ChromeCast device : copy) {
-                if (device.getName().equals(event.getInfo().getName())) {
+                if (device.getName().equals(se.getInfo().getName())) {
                     deviceRemoved = device;
-                    this.remove(device);
+                    synchronized(chromeCasts) {
+                        chromeCasts.remove(device);
+                    }
                     break;
                 }
             }
@@ -85,10 +86,31 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
                 }
             }
         }
+        }
+
+        @Override
+        public void serviceResolved(ServiceEvent se) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
     }
 
-    @Override
-    public void serviceResolved(ServiceEvent event) {
+    private void _startDiscovery(InetAddress addr) throws IOException {
+        if (mDNS == null) {
+            if(addr != null) {
+                mDNS = JmDNS.create(addr);
+            } else {
+                mDNS = JmDNS.create();
+            }            
+            mDNS.addServiceListener(ChromeCast.SERVICE_TYPE, listener);
+        }
+    }
+
+    private void _stopDiscovery() throws IOException {
+        if (mDNS != null) {
+            mDNS.close();
+            mDNS = null;
+        }
     }
 
     /**
@@ -130,13 +152,6 @@ public class ChromeCasts extends ArrayList<ChromeCast> implements ServiceListene
     public static void restartDiscovery(InetAddress addr) throws IOException {
         stopDiscovery();
         startDiscovery(addr);
-    }
-
-    /**
-     * @return singleton container holding all discovered devices
-     */
-    public static ChromeCasts get() {
-        return INSTANCE;
     }
 
     public static void registerListener(ChromeCastsListener listener) {
