@@ -68,7 +68,7 @@ public class ChromeCasts {
         public void serviceRemoved(ServiceEvent se) {
         if (ChromeCast.SERVICE_TYPE.equals(se.getType())) {
             // We have a ChromeCast device unregistering
-            List<ChromeCast> copy = list();
+            List<ChromeCast> copy = get();
             ChromeCast deviceRemoved = null;
             // Probably better keep a map to better lookup devices
             for (ChromeCast device : copy) {
