@@ -21,6 +21,7 @@ import javax.jmdns.ServiceListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,18 +34,17 @@ public class ChromeCasts {
     private JmDNS mDNS;
 
     private final List<ChromeCastsListener> listeners = new ArrayList<ChromeCastsListener>();
-    private final List<ChromeCast> chromeCasts = new ArrayList<ChromeCast>();
+    private final List<ChromeCast> chromeCasts;
     
     private ChromeCasts() {
+        chromeCasts = Collections.synchronizedList(new ArrayList<ChromeCast>());
     }
     
     /** Returns a copy of the currently seen chrome casts.
      * @return a copy of the currently seen chromecast devices.
      */
     public static List<ChromeCast> get() {
-        synchronized (INSTANCE.chromeCasts) {
-            return new ArrayList<ChromeCast>(INSTANCE.chromeCasts);
-        }
+        return new ArrayList<ChromeCast>(INSTANCE.chromeCasts);
     }
     
     /** Hidden service listener to receive callbacks.
@@ -55,9 +55,7 @@ public class ChromeCasts {
         public void serviceAdded(ServiceEvent se) {
         if (se.getInfo() != null) {
             ChromeCast device = new ChromeCast(mDNS, se.getInfo().getName());
-            synchronized(chromeCasts) {
-                chromeCasts.add(device);
-            }
+            chromeCasts.add(device);
             for (ChromeCastsListener listener : listeners) {
                 listener.newChromeCastDiscovered(device);
             }
@@ -74,9 +72,7 @@ public class ChromeCasts {
             for (ChromeCast device : copy) {
                 if (device.getName().equals(se.getInfo().getName())) {
                     deviceRemoved = device;
-                    synchronized(chromeCasts) {
-                        chromeCasts.remove(device);
-                    }
+                    chromeCasts.remove(device);
                     break;
                 }
             }
@@ -90,7 +86,7 @@ public class ChromeCasts {
 
         @Override
         public void serviceResolved(ServiceEvent se) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // intentionally blank
         }
         
     }
