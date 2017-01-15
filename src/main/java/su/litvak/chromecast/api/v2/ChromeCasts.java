@@ -88,7 +88,6 @@ public class ChromeCasts {
         public void serviceResolved(ServiceEvent se) {
             // intentionally blank
         }
-        
     }
 
     private void _startDiscovery(InetAddress addr) throws IOException {
