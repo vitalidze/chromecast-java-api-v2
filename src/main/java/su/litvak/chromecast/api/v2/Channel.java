@@ -88,7 +88,7 @@ class Channel implements Closeable {
     /**
      * Processors of requests by their identifiers
      */
-    private Map<Long, ResultProcessor<?>> requests = new ConcurrentHashMap<Long, ResultProcessor<?>>();
+    private final Map<Long, ResultProcessor<? extends Response>> requests = new ConcurrentHashMap<Long, ResultProcessor<? extends Response>>();
     /**
      * Single mapper object for marshalling JSON
      */
@@ -148,7 +148,7 @@ class Channel implements Closeable {
                         } else {
                             if (parsed.has("requestId")) {
                                 Long requestId = parsed.get("requestId").asLong();
-                                ResultProcessor<?> rp = requests.remove(requestId);
+                                final ResultProcessor<? extends Response> rp = requests.remove(requestId);
                                 if (rp != null) {
                                     rp.put(jsonMSG);
                                 } else {
