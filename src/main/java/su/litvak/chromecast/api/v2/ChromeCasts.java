@@ -34,10 +34,9 @@ public class ChromeCasts {
     private JmDNS mDNS;
 
     private final List<ChromeCastsListener> listeners = new ArrayList<ChromeCastsListener>();
-    private final List<ChromeCast> chromeCasts;
+    private final List<ChromeCast> chromeCasts = Collections.synchronizedList(new ArrayList<ChromeCast>());
     
     private ChromeCasts() {
-        chromeCasts = Collections.synchronizedList(new ArrayList<ChromeCast>());
     }
     
     /** Returns a copy of the currently seen chrome casts.
