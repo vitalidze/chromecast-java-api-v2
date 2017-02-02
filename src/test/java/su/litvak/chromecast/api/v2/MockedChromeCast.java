@@ -16,6 +16,7 @@
 package su.litvak.chromecast.api.v2;
 
 import com.google.protobuf.MessageLite;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -30,11 +31,19 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.*;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class MockedChromeCast {
     final ServerSocket socket;
     final ClientThread clientThread;
+    List<Application> runningApplications = new ArrayList<Application>();
+    CustomHandler customHandler;
+
+    interface CustomHandler {
+        Response handle(JsonNode json);
+    }
 
     MockedChromeCast() throws IOException, GeneralSecurityException {
         SSLContext sc = SSLContext.getInstance("SSL");
@@ -88,6 +97,11 @@ public class MockedChromeCast {
 
             if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.BINARY) {
                 MessageLite response = handleBinary(CastChannel.DeviceAuthMessage.parseFrom(message.getPayloadBinary()));
+                System.out.println("Sending response message: ");
+                System.out.println("   sourceId: " + message.getDestinationId());
+                System.out.println("   destinationId: " + message.getSourceId());
+                System.out.println("   namespace: " + message.getNamespace());
+                System.out.println("   payloadType: " + CastChannel.CastMessage.PayloadType.BINARY);
                 write(clientSocket,
                         CastChannel.CastMessage.newBuilder()
                                 .setProtocolVersion(message.getProtocolVersion())
@@ -98,14 +112,26 @@ public class MockedChromeCast {
                                 .setPayloadBinary(response.toByteString())
                                 .build());
             } else {
-                StandardMessage json = jsonMapper.readValue(message.getPayloadUtf8(), StandardMessage.class);
-                StandardResponse response = handleJSON(json);
+                JsonNode json = jsonMapper.readTree(message.getPayloadUtf8());
+                Response response = null;
+                if (json.has("type")) {
+                    StandardMessage standardMessage = jsonMapper.readValue(message.getPayloadUtf8(), StandardMessage.class);
+                    response = handleJSON(standardMessage);
+                } else {
+                    response = handleCustom(json);
+                }
+
                 if (response != null) {
-                    if (json instanceof Request) {
-                        Request request = (Request) json;
-                        response.requestId = request.getRequestId();
+                    if (json.has("requestId")) {
+                        response.setRequestId(json.get("requestId").asLong());
                     }
 
+                    System.out.println("Sending response message: ");
+                    System.out.println("   sourceId: " + message.getDestinationId());
+                    System.out.println("   destinationId: " + message.getSourceId());
+                    System.out.println("   namespace: " + message.getNamespace());
+                    System.out.println("   payloadType: " + CastChannel.CastMessage.PayloadType.STRING);
+                    System.out.println("   payload: " + jsonMapper.writeValueAsString(response));
                     write(clientSocket,
                             CastChannel.CastMessage.newBuilder()
                                     .setProtocolVersion(message.getProtocolVersion())
@@ -123,15 +149,33 @@ public class MockedChromeCast {
             return message;
         }
 
-        StandardResponse handleJSON(Message message) {
+        Response handleJSON(Message message) {
             if (message instanceof StandardMessage.Ping) {
                 return new StandardResponse.Pong();
             } else if (message instanceof StandardRequest.Status) {
-                Status status = new Status(new Volume(1f, false, Volume.default_increment,
-                        Volume.default_increment.doubleValue(), Volume.default_controlType), Collections.<Application>emptyList(), false, true);
-                return new StandardResponse.Status(status);
+                return new StandardResponse.Status(status());
+            } else if (message instanceof StandardRequest.Launch) {
+                StandardRequest.Launch launch = (StandardRequest.Launch) message;
+                runningApplications.add(new Application(launch.appId, launch.appId, "SESSION_ID", "", false, "", Collections.<Namespace>emptyList()));
+                StandardResponse response = new StandardResponse.Status(status());
+                response.setRequestId(launch.getRequestId());
+                return response;
             }
             return null;
+        }
+
+        Status status() {
+            return new Status(new Volume(1f, false, Volume.default_increment,
+                        Volume.default_increment.doubleValue(), Volume.default_controlType), runningApplications, false, true);
+        }
+
+        Response handleCustom(JsonNode json) {
+            if (customHandler == null) {
+                System.out.println("No custom handler set");
+                return null;
+            } else {
+                return customHandler.handle(json);
+            }
         }
 
         CastChannel.CastMessage read(Socket socket) throws IOException {

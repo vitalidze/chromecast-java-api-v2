@@ -50,7 +50,7 @@ abstract class StandardRequest extends StandardMessage implements Request {
         @JsonProperty
         final String appId;
 
-        Launch(String appId) {
+        Launch(@JsonProperty("appId") String appId) {
             this.appId = appId;
         }
     }

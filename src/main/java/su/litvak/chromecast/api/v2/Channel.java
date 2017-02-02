@@ -197,7 +197,7 @@ class Channel implements Closeable {
                     }
                 }
             }
-            return true;
+            return parsed == null || !parsed.has("requestId");
         }
     }
 
