@@ -32,6 +32,11 @@ public class ChromeCastSpontaneousEvent {
         STATUS(Status.class),
 
         /**
+         * Data type will be {@link Close}.
+         */
+        CLOSE(Close.class),
+
+        /**
          * Data type will be {@link AppEvent}.
          */
         APPEVENT(AppEvent.class),

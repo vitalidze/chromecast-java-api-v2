@@ -129,6 +129,19 @@ public class EventListenerHolderTest {
     }
 
     @Test
+    public void itHandlesCloseBySenderEvent () throws Exception {
+        StandardResponse.Close ev = new StandardResponse.Close(true);
+        this.underTest.deliverEvent(jsonMapper.valueToTree(ev));
+
+        ChromeCastSpontaneousEvent event = emittedEvents.get(0);
+
+        assertEquals(SpontaneousEventType.CLOSE, event.getType());
+        assertEquals(true, event.getData(Close.class).requestedBySender);
+
+        assertEquals(1, emittedEvents.size());
+    }
+
+    @Test
     public void itHandlesPlainAppEvent () throws Exception {
         final String NAMESPACE = "urn:x-cast:com.example.app";
         final String MESSAGE = "Sample message";

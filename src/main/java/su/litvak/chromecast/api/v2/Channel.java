@@ -23,6 +23,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +102,10 @@ class Channel implements Closeable {
      * Indicates that this channel was closed (explicitly, by remote host or for some connectivity issue)
      */
     private volatile boolean closed;
+    /**
+     * Indicates whether an app stop was requested
+     */
+    private volatile boolean stopRequested;
 
     private class PingThread extends TimerTask {
         @Override
@@ -161,8 +166,20 @@ class Channel implements Closeable {
                                         LOG.warn("Unable to process request ID = {}, data: {}", requestId, jsonMSG);
                                     }
                                 }
-                            } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
+                            } else if (message.getNamespace().equals("urn:x-cast:com.google.cast.tp.heartbeat")
+                                    && parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
                                 write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
+                            } else if (message.getNamespace().equals("urn:x-cast:com.google.cast.tp.connection")
+                                    && parsed.has("responseType") && parsed.get("responseType").asText().equals("CLOSE")) {
+                                // Determine whether the close event was requested by this sender
+                                ((ObjectNode) parsed).put("requestedBySender", stopRequested);
+                                notifyListenersOfSpontaneousEvent(parsed);
+                                if (!stopRequested) {
+                                    try {
+                                        close();
+                                    } catch (IOException e) {
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -426,8 +443,13 @@ class Channel implements Closeable {
     }
 
     public Status stop(String sessionId) throws IOException {
-        StandardResponse.Status status = sendStandard("urn:x-cast:com.google.cast.receiver", StandardRequest.stop(sessionId), DEFAULT_RECEIVER_ID);
-        return status == null ? null : status.status;
+        stopRequested = true;
+        try {
+            StandardResponse.Status status = sendStandard("urn:x-cast:com.google.cast.receiver", StandardRequest.stop(sessionId), DEFAULT_RECEIVER_ID);
+            return status == null ? null : status.status;
+        } finally {
+            stopRequested = false;
+        }
     }
 
     private void startSession(String destinationId) throws IOException {
