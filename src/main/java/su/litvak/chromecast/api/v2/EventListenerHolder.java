@@ -43,6 +43,10 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener {
 		}
 	}
 
+	public void deliverEventConnectionStatus(final boolean connected) {
+		spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.CONNECTION_STATUS, connected));
+	}
+
 	public void deliverEvent (final JsonNode json) throws IOException {
 		if (json == null) return;
 		if (this.eventListeners.size() < 1) return;

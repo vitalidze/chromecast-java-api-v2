@@ -22,6 +22,11 @@ public class ChromeCastSpontaneousEvent {
     public enum SpontaneousEventType {
 
         /**
+         * Data type will be {@link Boolean}.
+         */
+        CONNECTION_STATUS(Boolean.class),
+
+        /**
          * Data type will be {@link MediaStatus}.
          */
         MEDIA_STATUS(MediaStatus.class),
