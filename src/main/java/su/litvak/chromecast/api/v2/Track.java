@@ -18,15 +18,17 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * Track meta data information
+ * Track meta data information.
  *
- * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.Track">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.Track</a>
+ * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.Track">
+ *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.Track</a>
  */
 public class Track {
     /**
-     * Media track type
+     * Media track type.
      *
-     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.TrackType">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.TrackType</a>
+     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.TrackType">
+     *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.TrackType</a>
      */
     public enum TrackType { TEXT, AUDIO, VIDEO }
 
@@ -40,7 +42,7 @@ public class Track {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format("Track{id: %d, type: %s}", this.id, this.type);
     }
 }

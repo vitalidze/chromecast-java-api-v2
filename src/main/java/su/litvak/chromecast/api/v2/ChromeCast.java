@@ -171,16 +171,16 @@ public class ChromeCast {
      * @param level volume level from 0 to 1 to set
      */
     public void setVolume(float level) throws IOException {
-        channel.setVolume(new Volume(level, false, Volume.default_increment,
-        Volume.default_increment.doubleValue(), Volume.default_controlType));
+        channel.setVolume(new Volume(level, false, Volume.DEFAULT_INCREMENT,
+        Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE));
     }
 
     /**
      * @param muted is to mute or not
      */
     public void setMuted(boolean muted) throws IOException {
-        channel.setVolume(new Volume(null, muted, Volume.default_increment,
-        Volume.default_increment.doubleValue(), Volume.default_controlType));
+        channel.setVolume(new Volume(null, muted, Volume.DEFAULT_INCREMENT,
+        Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE));
     }
 
     /**

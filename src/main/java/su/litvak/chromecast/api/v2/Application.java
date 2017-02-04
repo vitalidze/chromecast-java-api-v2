@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Application descriptor
+ * Application descriptor.
  */
 public class Application {
     public final String id;
@@ -50,11 +50,13 @@ public class Application {
     }
 
     @Override
-    public String toString() {
-        final String namespaces = this.namespaces == null ? "<null>" : Arrays.toString(this.namespaces.toArray());
+    public final String toString() {
+        final String namespacesString = this.namespaces == null ? "<null>" : Arrays.toString(this.namespaces.toArray());
 
-        return String.format("Application{id: %s, name: %s, sessionId: %s, statusText: %s, transportId: %s, isIdleScreen: %b, namespaces: %s}",
-                this.id, this.name, this.sessionId, this.statusText, this.transportId, this.isIdleScreen, namespaces);
+        return String.format("Application{id: %s, name: %s, sessionId: %s, statusText: %s, transportId: %s,"
+                        + " isIdleScreen: %b, namespaces: %s}",
+            this.id, this.name, this.sessionId, this.statusText, this.transportId,
+                this.isIdleScreen, namespacesString);
     }
 
 }

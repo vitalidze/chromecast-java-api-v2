@@ -71,8 +71,8 @@ public class MediaStatusTest {
         assertEquals(PlayerState.BUFFERING, mediaStatus.playerState);
         assertEquals(RepeatMode.REPEAT_OFF, mediaStatus.repeatMode);
         assertEquals(15, mediaStatus.supportedMediaCommands);
-        assertEquals(new Volume(1f, false, Volume.default_increment,
-                Volume.default_increment.doubleValue(), Volume.default_controlType), mediaStatus.volume);
+        assertEquals(new Volume(1f, false, Volume.DEFAULT_INCREMENT,
+                Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE), mediaStatus.volume);
     }
 
     @Test

@@ -165,8 +165,8 @@ public class MockedChromeCast {
         }
 
         Status status() {
-            return new Status(new Volume(1f, false, Volume.default_increment,
-                        Volume.default_increment.doubleValue(), Volume.default_controlType), runningApplications, false, true);
+            return new Status(new Volume(1f, false, Volume.DEFAULT_INCREMENT,
+                        Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE), runningApplications, false, true);
         }
 
         Response handleCustom(JsonNode json) {

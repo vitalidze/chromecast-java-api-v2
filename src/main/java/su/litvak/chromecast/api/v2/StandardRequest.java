@@ -20,7 +20,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import java.util.Map;
 
 /**
- * Parent class for transport object representing messages sent TO ChromeCast device
+ * Parent class for transport object representing messages sent TO ChromeCast device.
  */
 abstract class StandardRequest extends StandardMessage implements Request {
     Long requestId;
@@ -35,8 +35,14 @@ abstract class StandardRequest extends StandardMessage implements Request {
         return requestId;
     }
 
+    /**
+     * Request for current status of ChromeCast device.
+     */
     static class Status extends StandardRequest {}
 
+    /**
+     * Request for availability of applications with specified identifiers.
+     */
     static class AppAvailability extends StandardRequest {
         @JsonProperty
         final String[] appId;
@@ -46,6 +52,9 @@ abstract class StandardRequest extends StandardMessage implements Request {
         }
     }
 
+    /**
+     * Request to launch application with specified identifiers.
+     */
     static class Launch extends StandardRequest {
         @JsonProperty
         final String appId;
@@ -55,6 +64,9 @@ abstract class StandardRequest extends StandardMessage implements Request {
         }
     }
 
+    /**
+     * Request to stop currently running application.
+     */
     static class Stop extends StandardRequest {
         @JsonProperty
         final String sessionId;
@@ -64,6 +76,9 @@ abstract class StandardRequest extends StandardMessage implements Request {
         }
     }
 
+    /**
+     * Request to load media.
+     */
     static class Load extends StandardRequest {
         @JsonProperty
         final String sessionId;
@@ -76,7 +91,8 @@ abstract class StandardRequest extends StandardMessage implements Request {
         @JsonProperty
         final Object customData;
 
-        Load(String sessionId, Media media, boolean autoplay, double currentTime, final Map<String, String> customData) {
+        Load(String sessionId, Media media, boolean autoplay, double currentTime,
+             final Map<String, String> customData) {
             this.sessionId = sessionId;
             this.media = media;
             this.autoplay = autoplay;
@@ -89,6 +105,9 @@ abstract class StandardRequest extends StandardMessage implements Request {
         }
     }
 
+    /**
+     * Abstract request for an action with currently played media.
+     */
     abstract static class MediaRequest extends StandardRequest {
         @JsonProperty
         final long mediaSessionId;
@@ -101,18 +120,27 @@ abstract class StandardRequest extends StandardMessage implements Request {
         }
     }
 
+    /**
+     * Request to start/resume playback.
+     */
     static class Play extends MediaRequest {
         Play(long mediaSessionId, String sessionId) {
             super(mediaSessionId, sessionId);
         }
     }
 
+    /**
+     * Request to pause playback.
+     */
     static class Pause extends MediaRequest {
         Pause(long mediaSessionId, String sessionId) {
             super(mediaSessionId, sessionId);
         }
     }
 
+    /**
+     * Request to change current playback position.
+     */
     static class Seek extends MediaRequest {
         @JsonProperty
         final double currentTime;
@@ -123,6 +151,9 @@ abstract class StandardRequest extends StandardMessage implements Request {
         }
     }
 
+    /**
+     * Request to change volume.
+     */
     static class SetVolume extends StandardRequest {
         @JsonProperty
         final Volume volume;
@@ -148,7 +179,8 @@ abstract class StandardRequest extends StandardMessage implements Request {
         return new Stop(sessionId);
     }
 
-    static Load load(String sessionId, Media media, boolean autoplay, double currentTime, Map<String, String> customData) {
+    static Load load(String sessionId, Media media, boolean autoplay, double currentTime,
+                     Map<String, String> customData) {
         return new Load(sessionId, media, autoplay, currentTime, customData);
     }
 

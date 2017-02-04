@@ -17,6 +17,9 @@ package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Namespace of the ChromeCast application.
+ */
 public class Namespace {
     final String name;
 
@@ -25,7 +28,7 @@ public class Namespace {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format("Namespace{%s}", this.name);
     }
 

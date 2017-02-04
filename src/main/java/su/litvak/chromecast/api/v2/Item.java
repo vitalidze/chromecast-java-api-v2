@@ -21,6 +21,9 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Media item.
+ */
 public class Item {
 
     public final boolean autoplay;
@@ -28,7 +31,7 @@ public class Item {
     public final Media media;
     public final long id;
 
-    public Item (@JsonProperty("autoplay") boolean autoplay,
+    public Item(@JsonProperty("autoplay") boolean autoplay,
             @JsonProperty("customData") Map<String, Object> customData,
             @JsonProperty("itemId") long id,
             @JsonProperty("media") Media media) {
@@ -39,24 +42,30 @@ public class Item {
     }
 
     @Override
-    public int hashCode () {
-        return Arrays.hashCode(new Object[] { this.autoplay, this.customData, this.id, this.media });
+    public final int hashCode() {
+        return Arrays.hashCode(new Object[] {this.autoplay, this.customData, this.id, this.media});
     }
 
     @Override
-    public boolean equals (final Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (!(obj instanceof Item)) return false;
+    public final boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Item)) {
+            return false;
+        }
         final Item that = (Item) obj;
-        return this.autoplay == that.autoplay &&
-                this.customData == null ? that.customData == null : this.customData.equals(that.customData) &&
-                this.id == that.id &&
-                this.media == null ? that.media == null : this.media.equals(that.media);
+        return this.autoplay == that.autoplay
+                && this.customData == null ? that.customData == null : this.customData.equals(that.customData)
+                && this.id == that.id
+                && this.media == null ? that.media == null : this.media.equals(that.media);
     }
 
     @Override
-    public String toString () {
+    public final String toString() {
         return String.format("Item{id: %s, media: %s}", this.id, this.media);
     }
 

@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Current ChromeCast device status
+ * Current ChromeCast device status.
  */
 public class Status {
     public final Volume volume;
@@ -42,19 +42,21 @@ public class Status {
     }
 
     @JsonIgnore
-    public Application getRunningApp() {
+    public final Application getRunningApp() {
         return applications.isEmpty() ? null : applications.get(0);
     }
 
-    public boolean isAppRunning(String appId) {
+    public final boolean isAppRunning(String appId) {
         return getRunningApp() != null && getRunningApp().id.equals(appId);
     }
 
     @Override
-    public String toString() {
-        final String applications = this.applications == null ? "<null>" : Arrays.toString(this.applications.toArray());
+    public final String toString() {
+        final String applicationsString = this.applications == null
+                ? "<null>"
+                : Arrays.toString(this.applications.toArray());
 
         return String.format("Media{volume: %s, applications: %s, activeInput: %b, standBy; %b}",
-                this.volume, applications, this.activeInput, this.standBy);
+                this.volume, applicationsString, this.activeInput, this.standBy);
     }
 }

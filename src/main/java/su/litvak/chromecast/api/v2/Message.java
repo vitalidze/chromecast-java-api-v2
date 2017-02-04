@@ -15,5 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
+/**
+ * Generic message used in exchange with the ChromeCast device.
+ */
 public interface Message {
 }

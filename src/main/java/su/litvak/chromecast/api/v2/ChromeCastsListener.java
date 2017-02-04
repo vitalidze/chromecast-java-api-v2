@@ -15,10 +15,13 @@
  */
 package su.litvak.chromecast.api.v2;
 
+/**
+ * The listener interface for discovering ChromeCast devices.
+ */
 public interface ChromeCastsListener {
 
-    public void newChromeCastDiscovered(ChromeCast chromeCast);
+    void newChromeCastDiscovered(ChromeCast chromeCast);
 
-    public void chromeCastRemoved(ChromeCast chromecast);
+    void chromeCastRemoved(ChromeCast chromecast);
 
 }

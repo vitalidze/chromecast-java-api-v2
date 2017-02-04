@@ -24,19 +24,21 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.annotate.JsonIgnore;
 /**
- * Media streamed on ChromeCast device
+ * Media streamed on ChromeCast device.
  *
- * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation</a>
+ * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation">
+ *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation</a>
  */
 public class Media {
 
     /**
-     * <p>Stream type</p>
+     * <p>Stream type.</p>
      *
      * <p>Some receivers use upper-case (like Pandora), some use lower-case (like Google Audio),
-     * duplicate elements to support both</p>
+     * duplicate elements to support both.</p>
      *
-     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType</a>
+     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType">
+     *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.StreamType</a>
      */
     public enum StreamType {
         BUFFERED, buffered,
@@ -99,25 +101,32 @@ public class Media {
     }
 
     @Override
-    public int hashCode () {
-        return Arrays.hashCode(new Object[] { this.url, this.contentType, this.streamType, this.duration });
+    public final int hashCode() {
+        return Arrays.hashCode(new Object[] {this.url, this.contentType, this.streamType, this.duration});
     }
 
     @Override
-    public boolean equals (final Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (!(obj instanceof Media)) return false;
+    public final boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Media)) {
+            return false;
+        }
         final Media that = (Media) obj;
-        return this.url == null ? that.url == null : this.url.equals(that.url) &&
-                this.contentType == null ? that.contentType == null : this.contentType.equals(that.contentType) &&
-                this.streamType == null ? that.streamType == null : this.streamType.equals(that.streamType) &&
-                this.duration == null ? that.duration == null : this.duration.equals(that.duration);
+        return this.url == null ? that.url == null : this.url.equals(that.url)
+                && this.contentType == null ? that.contentType == null : this.contentType.equals(that.contentType)
+                && this.streamType == null ? that.streamType == null : this.streamType.equals(that.streamType)
+                && this.duration == null ? that.duration == null : this.duration.equals(that.duration);
     }
 
     @Override
-    public String toString () {
-        return String.format("Media{url: %s, contentType: %s, duration: %s}", this.url, this.contentType, this.duration);
+    public final String toString() {
+        return String.format("Media{url: %s, contentType: %s, duration: %s}",
+                this.url, this.contentType, this.duration);
     }
 
 }

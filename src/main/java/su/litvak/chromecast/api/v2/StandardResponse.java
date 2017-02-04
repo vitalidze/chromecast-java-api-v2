@@ -22,9 +22,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import java.util.Map;
 
 /**
- * Parent class for transport object representing messages received FROM ChromeCast device
+ * Parent class for transport object representing messages received FROM ChromeCast device.
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property = "responseType")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "responseType")
 @JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = StandardResponse.Ping.class),
                @JsonSubTypes.Type(name = "PONG", value = StandardResponse.Pong.class),
                @JsonSubTypes.Type(name = "RECEIVER_STATUS", value = StandardResponse.Status.class),
@@ -47,11 +47,29 @@ abstract class StandardResponse implements Response {
         this.requestId = requestId;
     }
 
+    /**
+     * Request to send 'Pong' message in reply.
+     */
     static class Ping extends StandardResponse {}
+
+    /**
+     * Response in reply to 'Ping' message.
+     */
     static class Pong extends StandardResponse {}
+
+    /**
+     * Request to 'Close' connection.
+     */
     static class Close extends StandardResponse {}
+
+    /**
+     * Identifies that loading of media has failed.
+     */
     static class LoadFailed extends StandardResponse {}
 
+    /**
+     * Request was invalid for some <code>reason</code>.
+     */
     static class Invalid extends StandardResponse {
         final String reason;
 
@@ -60,6 +78,9 @@ abstract class StandardResponse implements Response {
         }
     }
 
+    /**
+     * Application cannot be launched for some <code>reason</code>.
+     */
     static class LaunchError extends StandardResponse {
         final String reason;
 
@@ -68,6 +89,9 @@ abstract class StandardResponse implements Response {
         }
     }
 
+    /**
+     * Response to "Status" request.
+     */
     static class Status extends StandardResponse {
         @JsonProperty
         final su.litvak.chromecast.api.v2.Status status;
@@ -77,14 +101,20 @@ abstract class StandardResponse implements Response {
         }
     }
 
+    /**
+     * Response to "MediaStatus" request.
+     */
     static class MediaStatus extends StandardResponse {
-        final su.litvak.chromecast.api.v2.MediaStatus statuses[];
+        final su.litvak.chromecast.api.v2.MediaStatus[] statuses;
 
-        MediaStatus(@JsonProperty("status") su.litvak.chromecast.api.v2.MediaStatus status[]) {
-            this.statuses = status;
+        MediaStatus(@JsonProperty("status") su.litvak.chromecast.api.v2.MediaStatus... statuses) {
+            this.statuses = statuses;
         }
     }
 
+    /**
+     * Response to "AppAvailability" request.
+     */
     static class AppAvailability extends StandardResponse {
         @JsonProperty
         Map<String, String> availability;

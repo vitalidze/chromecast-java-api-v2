@@ -25,18 +25,21 @@ import org.codehaus.jackson.annotate.JsonProperty;
 /**
  * Current media player status - which media is played, volume, time position, etc.
  *
- * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaStatus">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaStatus</a>
+ * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaStatus">
+ *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaStatus</a>
  */
 public class MediaStatus {
     /**
-     * Playback status
+     * Playback status.
      *
-     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.PlayerState">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.PlayerState</a>
+     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.PlayerState">
+     *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.PlayerState</a>
      */
     public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
 
     /**
-     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode</a>
+     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode">
+     *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode</a>
      */
     public enum RepeatMode { REPEAT_OFF, REPEAT_ALL, REPEAT_SINGLE, REPEAT_ALL_AND_SHUFFLE }
 
@@ -45,7 +48,8 @@ public class MediaStatus {
      *
      * <p>Pandora is known to use 'COMPLETED' when the app timesout</p>
      *
-     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason">https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason</a>
+     * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason">
+     *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason</a>
      */
     public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR, COMPLETED}
 
@@ -98,16 +102,23 @@ public class MediaStatus {
     }
 
     @Override
-    public String toString() {
-        final String activeTrackIds = this.activeTrackIds == null ? "<null>" : Arrays.toString(this.activeTrackIds.toArray());
-        final String items = this.items == null ? "<null>" : Arrays.toString(this.items.toArray());
-        final String customData = this.customData == null ? "<null>" : Arrays.toString(this.customData.keySet().toArray());
+    public final String toString() {
+        String activeTrackIdsString = this.activeTrackIds == null
+                ? "<null>"
+                : Arrays.toString(this.activeTrackIds.toArray());
+        String itemsString = this.items == null
+                ? "<null>"
+                : Arrays.toString(this.items.toArray());
+        String customDataString = this.customData == null
+                ? "<null>"
+                : Arrays.toString(this.customData.keySet().toArray());
 
-        return String.format("MediaStatus{activeTrackIds: %s, mediaSessionId: %d, playbackRate: %d, playerState: %s, currentItemId: %s, "
-                + "currentTime: %f, customData: %s, loadingItemId: %s, items: %s, preloadedItemId: %s, supportedMediaCommands: %d, "
-                + "volume: %s, media: %s, repeatMode: %s, idleReason: %s}",
-                activeTrackIds, this.mediaSessionId, this.playbackRate, this.playerState, this.currentItemId,
-                this.currentTime, customData, this.loadingItemId, items, this.preloadedItemId,
+        return String.format("MediaStatus{activeTrackIds: %s, mediaSessionId: %d, playbackRate: %d, playerState: %s,"
+                        + " currentItemId: %s, currentTime: %f, customData: %s, loadingItemId: %s, items: %s,"
+                        + " preloadedItemId: %s, supportedMediaCommands: %d, volume: %s, media: %s, repeatMode: %s,"
+                        + " idleReason: %s}",
+                activeTrackIdsString, this.mediaSessionId, this.playbackRate, this.playerState, this.currentItemId,
+                this.currentTime, customDataString, this.loadingItemId, itemsString, this.preloadedItemId,
                 this.supportedMediaCommands, this.volume, this.media, this.repeatMode, this.idleReason);
     }
 

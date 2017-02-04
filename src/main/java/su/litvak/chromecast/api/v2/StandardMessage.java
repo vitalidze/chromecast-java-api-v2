@@ -21,9 +21,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
- * Parent class for transport objects used to communicate with ChromeCast
+ * Parent class for transport objects used to communicate with ChromeCast.
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(name = "PING", value = StandardMessage.Ping.class),
                @JsonSubTypes.Type(name = "PONG", value = StandardMessage.Pong.class),
                @JsonSubTypes.Type(name = "CONNECT", value = StandardMessage.Connect.class),
@@ -37,12 +37,25 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
                @JsonSubTypes.Type(name = "SET_VOLUME", value = StandardRequest.SetVolume.class),
                @JsonSubTypes.Type(name = "SEEK", value = StandardRequest.Seek.class)})
 abstract class StandardMessage implements Message {
+    /**
+     * Simple "Ping" message to request a reply with "Pong" message.
+     */
     static class Ping extends StandardMessage {}
+
+    /**
+     * Simple "Pong" message to reply to "Ping" message.
+     */
     static class Pong extends StandardMessage {}
 
+    /**
+     * Some "Origin" required to be sent with the "Connect" request.
+     */
     @JsonSerialize
     static class Origin {}
 
+    /**
+     * Used to initiate connection with the ChromeCast device.
+     */
     static class Connect extends StandardMessage {
         @JsonProperty
         final Origin origin = new Origin();

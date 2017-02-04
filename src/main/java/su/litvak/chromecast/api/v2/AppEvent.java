@@ -32,7 +32,7 @@ public class AppEvent {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format("AppEvent{namespace: %s, message: %s}", this.namespace, this.message);
     }
 }

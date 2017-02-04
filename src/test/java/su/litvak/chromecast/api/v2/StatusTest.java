@@ -42,8 +42,8 @@ public class StatusTest {
         assertEquals(1.0, volume.level, 0.1);
         assertFalse(volume.muted);
         assertNull(volume.controlType);
-        assertEquals(Volume.default_increment, volume.increment, 0.001);
-        assertEquals(Volume.default_increment, volume.stepInterval, 0.001);
+        assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
+        assertEquals(Volume.DEFAULT_INCREMENT, volume.stepInterval, 0.001);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class StatusTest {
         assertEquals(1.0, volume.level, 0.1);
         assertFalse(volume.muted);
         assertEquals("attenuation", volume.controlType);
-        assertEquals(Volume.default_increment, volume.increment, 0.001);
+        assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
         assertEquals(0.04, volume.stepInterval, 0.001);
     }
 
@@ -88,7 +88,7 @@ public class StatusTest {
         assertEquals(1.0, volume.level, 0.1);
         assertFalse(volume.muted);
         assertEquals("attenuation", volume.controlType);
-        assertEquals(Volume.default_increment, volume.increment, 0.001);
+        assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
         assertEquals(0.04, volume.stepInterval, 0.001);
     }
 }

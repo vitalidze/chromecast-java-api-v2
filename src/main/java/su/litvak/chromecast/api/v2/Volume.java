@@ -22,11 +22,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
- * Volume settings
+ * Volume settings.
  */
 public class Volume {
-    final static Float default_increment = 0.05f;
-    final static String default_controlType = "attenuation";
+    static final Float DEFAULT_INCREMENT = 0.05f;
+    static final String DEFAULT_CONTROL_TYPE = "attenuation";
     @JsonProperty
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public final Float level;
@@ -43,9 +43,9 @@ public class Volume {
     public Volume() {
         level = new Float(-1);
         muted = false;
-        increment = default_increment;
-        stepInterval = default_increment.doubleValue();
-        controlType = default_controlType;
+        increment = DEFAULT_INCREMENT;
+        stepInterval = DEFAULT_INCREMENT.doubleValue();
+        controlType = DEFAULT_CONTROL_TYPE;
     }
 
     public Volume(@JsonProperty("level") Float level,
@@ -59,37 +59,43 @@ public class Volume {
         if (increment != null && increment > 0f) {
             this.increment = increment;
         } else {
-            this.increment = default_increment;
+            this.increment = DEFAULT_INCREMENT;
         }
-        if(stepInterval!=null && stepInterval > 0d) {
+        if (stepInterval != null && stepInterval > 0d) {
             this.stepInterval = stepInterval;
         } else {
-            this.stepInterval = default_increment.doubleValue();
+            this.stepInterval = DEFAULT_INCREMENT.doubleValue();
         }
         this.controlType = controlType;
     }
 
     @Override
-    public int hashCode () {
+    public final int hashCode() {
         return Arrays.hashCode(new Object[]{this.level, this.muted, this.increment,
             this.stepInterval, this.controlType});
     }
 
     @Override
-    public boolean equals (final Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (!(obj instanceof Volume))  return false;
+    public final boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Volume)) {
+            return false;
+        }
         final Volume that = (Volume) obj;
         return this.level == null ? that.level == null : this.level.equals(that.level)
                 && this.muted == that.muted
                 && this.increment == null ? that.increment == null : this.increment.equals(that.increment)
-                        && this.stepInterval == null ? that.stepInterval == null : this.stepInterval.equals(that.stepInterval)
-                        && this.controlType == null ? that.controlType == null : this.controlType.equals(that.controlType);
+                && this.stepInterval == null ? that.stepInterval == null : this.stepInterval.equals(that.stepInterval)
+                && this.controlType == null ? that.controlType == null : this.controlType.equals(that.controlType);
     }
 
     @Override
-    public String toString () {
+    public final String toString() {
         return String.format("Volume{level: %s, muted: %b, increment: %s, stepInterval: %s, controlType: %s}",
                 this.level, this.muted, this.increment, this.stepInterval, this.controlType);
     }

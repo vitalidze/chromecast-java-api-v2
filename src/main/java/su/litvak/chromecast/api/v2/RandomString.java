@@ -18,17 +18,19 @@ package su.litvak.chromecast.api.v2;
 import java.util.Random;
 
 /**
- * Utility class for generating random strings of human-readable characters
+ * Utility class for generating random strings of human-readable characters.
  */
-public class RandomString {
+class RandomString {
     private static char[] symbols;
 
     static {
         StringBuilder tmp = new StringBuilder();
-        for (char ch = '0'; ch <= '9'; ++ch)
+        for (char ch = '0'; ch <= '9'; ++ch) {
             tmp.append(ch);
-        for (char ch = 'a'; ch <= 'z'; ++ch)
+        }
+        for (char ch = 'a'; ch <= 'z'; ++ch) {
             tmp.append(ch);
+        }
         symbols = tmp.toString().toCharArray();
     }
 
@@ -36,15 +38,17 @@ public class RandomString {
 
     private final char[] buf;
 
-    public RandomString(int length) {
-        if (length < 1)
+    RandomString(int length) {
+        if (length < 1) {
             throw new IllegalArgumentException("length < 1: " + length);
+        }
         buf = new char[length];
     }
 
-    public String nextString() {
-        for (int idx = 0; idx < buf.length; ++idx)
+    final String nextString() {
+        for (int idx = 0; idx < buf.length; ++idx) {
             buf[idx] = symbols[random.nextInt(symbols.length)];
+        }
         return new String(buf);
     }
 }

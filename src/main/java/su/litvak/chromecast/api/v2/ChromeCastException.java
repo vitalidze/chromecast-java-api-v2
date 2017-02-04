@@ -17,6 +17,9 @@ package su.litvak.chromecast.api.v2;
 
 import java.io.IOException;
 
+/**
+ * Generic error, which may happen during interaction with ChromeCast device. Contains some descriptive message.
+ */
 public class ChromeCastException extends IOException {
     public ChromeCastException(String message) {
         super(message);

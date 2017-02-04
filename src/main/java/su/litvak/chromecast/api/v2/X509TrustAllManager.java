@@ -19,12 +19,13 @@ import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 
 /**
- * Google Cast's certificate cannot be validated against standard keystore,
- * so use a dummy trust-all manager
+ * Google Cast's certificate cannot be validated against standard keystore, so use a dummy trust-all manager.
  */
 class X509TrustAllManager implements X509TrustManager {
     @Override
-    public X509Certificate[] getAcceptedIssuers() { return null; }
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
+    }
     @Override
     public void checkClientTrusted(X509Certificate[] certs, String authType) {}
     @Override
