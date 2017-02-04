@@ -86,6 +86,21 @@ public class ChromeCast {
     public void setApplication(String application) {
         this.application = application;
     }
+    
+    /** Returns the {@link #channel} and opens it if it's not yet or
+     * no longer open.
+     * @return an open channel.
+     */
+    private Channel channel() throws IOException {
+        if (!isConnected()) {
+            try {
+                connect();
+            } catch (GeneralSecurityException ex) {
+                throw new IOException(ex);
+            }
+        }
+        return channel;
+    }
 
     public synchronized void connect() throws IOException, GeneralSecurityException {
         if (channel == null) {
@@ -111,7 +126,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public Status getStatus() throws IOException {
-        return channel.getStatus();
+        return channel().getStatus();
     }
 
     /**
@@ -129,7 +144,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public boolean isAppAvailable(String appId) throws IOException {
-        return channel.isAppAvailable(appId);
+        return channel().isAppAvailable(appId);
     }
 
     /**
@@ -148,7 +163,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public Application launchApp(String appId) throws IOException {
-        Status status = channel.launch(appId);
+        Status status = channel().launch(appId);
         return status == null ? null : status.getRunningApp();
     }
 
@@ -164,14 +179,14 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        channel.stop(runningApp.sessionId);
+        channel().stop(runningApp.sessionId);
     }
 
     /**
      * @param level volume level from 0 to 1 to set
      */
     public void setVolume(float level) throws IOException {
-        channel.setVolume(new Volume(level, false, Volume.default_increment,
+        channel().setVolume(new Volume(level, false, Volume.default_increment,
         Volume.default_increment.doubleValue(), Volume.default_controlType));
     }
 
@@ -179,7 +194,7 @@ public class ChromeCast {
      * @param muted is to mute or not
      */
     public void setMuted(boolean muted) throws IOException {
-        channel.setVolume(new Volume(null, muted, Volume.default_increment,
+        channel().setVolume(new Volume(null, muted, Volume.default_increment,
         Volume.default_increment.doubleValue(), Volume.default_controlType));
     }
 
@@ -194,7 +209,7 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel.getMediaStatus(runningApp.transportId);
+        return channel().getMediaStatus(runningApp.transportId);
     }
 
     /**
@@ -210,11 +225,11 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        MediaStatus mediaStatus = channel.getMediaStatus(runningApp.transportId);
+        MediaStatus mediaStatus = channel().getMediaStatus(runningApp.transportId);
         if (mediaStatus == null) {
             throw new ChromeCastException("ChromeCast has invalid state to resume media playback");
         }
-        channel.play(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
+        channel().play(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
     }
 
     /**
@@ -230,11 +245,11 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        MediaStatus mediaStatus = channel.getMediaStatus(runningApp.transportId);
+        MediaStatus mediaStatus = channel().getMediaStatus(runningApp.transportId);
         if (mediaStatus == null) {
             throw new ChromeCastException("ChromeCast has invalid state to pause media playback");
         }
-        channel.pause(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
+        channel().pause(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
     }
 
     /**
@@ -251,11 +266,11 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        MediaStatus mediaStatus = channel.getMediaStatus(runningApp.transportId);
+        MediaStatus mediaStatus = channel().getMediaStatus(runningApp.transportId);
         if (mediaStatus == null) {
             throw new ChromeCastException("ChromeCast has invalid state to seek media playback");
         }
-        channel.seek(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId, time);
+        channel().seek(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId, time);
     }
 
     /**
@@ -292,7 +307,7 @@ public class ChromeCast {
         Map<String, Object> metadata = new HashMap<String, Object>(2);
         metadata.put("title", title);
         metadata.put("thumb", thumb);
-        return channel.load(runningApp.transportId, runningApp.sessionId, new Media(url, contentType, null, null, null, metadata, null, null), true, 0d, null);
+        return channel().load(runningApp.transportId, runningApp.sessionId, new Media(url, contentType, null, null, null, metadata, null, null), true, 0d, null);
     }
 
     /**
@@ -310,7 +325,7 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel.load(runningApp.transportId, runningApp.sessionId, media, true, 0d, null);
+        return channel().load(runningApp.transportId, runningApp.sessionId, media, true, 0d, null);
     }
 
     /**
@@ -331,7 +346,7 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel.sendGenericRequest(runningApp.transportId, namespace, request, responseClass);
+        return channel().sendGenericRequest(runningApp.transportId, namespace, request, responseClass);
     }
 
     /**
