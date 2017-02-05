@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class FixtureHelper {
+final class FixtureHelper {
 
-    public static String fixtureAsString(final String res) throws IOException {
+    private FixtureHelper() {
+    }
+
+    static String fixtureAsString(final String res) throws IOException {
         final InputStream is = FixtureHelper.class.getResourceAsStream(res);
         try {
             final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -32,8 +35,7 @@ public class FixtureHelper {
                 sb.append(line).append("\n");
             }
             return sb.toString();
-        }
-        finally {
+        } finally {
             is.close();
         }
     }

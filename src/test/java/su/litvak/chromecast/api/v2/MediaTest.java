@@ -31,7 +31,7 @@ public class MediaTest {
     final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
     @Test
-    public void itIncludesOptionalFieldsWhenSet () throws Exception {
+    public void itIncludesOptionalFieldsWhenSet() throws Exception {
         Map<String, Object> customData = new HashMap<String, Object>();
         customData.put("a", "b");
         Map<String, Object> metadata = new HashMap<String, Object>();
@@ -47,7 +47,7 @@ public class MediaTest {
     }
 
     @Test
-    public void itDoseNotContainOptionalFieldsWhenNotSet () throws Exception {
+    public void itDoseNotContainOptionalFieldsWhenNotSet() throws Exception {
         Media m = new Media(null, null, null, null, null, null, null, null);
 
         String json = jsonMapper.writeValueAsString(m);

@@ -30,12 +30,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MockedChromeCast {
+import su.litvak.chromecast.api.v2.CastChannel.CastMessage;
+import su.litvak.chromecast.api.v2.CastChannel.CastMessage.PayloadType;
+import su.litvak.chromecast.api.v2.CastChannel.DeviceAuthMessage;
+
+final class MockedChromeCast {
     final ServerSocket socket;
     final ClientThread clientThread;
     List<Application> runningApplications = new ArrayList<Application>();
@@ -53,7 +59,7 @@ public class MockedChromeCast {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(keyStore, "changeit".toCharArray());
 
-        sc.init(keyManagerFactory.getKeyManagers(), new TrustManager[] { new X509TrustAllManager() }, new SecureRandom());
+        sc.init(keyManagerFactory.getKeyManagers(), new TrustManager[] {new X509TrustAllManager()}, new SecureRandom());
         socket = sc.getServerSocketFactory().createServerSocket(8009);
 
         clientThread = new ClientThread();
@@ -85,37 +91,38 @@ public class MockedChromeCast {
             }
         }
 
-        void handle(CastChannel.CastMessage message) throws IOException {
+        void handle(CastMessage message) throws IOException {
             System.out.println("Received message: ");
             System.out.println("   sourceId: " + message.getSourceId());
             System.out.println("   destinationId: " + message.getDestinationId());
             System.out.println("   namespace: " + message.getNamespace());
             System.out.println("   payloadType: " + message.getPayloadType());
-            if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
+            if (message.getPayloadType() == PayloadType.STRING) {
                 System.out.println("   payload: " + message.getPayloadUtf8());
             }
 
-            if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.BINARY) {
-                MessageLite response = handleBinary(CastChannel.DeviceAuthMessage.parseFrom(message.getPayloadBinary()));
+            if (message.getPayloadType() == PayloadType.BINARY) {
+                MessageLite response = handleBinary(DeviceAuthMessage.parseFrom(message.getPayloadBinary()));
                 System.out.println("Sending response message: ");
                 System.out.println("   sourceId: " + message.getDestinationId());
                 System.out.println("   destinationId: " + message.getSourceId());
                 System.out.println("   namespace: " + message.getNamespace());
-                System.out.println("   payloadType: " + CastChannel.CastMessage.PayloadType.BINARY);
+                System.out.println("   payloadType: " + PayloadType.BINARY);
                 write(clientSocket,
-                        CastChannel.CastMessage.newBuilder()
+                        CastMessage.newBuilder()
                                 .setProtocolVersion(message.getProtocolVersion())
                                 .setSourceId(message.getDestinationId())
                                 .setDestinationId(message.getSourceId())
                                 .setNamespace(message.getNamespace())
-                                .setPayloadType(CastChannel.CastMessage.PayloadType.BINARY)
+                                .setPayloadType(PayloadType.BINARY)
                                 .setPayloadBinary(response.toByteString())
                                 .build());
             } else {
                 JsonNode json = jsonMapper.readTree(message.getPayloadUtf8());
                 Response response = null;
                 if (json.has("type")) {
-                    StandardMessage standardMessage = jsonMapper.readValue(message.getPayloadUtf8(), StandardMessage.class);
+                    StandardMessage standardMessage = jsonMapper.readValue(message.getPayloadUtf8(),
+                            StandardMessage.class);
                     response = handleJSON(standardMessage);
                 } else {
                     response = handleCustom(json);
@@ -130,22 +137,22 @@ public class MockedChromeCast {
                     System.out.println("   sourceId: " + message.getDestinationId());
                     System.out.println("   destinationId: " + message.getSourceId());
                     System.out.println("   namespace: " + message.getNamespace());
-                    System.out.println("   payloadType: " + CastChannel.CastMessage.PayloadType.STRING);
+                    System.out.println("   payloadType: " + CastMessage.PayloadType.STRING);
                     System.out.println("   payload: " + jsonMapper.writeValueAsString(response));
                     write(clientSocket,
-                            CastChannel.CastMessage.newBuilder()
+                            CastMessage.newBuilder()
                                     .setProtocolVersion(message.getProtocolVersion())
                                     .setSourceId(message.getDestinationId())
                                     .setDestinationId(message.getSourceId())
                                     .setNamespace(message.getNamespace())
-                                    .setPayloadType(CastChannel.CastMessage.PayloadType.STRING)
+                                    .setPayloadType(CastMessage.PayloadType.STRING)
                                     .setPayloadUtf8(jsonMapper.writeValueAsString(response))
                                     .build());
                 }
             }
         }
 
-        MessageLite handleBinary(CastChannel.DeviceAuthMessage message) throws IOException {
+        MessageLite handleBinary(DeviceAuthMessage message) throws IOException {
             return message;
         }
 
@@ -156,7 +163,8 @@ public class MockedChromeCast {
                 return new StandardResponse.Status(status());
             } else if (message instanceof StandardRequest.Launch) {
                 StandardRequest.Launch launch = (StandardRequest.Launch) message;
-                runningApplications.add(new Application(launch.appId, launch.appId, "SESSION_ID", "", false, "", Collections.<Namespace>emptyList()));
+                runningApplications.add(new Application(launch.appId, launch.appId, "SESSION_ID", "",
+                        false, "", Collections.<Namespace>emptyList()));
                 StandardResponse response = new StandardResponse.Status(status());
                 response.setRequestId(launch.getRequestId());
                 return response;
@@ -166,7 +174,8 @@ public class MockedChromeCast {
 
         Status status() {
             return new Status(new Volume(1f, false, Volume.DEFAULT_INCREMENT,
-                        Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE), runningApplications, false, true);
+                        Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE),
+                    runningApplications, false, true);
         }
 
         Response handleCustom(JsonNode json) {
@@ -178,8 +187,8 @@ public class MockedChromeCast {
             }
         }
 
-        CastChannel.CastMessage read(Socket socket) throws IOException {
-            InputStream is = socket.getInputStream();
+        CastMessage read(Socket mySocket) throws IOException {
+            InputStream is = mySocket.getInputStream();
             byte[] buf = new byte[4];
 
             int read = 0;
@@ -202,12 +211,12 @@ public class MockedChromeCast {
                 read += nowRead;
             }
 
-            return CastChannel.CastMessage.parseFrom(buf);
+            return CastMessage.parseFrom(buf);
         }
 
-        void write(Socket socket, CastChannel.CastMessage message) throws IOException {
-            socket.getOutputStream().write(toArray(message.getSerializedSize()));
-            message.writeTo(socket.getOutputStream());
+        void write(Socket mySocket, CastMessage message) throws IOException {
+            mySocket.getOutputStream().write(toArray(message.getSerializedSize()));
+            message.writeTo(mySocket.getOutputStream());
         }
     }
 

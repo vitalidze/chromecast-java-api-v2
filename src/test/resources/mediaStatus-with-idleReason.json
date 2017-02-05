@@ -1,0 +1,1 @@
+{"responseType":"MEDIA_STATUS","status":[{"mediaSessionId":1,"playbackRate":1,"playerState":"IDLE","currentTime":0,"supportedMediaCommands":15,"volume":{"level":1,"muted":false},"media":{"contentId":"/public/Videos/Movies/FileB.mp4","contentType":"video/transcode","streamType":"buffered","duration":null},"idleReason":"ERROR"}],"requestId":28}

@@ -6,4 +6,8 @@
 
 <suppressions>
     <suppress files="Channel\.java" checks="[a-zA-Z0-9]*"/>
+    <suppress files="[a-zA-Z]+Test\.java" checks="JavadocType"/>
+    <suppress files="MockedChromeCast\.java" checks="JavadocType"/>
+    <suppress files="FixtureHelper\.java" checks="JavadocType"/>
+    <suppress files="Main\.java" checks="[a-zA-Z0-9]*"/>
 </suppressions>

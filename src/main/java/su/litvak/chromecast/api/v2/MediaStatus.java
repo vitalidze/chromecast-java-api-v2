@@ -51,7 +51,7 @@ public class MediaStatus {
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason">
      *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.IdleReason</a>
      */
-    public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR, COMPLETED}
+    public enum IdleReason { CANCELLED, INTERRUPTED, FINISHED, ERROR, COMPLETED }
 
     public final List<Integer> activeTrackIds;
     public final long mediaSessionId;

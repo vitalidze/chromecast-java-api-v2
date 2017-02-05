@@ -18,14 +18,19 @@ package su.litvak.chromecast.api.v2;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class StatusTest {
     final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
     @Test
-    public void testDeserializationBackdrop1_18() throws Exception {
-        final String jsonMSG = FixtureHelper.fixtureAsString("/status-backdrop-1.18.json").replaceFirst("\"type\"", "\"responseType\"");
+    public void testDeserializationBackdrop118() throws Exception {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/status-backdrop-1.18.json")
+                .replaceFirst("\"type\"", "\"responseType\"");
         final StandardResponse.Status response = jsonMapper.readValue(jsonMSG, StandardResponse.Status.class);
 
         Status status = response.status;
@@ -47,8 +52,9 @@ public class StatusTest {
     }
 
     @Test
-    public void testDeserializationBackdrop1_19() throws Exception {
-        final String jsonMSG = FixtureHelper.fixtureAsString("/status-backdrop-1.19.json").replaceFirst("\"type\"", "\"responseType\"");
+    public void testDeserializationBackdrop119() throws Exception {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/status-backdrop-1.19.json")
+                .replaceFirst("\"type\"", "\"responseType\"");
         final StandardResponse.Status response = jsonMapper.readValue(jsonMSG, StandardResponse.Status.class);
 
         Status status = response.status;
@@ -71,7 +77,8 @@ public class StatusTest {
 
     @Test
     public void testDeserializationChromeMirroring() throws Exception {
-        final String jsonMSG = FixtureHelper.fixtureAsString("/status-chrome-mirroring-1.19.json").replaceFirst("\"type\"", "\"responseType\"");
+        final String jsonMSG = FixtureHelper.fixtureAsString("/status-chrome-mirroring-1.19.json")
+                .replaceFirst("\"type\"", "\"responseType\"");
         final StandardResponse.Status response = jsonMapper.readValue(jsonMSG, StandardResponse.Status.class);
 
         Status status = response.status;

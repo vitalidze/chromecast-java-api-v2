@@ -37,7 +37,7 @@ public class CustomRequestTest {
 
         private Long requestId;
 
-        public KioskStatusRequest(){
+        KioskStatusRequest() {
             status = true;
         }
 
@@ -63,11 +63,11 @@ public class CustomRequestTest {
 
         private Long requestId;
 
-        public String getUrl(){
+        public String getUrl() {
             return this.url;
         }
 
-        public int getRefresh(){
+        public int getRefresh() {
             return this.refresh;
         }
 
@@ -108,7 +108,8 @@ public class CustomRequestTest {
                 return response;
             }
         };
-        KioskStatusResponse response = cast.send("urn:x-cast:de.michaelkuerbis.kiosk", new KioskStatusRequest(), KioskStatusResponse.class);
+        KioskStatusResponse response = cast.send("urn:x-cast:de.michaelkuerbis.kiosk",
+                new KioskStatusRequest(), KioskStatusResponse.class);
         assertNotNull(response);
         assertEquals("http://google.com", response.getUrl());
         assertEquals(50, response.getRefresh());
