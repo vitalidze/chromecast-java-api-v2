@@ -45,7 +45,7 @@ import su.litvak.chromecast.api.v2.CastChannel.DeviceAuthMessage;
 
 final class MockedChromeCast {
     final Logger logger = LoggerFactory.getLogger(MockedChromeCast.class);
-    
+
     final ServerSocket socket;
     final ClientThread clientThread;
     List<Application> runningApplications = new ArrayList<Application>();
