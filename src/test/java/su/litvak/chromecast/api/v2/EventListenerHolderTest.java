@@ -174,4 +174,15 @@ public class EventListenerHolderTest {
         assertEquals(1, emittedEvents.size());
     }
 
+    @Test
+    public void itHandlesCloseBySenderEvent() throws Exception {
+        StandardResponse.Close ev = new StandardResponse.Close();
+        this.underTest.deliverEvent(jsonMapper.valueToTree(ev));
+
+        ChromeCastSpontaneousEvent event = emittedEvents.get(0);
+
+        assertEquals(SpontaneousEventType.CLOSE, event.getType());
+
+        assertEquals(1, emittedEvents.size());
+    }
 }

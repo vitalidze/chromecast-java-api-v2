@@ -163,6 +163,8 @@ class Channel implements Closeable {
                                 }
                             } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
                                 write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
+                            } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("CLOSE")) {
+                                notifyListenersOfSpontaneousEvent(parsed);
                             }
                         }
                     } else {

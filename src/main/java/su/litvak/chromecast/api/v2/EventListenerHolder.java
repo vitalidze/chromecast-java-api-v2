@@ -48,10 +48,7 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener {
     }
 
     public void deliverEvent(JsonNode json) throws IOException {
-        if (json == null) {
-            return;
-        }
-        if (this.eventListeners.size() < 1) {
+        if (json == null || this.eventListeners.isEmpty()) {
             return;
         }
 
@@ -70,6 +67,8 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener {
         } else if (resp instanceof StandardResponse.Status) {
             spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.STATUS,
                     ((StandardResponse.Status) resp).status));
+        } else if (resp instanceof StandardResponse.Close) {
+            spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.CLOSE, new Object()));
         } else {
             spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.UNKNOWN, json));
         }

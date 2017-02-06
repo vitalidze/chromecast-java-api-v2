@@ -48,6 +48,11 @@ public class ChromeCastSpontaneousEvent {
         APPEVENT(AppEvent.class),
 
         /**
+         * Special event usually received when session is stopped.
+         */
+        CLOSE(Object.class),
+
+        /**
          * Data type will be {@link org.codehaus.jackson.JsonNode}.
          */
         UNKNOWN(JsonNode.class);
