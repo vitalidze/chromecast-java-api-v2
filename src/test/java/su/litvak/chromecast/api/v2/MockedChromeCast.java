@@ -37,11 +37,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import su.litvak.chromecast.api.v2.CastChannel.CastMessage;
 import su.litvak.chromecast.api.v2.CastChannel.CastMessage.PayloadType;
 import su.litvak.chromecast.api.v2.CastChannel.DeviceAuthMessage;
 
 final class MockedChromeCast {
+    final Logger logger = LoggerFactory.getLogger(MockedChromeCast.class);
+    
     final ServerSocket socket;
     final ClientThread clientThread;
     List<Application> runningApplications = new ArrayList<Application>();
@@ -92,22 +96,22 @@ final class MockedChromeCast {
         }
 
         void handle(CastMessage message) throws IOException {
-            System.out.println("Received message: ");
-            System.out.println("   sourceId: " + message.getSourceId());
-            System.out.println("   destinationId: " + message.getDestinationId());
-            System.out.println("   namespace: " + message.getNamespace());
-            System.out.println("   payloadType: " + message.getPayloadType());
+            logger.info("Received message: ");
+            logger.info("   sourceId: " + message.getSourceId());
+            logger.info("   destinationId: " + message.getDestinationId());
+            logger.info("   namespace: " + message.getNamespace());
+            logger.info("   payloadType: " + message.getPayloadType());
             if (message.getPayloadType() == PayloadType.STRING) {
-                System.out.println("   payload: " + message.getPayloadUtf8());
+                logger.info("   payload: " + message.getPayloadUtf8());
             }
 
             if (message.getPayloadType() == PayloadType.BINARY) {
                 MessageLite response = handleBinary(DeviceAuthMessage.parseFrom(message.getPayloadBinary()));
-                System.out.println("Sending response message: ");
-                System.out.println("   sourceId: " + message.getDestinationId());
-                System.out.println("   destinationId: " + message.getSourceId());
-                System.out.println("   namespace: " + message.getNamespace());
-                System.out.println("   payloadType: " + PayloadType.BINARY);
+                logger.info("Sending response message: ");
+                logger.info("   sourceId: " + message.getDestinationId());
+                logger.info("   destinationId: " + message.getSourceId());
+                logger.info("   namespace: " + message.getNamespace());
+                logger.info("   payloadType: " + PayloadType.BINARY);
                 write(clientSocket,
                         CastMessage.newBuilder()
                                 .setProtocolVersion(message.getProtocolVersion())
@@ -133,12 +137,12 @@ final class MockedChromeCast {
                         response.setRequestId(json.get("requestId").asLong());
                     }
 
-                    System.out.println("Sending response message: ");
-                    System.out.println("   sourceId: " + message.getDestinationId());
-                    System.out.println("   destinationId: " + message.getSourceId());
-                    System.out.println("   namespace: " + message.getNamespace());
-                    System.out.println("   payloadType: " + CastMessage.PayloadType.STRING);
-                    System.out.println("   payload: " + jsonMapper.writeValueAsString(response));
+                    logger.info("Sending response message: ");
+                    logger.info("   sourceId: " + message.getDestinationId());
+                    logger.info("   destinationId: " + message.getSourceId());
+                    logger.info("   namespace: " + message.getNamespace());
+                    logger.info("   payloadType: " + CastMessage.PayloadType.STRING);
+                    logger.info("   payload: " + jsonMapper.writeValueAsString(response));
                     write(clientSocket,
                             CastMessage.newBuilder()
                                     .setProtocolVersion(message.getProtocolVersion())
@@ -180,7 +184,7 @@ final class MockedChromeCast {
 
         Response handleCustom(JsonNode json) {
             if (customHandler == null) {
-                System.out.println("No custom handler set");
+                logger.info("No custom handler set");
                 return null;
             } else {
                 return customHandler.handle(json);
