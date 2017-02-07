@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Vitaly Litvak (vitavaque@gmail.com)
+ * Copyright 2017 Vitaly Litvak (vitavaque@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,14 @@
  */
 package su.litvak.chromecast.api.v2;
 
+/**
+ * The listener interface for receiving connection open/close events. The class that is interested in processing
+ * connection events implements this interface, and object create with that class is registered
+ * with <code>ChromeCast</code> instance using the <code>registerConnectionListener</code> method.
+ * When connection event occurs, that object's <code>connectionEventReceived</code> is invoked.
+ *
+ * @see ChromeCastConnectionEvent
+ */
 public interface ChromeCastConnectionEventListener {
 
     void connectionEventReceived(ChromeCastConnectionEvent event);

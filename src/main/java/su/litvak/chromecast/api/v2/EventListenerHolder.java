@@ -32,6 +32,8 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
     private final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
     private final Set<ChromeCastSpontaneousEventListener> eventListeners =
             new CopyOnWriteArraySet<ChromeCastSpontaneousEventListener>();
+    private final Set<ChromeCastConnectionEventListener> eventListenersConnection =
+            new CopyOnWriteArraySet<ChromeCastConnectionEventListener>();
 
     EventListenerHolder() {}
 
@@ -85,12 +87,6 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
         }
     }
 
-    /*
-     * Add connection event handling
-     */
-
-    private final Set<ChromeCastConnectionEventListener> eventListenersConnection = new CopyOnWriteArraySet<ChromeCastConnectionEventListener>();
-
     public void registerConnectionListener(ChromeCastConnectionEventListener listener) {
         if (listener != null) {
             this.eventListenersConnection.add(listener);
@@ -111,6 +107,6 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
     public void connectionEventReceived(ChromeCastConnectionEvent event) {
         for (ChromeCastConnectionEventListener listener : this.eventListenersConnection) {
             listener.connectionEventReceived(event);
-		}
-	}
+        }
+    }
 }
