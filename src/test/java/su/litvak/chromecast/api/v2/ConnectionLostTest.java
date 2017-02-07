@@ -56,7 +56,9 @@ public class ConnectionLostTest {
 
     @After
     public void shutdown() throws IOException {
-        cast.disconnect();
+        if (cast.isConnected()) {
+            cast.disconnect();
+        }
         chromeCastStub.close();
     }
 }

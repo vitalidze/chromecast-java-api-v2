@@ -100,7 +100,7 @@ class Channel implements Closeable {
     /**
      * Indicates that this channel was closed (explicitly, by remote host or for some connectivity issue)
      */
-    private volatile boolean closed;
+    private volatile boolean closed = true;
     private final Object closedSync = new Object();
 
     private class PingThread extends TimerTask {
@@ -257,7 +257,7 @@ class Channel implements Closeable {
      */
     public void open() throws IOException, GeneralSecurityException {
         if (!closed) {
-            throw new IOException("Try to open non channel for a non-closed closed.");
+            throw new ChromeCastException("Channel already oppened.");
         }
         connect();
     }
@@ -509,7 +509,9 @@ class Channel implements Closeable {
     @Override
     public void close() throws IOException {
         synchronized (closedSync) {
-            if (!closed) {
+            if (closed) {
+                throw new ChromeCastException("Channel already closed.");
+            } else {
                 closed = true;
                 notifyListenerOfConnectionEvent(false);
                 if (pingTimer != null) {
