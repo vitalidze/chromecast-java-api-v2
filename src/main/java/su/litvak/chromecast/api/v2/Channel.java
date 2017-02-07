@@ -250,8 +250,7 @@ class Channel implements Closeable {
     /**
      * Open the channel.
      *
-     * <p>
-     * This function must be called before any other usage.
+     * <p>This function must be called before any other usage.</p>
      *
      * @throws IOException
      * @throws GeneralSecurityException

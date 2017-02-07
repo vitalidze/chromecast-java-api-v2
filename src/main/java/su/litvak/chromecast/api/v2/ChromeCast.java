@@ -35,7 +35,7 @@ public class ChromeCast {
     private final int port;
     private String appsURL;
     private String application;
-    private final Channel channel;
+    private Channel channel;
 
     ChromeCast(JmDNS mDNS, String name) {
         this.name = name;
@@ -44,7 +44,6 @@ public class ChromeCast {
         this.port = serviceInfo.getPort();
         this.appsURL = serviceInfo.getURLs().length == 0 ? null : serviceInfo.getURLs()[0];
         this.application = serviceInfo.getApplication();
-        this.channel = new Channel(address, port, this.eventListenerHolder);
     }
 
     public ChromeCast(String address) {
@@ -54,7 +53,6 @@ public class ChromeCast {
     public ChromeCast(String address, int port) {
         this.address = address;
         this.port = port;
-        this.channel = new Channel(address, port, this.eventListenerHolder);
     }
 
     public final String getName() {
@@ -90,17 +88,23 @@ public class ChromeCast {
     }
 
     public final synchronized void connect() throws IOException, GeneralSecurityException {
-        if (channel.isClosed()) {
+        if (channel == null) {
+            channel = new Channel(this.address, this.port, this.eventListenerHolder);
             channel.open();
         }
     }
 
     public final synchronized void disconnect() throws IOException {
+        if (channel == null) {
+            return;
+        }
+
         channel.close();
+        channel = null;
     }
 
     public final boolean isConnected() {
-        return !channel.isClosed();
+        return channel != null && !channel.isClosed();
     }
 
     /**
