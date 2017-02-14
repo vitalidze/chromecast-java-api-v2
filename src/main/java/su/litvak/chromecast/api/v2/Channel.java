@@ -257,7 +257,7 @@ class Channel implements Closeable {
      */
     public void open() throws IOException, GeneralSecurityException {
         if (!closed) {
-            throw new ChromeCastException("Channel already oppened.");
+            throw new ChromeCastException("Channel already opened.");
         }
         connect();
     }
