@@ -36,6 +36,7 @@ public class ChromeCast {
     private String appsURL;
     private String application;
     private Channel channel;
+    private boolean autoReconnect = true;
 
     ChromeCast(JmDNS mDNS, String name) {
         this.name = name;
@@ -87,8 +88,25 @@ public class ChromeCast {
         this.application = application;
     }
 
+   /**
+    * Returns the {@link #channel}. May open it if <code>autoReconnect</code> is set to "true" (default value)
+    * and it's not yet or no longer open.
+    * @return an open channel.
+    */
+    private synchronized Channel channel() throws IOException {
+        if (autoReconnect) {
+            try {
+                connect();
+            } catch (GeneralSecurityException e) {
+                throw new IOException(e);
+            }
+        }
+
+        return channel;
+    }
+
     public final synchronized void connect() throws IOException, GeneralSecurityException {
-        if (channel == null) {
+        if (channel == null || channel.isClosed()) {
             channel = new Channel(this.address, this.port, this.eventListenerHolder);
             channel.open();
         }
@@ -108,11 +126,35 @@ public class ChromeCast {
     }
 
     /**
+     * Changes behaviour for opening/closing of connection with ChromeCast device. If set to "true" (default value)
+     * then connection will be re-established on every request in case it is not present yet, or has been lost.
+     * "false" value means manual control over connection with ChromeCast device, i.e. calling <code>connect()</code>
+     * or <code>disconnect()</code> methods when needed.
+     *
+     * @param autoReconnect true means controlling connection with ChromeCast device automatically, false - manually
+     * @see #connect()
+     * @see #disconnect()
+     */
+    public void setAutoReconnect(boolean autoReconnect) {
+        this.autoReconnect = autoReconnect;
+    }
+
+    /**
+     * @return current value of <code>autoReconnect</code> setting, which controls opening/closing of connection
+     * with ChromeCast device
+     *
+     * @see #setAutoReconnect(boolean)
+     */
+    public boolean isAutoReconnect() {
+        return autoReconnect;
+    }
+
+    /**
      * @return current chromecast status - volume, running applications, etc.
      * @throws IOException
      */
     public final Status getStatus() throws IOException {
-        return channel.getStatus();
+        return channel().getStatus();
     }
 
     /**
@@ -130,7 +172,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public final boolean isAppAvailable(String appId) throws IOException {
-        return channel.isAppAvailable(appId);
+        return channel().isAppAvailable(appId);
     }
 
     /**
@@ -149,7 +191,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public final Application launchApp(String appId) throws IOException {
-        Status status = channel.launch(appId);
+        Status status = channel().launch(appId);
         return status == null ? null : status.getRunningApp();
     }
 
@@ -165,14 +207,14 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        channel.stop(runningApp.sessionId);
+        channel().stop(runningApp.sessionId);
     }
 
     /**
      * @param level volume level from 0 to 1 to set
      */
     public final void setVolume(float level) throws IOException {
-        channel.setVolume(new Volume(level, false, Volume.DEFAULT_INCREMENT,
+        channel().setVolume(new Volume(level, false, Volume.DEFAULT_INCREMENT,
             Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE));
     }
 
@@ -180,7 +222,7 @@ public class ChromeCast {
      * @param muted is to mute or not
      */
     public final void setMuted(boolean muted) throws IOException {
-        channel.setVolume(new Volume(null, muted, Volume.DEFAULT_INCREMENT,
+        channel().setVolume(new Volume(null, muted, Volume.DEFAULT_INCREMENT,
             Volume.DEFAULT_INCREMENT.doubleValue(), Volume.DEFAULT_CONTROL_TYPE));
     }
 
@@ -195,7 +237,7 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel.getMediaStatus(runningApp.transportId);
+        return channel().getMediaStatus(runningApp.transportId);
     }
 
     /**
@@ -211,11 +253,11 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        MediaStatus mediaStatus = channel.getMediaStatus(runningApp.transportId);
+        MediaStatus mediaStatus = channel().getMediaStatus(runningApp.transportId);
         if (mediaStatus == null) {
             throw new ChromeCastException("ChromeCast has invalid state to resume media playback");
         }
-        channel.play(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
+        channel().play(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
     }
 
     /**
@@ -231,11 +273,11 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        MediaStatus mediaStatus = channel.getMediaStatus(runningApp.transportId);
+        MediaStatus mediaStatus = channel().getMediaStatus(runningApp.transportId);
         if (mediaStatus == null) {
             throw new ChromeCastException("ChromeCast has invalid state to pause media playback");
         }
-        channel.pause(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
+        channel().pause(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId);
     }
 
     /**
@@ -252,11 +294,11 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        MediaStatus mediaStatus = channel.getMediaStatus(runningApp.transportId);
+        MediaStatus mediaStatus = channel().getMediaStatus(runningApp.transportId);
         if (mediaStatus == null) {
             throw new ChromeCastException("ChromeCast has invalid state to seek media playback");
         }
-        channel.seek(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId, time);
+        channel().seek(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId, time);
     }
 
     /**
@@ -293,7 +335,7 @@ public class ChromeCast {
         Map<String, Object> metadata = new HashMap<String, Object>(2);
         metadata.put("title", title);
         metadata.put("thumb", thumb);
-        return channel.load(runningApp.transportId, runningApp.sessionId, new Media(url, contentType, null,
+        return channel().load(runningApp.transportId, runningApp.sessionId, new Media(url, contentType, null,
                 null, null, metadata, null, null), true, 0d, null);
     }
 
@@ -314,7 +356,7 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel.load(runningApp.transportId, runningApp.sessionId, media, true, 0d, null);
+        return channel().load(runningApp.transportId, runningApp.sessionId, media, true, 0d, null);
     }
 
     /**
@@ -336,7 +378,7 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel.sendGenericRequest(runningApp.transportId, namespace, request, responseClass);
+        return channel().sendGenericRequest(runningApp.transportId, namespace, request, responseClass);
     }
 
     /**
