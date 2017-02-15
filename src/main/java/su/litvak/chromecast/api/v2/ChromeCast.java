@@ -18,6 +18,8 @@ package su.litvak.chromecast.api.v2;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
@@ -301,6 +303,21 @@ public class ChromeCast {
         channel().seek(runningApp.transportId, runningApp.sessionId, mediaStatus.mediaSessionId, time);
     }
 
+    private String getContentType(String url) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.connect();
+            return connection.getContentType();
+        } catch (IOException e) {
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return null;
+    }
+
     /**
      * <p>Loads and starts playing media in specified URL</p>
      *
@@ -335,8 +352,9 @@ public class ChromeCast {
         Map<String, Object> metadata = new HashMap<String, Object>(2);
         metadata.put("title", title);
         metadata.put("thumb", thumb);
-        return channel().load(runningApp.transportId, runningApp.sessionId, new Media(url, contentType, null,
-                null, null, metadata, null, null), true, 0d, null);
+        return channel().load(runningApp.transportId, runningApp.sessionId, new Media(url,
+                contentType == null ? getContentType(url) : contentType, null, null, null,
+                metadata, null, null), true, 0d, null);
     }
 
     /**
@@ -356,7 +374,14 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
-        return channel().load(runningApp.transportId, runningApp.sessionId, media, true, 0d, null);
+        Media mediaToPlay;
+        if (media.contentType == null) {
+            mediaToPlay = new Media(media.url, getContentType(media.url), media.duration, media.streamType,
+                    media.customData, media.metadata, media.textTrackStyle, media.tracks);
+        } else {
+            mediaToPlay = media;
+        }
+        return channel().load(runningApp.transportId, runningApp.sessionId, mediaToPlay, true, 0d, null);
     }
 
     /**
