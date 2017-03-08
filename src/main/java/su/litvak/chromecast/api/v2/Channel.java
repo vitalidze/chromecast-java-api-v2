@@ -20,6 +20,7 @@ import static su.litvak.chromecast.api.v2.Util.toArray;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -30,6 +31,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.SocketException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
