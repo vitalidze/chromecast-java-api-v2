@@ -54,7 +54,8 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
             return;
         }
 
-        final StandardResponse resp = this.jsonMapper.readValue(json, StandardResponse.class);
+        final StandardResponse resp = json.has("responseType") ? this.jsonMapper.readValue(json, StandardResponse.class)
+                : null;
 
         /*
          * The documentation only mentions MEDIA_STATUS as being a possible spontaneous event.
