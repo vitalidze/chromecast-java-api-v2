@@ -173,6 +173,18 @@ class Channel implements Closeable {
                     }
                 } catch (InvalidProtocolBufferException ipbe) {
                     LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
+                } catch (JsonParseException jpe) {
+                    LOG.warn("Error while processing protobuf: {}", jpe.getLocalizedMessage());
+                } catch (SocketException se) {
+                    LOG.warn("Socket error, will reconnect: {}", se.getLocalizedMessage());
+                    LOG.debug("StackTrace", se);
+                    try {
+                        close();
+                        connect();
+                    } catch (Exception e) {
+                        LOG.warn("Error while reconnecting channel: {}", e.getLocalizedMessage());
+                        LOG.debug("StackTrace", e);
+                    }
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
                     String temp;
