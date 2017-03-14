@@ -221,6 +221,39 @@ public class ChromeCast {
     }
 
     /**
+     *  ChromeCast does not allow you to jump levels too quickly to avoid blowing speakers.
+     *  Setting by increment allows us to easily get the level we want
+     *
+     * @param level volume level from 0 to 1 to set
+     * @throws IOException
+     * @see <a href="https://developers.google.com/cast/docs/design_checklist/sender#sender-control-volume">sender</a>
+     */
+    public final void setVolumeByIncrement(float level) throws IOException {
+        Volume volume = this.getStatus().volume;
+        float total = volume.level;
+
+        if (volume.increment <= 0f) {
+            throw new ChromeCastException("Volume.increment is <= 0");
+        }
+
+        // With floating points we always have minor decimal variations, using the Math.min/max
+        //   works around this issue
+        // Increase volume
+        if (level > total) {
+            while (total < level) {
+                total = Math.min(total + volume.increment, level);
+                setVolume(total);
+            }
+        // Decrease Volume
+        } else if (level < total) {
+            while (total > level) {
+                total = Math.max(total - volume.increment, level);
+                setVolume(total);
+            }
+        }
+    }
+
+    /**
      * @param muted is to mute or not
      */
     public final void setMuted(boolean muted) throws IOException {
