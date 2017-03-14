@@ -40,6 +40,10 @@ public class ChromeCast {
     private Channel channel;
     private boolean autoReconnect = true;
 
+    private String title;
+    private String appTitle;
+    private String model;
+
     ChromeCast(JmDNS mDNS, String name) {
         this.name = name;
         ServiceInfo serviceInfo = mDNS.getServiceInfo(SERVICE_TYPE, name);
@@ -47,6 +51,10 @@ public class ChromeCast {
         this.port = serviceInfo.getPort();
         this.appsURL = serviceInfo.getURLs().length == 0 ? null : serviceInfo.getURLs()[0];
         this.application = serviceInfo.getApplication();
+
+        this.title = serviceInfo.getPropertyString("fn");
+        this.appTitle = serviceInfo.getPropertyString("rs");
+        this.model = serviceInfo.getPropertyString("md");
     }
 
     public ChromeCast(String address) {
@@ -90,7 +98,19 @@ public class ChromeCast {
         this.application = application;
     }
 
-   /**
+    public final String getTitle() {
+        return title;
+    }
+
+    public final String getAppTitle() {
+        return appTitle;
+    }
+
+    public final String getModel() {
+        return model;
+    }
+
+  /**
     * Returns the {@link #channel}. May open it if <code>autoReconnect</code> is set to "true" (default value)
     * and it's not yet or no longer open.
     * @return an open channel.
@@ -369,21 +389,21 @@ public class ChromeCast {
      *
      * <p>If no application is running at the moment then exception is thrown.</p>
      *
-     * @param title name to be displayed
+     * @param mediaTitle name to be displayed
      * @param thumb url of video thumbnail to be displayed, relative to media url
      * @param url   media url
      * @param contentType    MIME content type
      * @return The new media status that resulted from loading the media.
      * @throws IOException
      */
-    public final MediaStatus load(String title, String thumb, String url, String contentType) throws IOException {
+    public final MediaStatus load(String mediaTitle, String thumb, String url, String contentType) throws IOException {
         Status status = getStatus();
         Application runningApp = status.getRunningApp();
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
         Map<String, Object> metadata = new HashMap<String, Object>(2);
-        metadata.put("title", title);
+        metadata.put("title", mediaTitle);
         metadata.put("thumb", thumb);
         return channel().load(runningApp.transportId, runningApp.sessionId, new Media(url,
                 contentType == null ? getContentType(url) : contentType, null, null, null,
