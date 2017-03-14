@@ -22,6 +22,6 @@ public interface ChromeCastsListener {
 
     void newChromeCastDiscovered(ChromeCast chromeCast);
 
-    void chromeCastRemoved(ChromeCast chromecast);
+    void chromeCastRemoved(ChromeCast chromeCast);
 
 }
