@@ -153,7 +153,7 @@ class Channel implements Closeable {
                                 if (rp != null) {
                                     rp.put(jsonMSG);
                                 } else {
-                                    if (requestId == 0) {
+                                    if (requestId == 0 && parsed.has("responseType")) {
                                         notifyListenersOfSpontaneousEvent(parsed);
                                     }
                                     else {
