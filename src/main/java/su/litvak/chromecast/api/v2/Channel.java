@@ -15,9 +15,6 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import static su.litvak.chromecast.api.v2.Util.fromArray;
-import static su.litvak.chromecast.api.v2.Util.toArray;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
@@ -32,12 +29,19 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.net.Socket;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static su.litvak.chromecast.api.v2.Util.fromArray;
+import static su.litvak.chromecast.api.v2.Util.toArray;
 
 /**
  * Internal class for low-level communication with ChromeCast device.
@@ -153,14 +157,7 @@ class Channel implements Closeable {
                                 if (rp != null) {
                                     rp.put(jsonMSG);
                                 } else {
-                                    if (requestId == 0) {
-                                        notifyListenersOfSpontaneousEvent(parsed);
-                                    }
-                                    else {
-                                        // Status events are sent with a requestId of zero
-                                        // https://developers.google.com/cast/docs/reference/messages
-                                        LOG.warn("Unable to process request ID = {}, data: {}", requestId, jsonMSG);
-                                    }
+                                    notifyListenersOfSpontaneousEvent(parsed);
                                 }
                             } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("MEDIA_STATUS")) {
                                 notifyListenersOfSpontaneousEvent(parsed);
