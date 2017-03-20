@@ -15,17 +15,16 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringContains.containsString;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Test;
+import su.litvak.chromecast.api.v2.Media.StreamType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Test;
-
-import su.litvak.chromecast.api.v2.Media.StreamType;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
 
 public class MediaTest {
     final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();

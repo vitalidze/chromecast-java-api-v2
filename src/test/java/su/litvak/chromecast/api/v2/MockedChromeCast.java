@@ -18,14 +18,15 @@ package su.litvak.chromecast.api.v2;
 import com.google.protobuf.MessageLite;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import su.litvak.chromecast.api.v2.CastChannel.CastMessage;
+import su.litvak.chromecast.api.v2.CastChannel.CastMessage.PayloadType;
+import su.litvak.chromecast.api.v2.CastChannel.DeviceAuthMessage;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
-import static su.litvak.chromecast.api.v2.Util.fromArray;
-import static su.litvak.chromecast.api.v2.Util.toArray;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -37,11 +38,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import su.litvak.chromecast.api.v2.CastChannel.CastMessage;
-import su.litvak.chromecast.api.v2.CastChannel.CastMessage.PayloadType;
-import su.litvak.chromecast.api.v2.CastChannel.DeviceAuthMessage;
+import static su.litvak.chromecast.api.v2.Util.fromArray;
+import static su.litvak.chromecast.api.v2.Util.toArray;
 
 final class MockedChromeCast {
     final Logger logger = LoggerFactory.getLogger(MockedChromeCast.class);

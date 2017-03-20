@@ -15,11 +15,10 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import java.util.Arrays;
-
 import org.codehaus.jackson.annotate.JsonProperty;
-
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import java.util.Arrays;
 
 /**
  * Volume settings.

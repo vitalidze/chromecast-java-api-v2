@@ -15,14 +15,13 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
+
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
 
 /**
  * Helper class for delivering spontaneous events to their listeners.

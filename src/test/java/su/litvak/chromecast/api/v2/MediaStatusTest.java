@@ -15,20 +15,19 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Test;
+import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
+import su.litvak.chromecast.api.v2.MediaStatus.RepeatMode;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Test;
-
-import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
-import su.litvak.chromecast.api.v2.MediaStatus.RepeatMode;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class MediaStatusTest {
     final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();

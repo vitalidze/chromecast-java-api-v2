@@ -15,17 +15,16 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class EventListenerHolderTest {
     private final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();

@@ -15,9 +15,9 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import java.util.Arrays;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

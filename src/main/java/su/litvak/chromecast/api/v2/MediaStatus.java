@@ -15,12 +15,12 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Current media player status - which media is played, volume, time position, etc.
