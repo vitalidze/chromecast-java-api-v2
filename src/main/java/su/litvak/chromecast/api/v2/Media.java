@@ -30,7 +30,29 @@ import java.util.Map;
  *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media.MediaInformation</a>
  */
 public class Media {
-
+    public static final String METADATA_TYPE = "metadataType";
+    public static final String METADATA_ALBUM_ARTIST = "albumArtist";
+    public static final String METADATA_ALBUM_NAME = "albumName";
+    public static final String METADATA_ARTIST = "artist";
+    public static final String METADATA_BROADCAST_DATE = "broadcastDate";
+    public static final String METADATA_COMPOSER = "composer";
+    public static final String METADATA_CREATION_DATE = "creationDate";
+    public static final String METADATA_DISC_NUMBER = "discNumber";
+    public static final String METADATA_EPISODE_NUMBER = "episodeNumber";
+    public static final String METADATA_HEIGHT = "height";
+    public static final String METADATA_IMAGES = "images";
+    public static final String METADATA_LOCATION_NAME = "locationName";
+    public static final String METADATA_LOCATION_LATITUDE = "locationLatitude";
+    public static final String METADATA_LOCATION_LONGITUDE = "locationLongitude";
+    public static final String METADATA_RELEASE_DATE = "releaseDate";
+    public static final String METADATA_SEASON_NUMBER = "seasonNumber";
+    public static final String METADATA_SERIES_TITLE = "seriesTitle";
+    public static final String METADATA_STUDIO = "studio";
+    public static final String METADATA_SUBTITLE = "subtitle";
+    public static final String METADATA_TITLE = "title";
+    public static final String METADATA_TRACK_NUMBER = "trackNumber";
+    public static final String METADATA_WIDTH = "width";
+    
     /**
      * <p>Stream type.</p>
      *
