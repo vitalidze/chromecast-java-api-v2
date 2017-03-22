@@ -74,6 +74,7 @@ public class MediaStatusTest {
         assertEquals(Collections.singletonList(new Item(true, customData, 1, media)), mediaStatus.items);
 
         assertEquals(media, mediaStatus.media);
+        assertEquals(Media.MetadataType.GENERIC, media.getMetadataType());
         assertEquals(1, mediaStatus.mediaSessionId);
         assertEquals(1, mediaStatus.playbackRate);
         assertEquals(PlayerState.BUFFERING, mediaStatus.playerState);
@@ -105,6 +106,7 @@ public class MediaStatusTest {
         assertNotNull(mediaStatus.media);
         Media media = mediaStatus.media;
         assertEquals(7, media.metadata.size());
+        assertEquals(Media.MetadataType.MUSIC_TRACK, media.getMetadataType());
         assertEquals("http://audioURL", media.url);
         assertEquals(246d, media.duration, 0.1);
         assertEquals(Media.StreamType.BUFFERED, media.streamType);
@@ -117,6 +119,28 @@ public class MediaStatusTest {
 
         assertEquals(8, status.size());
         assertEquals(2, status.get("state"));
+    }
+
+    @Test
+    public void testDeserializationNoMetadataType() throws IOException {
+        final StandardResponse.MediaStatus response =
+                (StandardResponse.MediaStatus) jsonMapper.readValue(getClass()
+                        .getResourceAsStream("/mediaStatus-no-metadataType.json"), StandardResponse.class);
+
+        final MediaStatus mediaStatus = response.statuses[0];
+        Media media = mediaStatus.media;
+        assertEquals(Media.MetadataType.GENERIC, media.getMetadataType());
+    }
+
+    @Test
+    public void testDeserializationUnknownMetadataType() throws IOException {
+        final StandardResponse.MediaStatus response =
+                (StandardResponse.MediaStatus) jsonMapper.readValue(getClass()
+                        .getResourceAsStream("/mediaStatus-unknown-metadataType.json"), StandardResponse.class);
+
+        final MediaStatus mediaStatus = response.statuses[0];
+        Media media = mediaStatus.media;
+        assertEquals(Media.MetadataType.GENERIC, media.getMetadataType());
     }
 
     @Test

@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static su.litvak.chromecast.api.v2.Media.MetadataType.GENERIC;
+
 /**
  * Media streamed on ChromeCast device.
  *
@@ -52,7 +55,25 @@ public class Media {
     public static final String METADATA_TITLE = "title";
     public static final String METADATA_TRACK_NUMBER = "trackNumber";
     public static final String METADATA_WIDTH = "width";
-    
+
+    /**
+     * Type of the data found inside {@link #metadata}. You can access the type with the key {@link #METADATA_TYPE}.
+     *
+     * You can access known metadata types using the constants in {@link Media}, such as {@link #METADATA_ALBUM_NAME}.
+     *
+     * @see <a href="https://developers.google.com/cast/docs/reference/ios/interface_g_c_k_media_metadata">
+     *     href="https://developers.google.com/cast/docs/reference/ios/interface_g_c_k_media_metadata</a>
+     * @see <a https://developers.google.com/android/reference/com/google/android/gms/cast/MediaMetadata">
+     *     https://developers.google.com/android/reference/com/google/android/gms/cast/MediaMetadata</a>
+     */
+    public enum MetadataType {
+        GENERIC,
+        MOVIE,
+        TV_SHOW,
+        MUSIC_TRACK,
+        PHOTO
+    }
+
     /**
      * <p>Stream type.</p>
      *
@@ -120,6 +141,19 @@ public class Media {
         this.metadata = metadata == null ? null : Collections.unmodifiableMap(metadata);
         this.textTrackStyle = textTrackStyle == null ? null : Collections.unmodifiableMap(textTrackStyle);
         this.tracks = tracks == null ? null : Collections.unmodifiableList(tracks);
+    }
+
+    /**
+     * @return the type defined by the key {@link #METADATA_TYPE}.
+     */
+    @JsonIgnore
+    public final MetadataType getMetadataType() {
+        if (metadata  == null || !metadata.containsKey(METADATA_TYPE)) {
+            return GENERIC;
+        }
+
+        Integer ordinal = (Integer) metadata.get(METADATA_TYPE);
+        return ordinal < MetadataType.values().length ? MetadataType.values()[ordinal] : GENERIC;
     }
 
     @Override
