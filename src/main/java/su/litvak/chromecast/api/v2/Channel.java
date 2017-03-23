@@ -17,6 +17,7 @@ package su.litvak.chromecast.api.v2;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -27,6 +28,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.SocketException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -172,6 +174,18 @@ class Channel implements Closeable {
                     }
                 } catch (InvalidProtocolBufferException ipbe) {
                     LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
+                } catch (JsonParseException jpe) {
+                    LOG.warn("Error while processing protobuf: {}", jpe.getLocalizedMessage());
+                } catch (SocketException se) {
+                    LOG.warn("Socket error, will reconnect: {}", se.getLocalizedMessage());
+                    LOG.debug("StackTrace", se);
+                    try {
+                        close();
+                        connect();
+                    } catch (Exception e) {
+                        LOG.warn("Error while reconnecting channel: {}", e.getLocalizedMessage());
+                        LOG.debug("StackTrace", e);
+                    }
                 } catch (IOException ioex) {
                     LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
                     String temp;
