@@ -7,7 +7,7 @@
       "playerState":"PLAYING",
       "media":
       {"metadata":
-        {"metadataType":3,
+        {
           "albumName":"The Album",
           "title":"And We Danced",
           "albumArtist":"The Artist",
