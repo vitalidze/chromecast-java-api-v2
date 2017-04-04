@@ -402,6 +402,15 @@ public class ChromeCast {
         if (runningApp == null) {
             throw new ChromeCastException("No application is running in ChromeCast");
         }
+
+        /* If the current track is paused, launching a new request results in nothing happening, therefore
+           resume current track */
+        if (getMediaStatus() != null && MediaStatus.PlayerState.PAUSED == getMediaStatus().playerState
+                && url.equals(getMediaStatus().media.url)) {
+            this.play();
+            return getMediaStatus();
+        }
+        
         Map<String, Object> metadata = new HashMap<String, Object>(2);
         metadata.put("title", mediaTitle);
         metadata.put("thumb", thumb);
