@@ -190,6 +190,7 @@ public class DashCastRequest implements Request {
 Sending request
 
 ````java
+chromecast.launchApp("5C3F0A3C");
 chromecast.send("urn:x-cast:es.offd.dashcast", new DashCastRequest("http://yandex.ru", true, false, 0));
 ````
 
