@@ -113,7 +113,7 @@ class Channel implements Closeable {
             try {
                 write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.ping(), DEFAULT_RECEIVER_ID);
             } catch (IOException ioex) {
-                LOG.warn("Error while sending 'PING': {}", ioex.getLocalizedMessage());
+                LOG.warn("Error while sending 'PING'", ioex);
             }
         }
     }
@@ -124,12 +124,15 @@ class Channel implements Closeable {
         @Override
         public void run() {
             while (!stop) {
+                JsonNode parsed = null;
+                String jsonMSG = null;
                 CastChannel.CastMessage message = null;
+
                 try {
                     message = read();
                     if (message.getPayloadType() == CastChannel.CastMessage.PayloadType.STRING) {
                         LOG.debug(" <-- {}",  message.getPayloadUtf8());
-                        final String jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
+                        jsonMSG = message.getPayloadUtf8().replaceFirst("\"type\"", "\"responseType\"");
                         if (jsonMSG == null || jsonMSG.isEmpty()) {
                             LOG.warn(" <-- Received empty message. Ignore.");
                             continue;
@@ -137,43 +140,16 @@ class Channel implements Closeable {
 
                         // Determine whether the message belongs to cast protocol or is a custom
                         // message from the receiver app
-                        final JsonNode parsed;
-                        try {
-                            parsed = jsonMapper.readTree(jsonMSG);
-                        } catch (JsonProcessingException jpex) {
-                            // Ignore
-                            // To prevent potential null pointer access using parsed, we could continue...
-                            continue;
-                        }
-
-                        if (isAppEvent(parsed)) {
-                            AppEvent event = new AppEvent(
-                                    message.getNamespace(), message.getPayloadUtf8());
-                            notifyListenersAppEvent(event);
-                        } else {
-                            if (parsed.has("requestId")) {
-                                Long requestId = parsed.get("requestId").asLong();
-                                final ResultProcessor<? extends Response> rp = requests.remove(requestId);
-                                if (rp != null) {
-                                    rp.put(jsonMSG);
-                                } else {
-                                    notifyListenersOfSpontaneousEvent(parsed);
-                                }
-                            } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("MEDIA_STATUS")) {
-                                notifyListenersOfSpontaneousEvent(parsed);
-                            } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
-                                write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
-                            } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("CLOSE")) {
-                                notifyListenersOfSpontaneousEvent(parsed);
-                            }
-                        }
+                        parsed = jsonMapper.readTree(jsonMSG);
                     } else {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
                     }
                 } catch (InvalidProtocolBufferException ipbe) {
-                    LOG.debug("Error while processing protobuf: {}", ipbe.getLocalizedMessage());
+                    LOG.warn("Error while processing protobuf", ipbe);
+                } catch (JsonProcessingException jpe) {
+                    LOG.warn("Error while processing json", jpe);
                 } catch (IOException ioex) {
-                    LOG.warn("Error while reading: {}", ioex.getLocalizedMessage());
+                    LOG.warn("Error while reading", ioex);
                     String temp;
                     if (message != null &&  message.getPayloadUtf8() != null) {
                         temp = message.getPayloadUtf8();
@@ -184,8 +160,41 @@ class Channel implements Closeable {
                     try {
                         close();
                     } catch (IOException e) {
-                        LOG.warn("Error while closing channel: {}", ioex.getLocalizedMessage());
+                        LOG.warn("Error while closing channel", ioex);
                     }
+                } catch (Exception e) {
+                    LOG.warn("Unknown error while reading", e);
+                    continue;
+                }
+
+                try {
+                    if (message == null) {
+                        continue;
+                    }
+
+                    if (isAppEvent(parsed)) {
+                        // This handles when parsed == null.
+                        AppEvent event = new AppEvent(message.getNamespace(), message.getPayloadUtf8());
+                        notifyListenersAppEvent(event);
+                    } else {
+                        if (parsed.has("requestId")) {
+                            Long requestId = parsed.get("requestId").asLong();
+                            final ResultProcessor<? extends Response> rp = requests.remove(requestId);
+                            if (rp != null) {
+                                rp.put(jsonMSG);
+                            } else {
+                                notifyListenersOfSpontaneousEvent(parsed);
+                            }
+                        } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("MEDIA_STATUS")) {
+                            notifyListenersOfSpontaneousEvent(parsed);
+                        } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
+                            write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
+                        } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("CLOSE")) {
+                            notifyListenersOfSpontaneousEvent(parsed);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOG.warn("Error while handling", e);
                 }
             }
         }
