@@ -113,7 +113,7 @@ class Channel implements Closeable {
             try {
                 write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.ping(), DEFAULT_RECEIVER_ID);
             } catch (IOException ioex) {
-                LOG.warn("Error while sending 'PING': {}", ioex);
+                LOG.warn("Error while sending 'PING'", ioex);
             }
         }
     }
@@ -145,11 +145,11 @@ class Channel implements Closeable {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
                     }
                 } catch (InvalidProtocolBufferException ipbe) {
-                    LOG.warn("Error while processing protobuf: {}", ipbe);
+                    LOG.warn("Error while processing protobuf", ipbe);
                 } catch (JsonProcessingException jpe) {
-                    LOG.warn("Error while processing json: {}", jpe);
+                    LOG.warn("Error while processing json", jpe);
                 } catch (IOException ioex) {
-                    LOG.warn("Error while reading: {}", ioex);
+                    LOG.warn("Error while reading", ioex);
                     String temp;
                     if (message != null &&  message.getPayloadUtf8() != null) {
                         temp = message.getPayloadUtf8();
@@ -160,10 +160,10 @@ class Channel implements Closeable {
                     try {
                         close();
                     } catch (IOException e) {
-                        LOG.warn("Error while closing channel: {}", ioex);
+                        LOG.warn("Error while closing channel", ioex);
                     }
                 } catch (Exception e) {
-                    LOG.warn("Unknown exception while reading", e);
+                    LOG.warn("Unknown error while reading", e);
                     continue;
                 }
 
@@ -194,7 +194,7 @@ class Channel implements Closeable {
                         }
                     }
                 } catch (Exception e) {
-                    LOG.warn("Error while handling: {}", e);
+                    LOG.warn("Error while handling", e);
                 }
             }
         }
