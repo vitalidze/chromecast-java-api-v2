@@ -62,8 +62,8 @@ public class Media {
      * You can access known metadata types using the constants in {@link Media}, such as {@link #METADATA_ALBUM_NAME}.
      *
      * @see <a href="https://developers.google.com/cast/docs/reference/ios/interface_g_c_k_media_metadata">
-     *     href="https://developers.google.com/cast/docs/reference/ios/interface_g_c_k_media_metadata</a>
-     * @see <a https://developers.google.com/android/reference/com/google/android/gms/cast/MediaMetadata">
+     *     https://developers.google.com/cast/docs/reference/ios/interface_g_c_k_media_metadata</a>
+     * @see <a href="https://developers.google.com/android/reference/com/google/android/gms/cast/MediaMetadata">
      *     https://developers.google.com/android/reference/com/google/android/gms/cast/MediaMetadata</a>
      */
     public enum MetadataType {
