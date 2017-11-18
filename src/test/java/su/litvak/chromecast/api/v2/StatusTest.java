@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class StatusTest {
+
     final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
 
     @Test
@@ -76,8 +77,33 @@ public class StatusTest {
     }
 
     @Test
+    public void testDeserializationBackdrop128() throws Exception {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/status-backdrop-1.28.json")
+                .replaceFirst("\"type\"", "\"responseType\"");
+        final StandardResponse.Status response = jsonMapper.readValue(jsonMSG, StandardResponse.Status.class);
+
+        Status status = response.status;
+        assertNotNull(status);
+        assertFalse(status.activeInput);
+        assertFalse(status.standBy);
+
+        assertEquals(1, status.applications.size());
+        Application app = status.getRunningApp();
+        assertTrue(app.isIdleScreen);
+        assertFalse(app.launchedFromCloud);
+
+        Volume volume = status.volume;
+        assertNotNull(volume);
+        assertEquals(1.0, volume.level, 0.1);
+        assertFalse(volume.muted);
+        assertEquals("attenuation", volume.controlType);
+        assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
+        assertEquals(0.05, volume.stepInterval, 0.001);
+    }
+
+    @Test
     public void testDeserializationChromeMirroring() throws Exception {
-        final String jsonMSG = FixtureHelper.fixtureAsString("/status-chrome-mirroring-1.19.json")
+        final String jsonMSG = FixtureHelper.fixtureAsString("/status-chrome-mirroring-1.28.json")
                 .replaceFirst("\"type\"", "\"responseType\"");
         final StandardResponse.Status response = jsonMapper.readValue(jsonMSG, StandardResponse.Status.class);
 
@@ -89,6 +115,7 @@ public class StatusTest {
         assertEquals(1, status.applications.size());
         Application app = status.getRunningApp();
         assertFalse(app.isIdleScreen);
+        assertFalse(app.launchedFromCloud);
 
         Volume volume = status.volume;
         assertNotNull(volume);
@@ -96,6 +123,6 @@ public class StatusTest {
         assertFalse(volume.muted);
         assertEquals("attenuation", volume.controlType);
         assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
-        assertEquals(0.04, volume.stepInterval, 0.001);
+        assertEquals(0.05, volume.stepInterval, 0.001);
     }
 }
