@@ -149,6 +149,10 @@ class Channel implements Closeable {
                 } catch (JsonProcessingException jpe) {
                     LOG.warn("Error while processing json", jpe);
                 } catch (IOException ioex) {
+                    if (stop) {
+                        LOG.warn("Got IOException while reading due to stream being closed (stop=true)");
+                        continue;
+                    }
                     LOG.warn("Error while reading", ioex);
                     String temp;
                     if (message != null &&  message.getPayloadUtf8() != null) {
