@@ -66,6 +66,11 @@ public class ChromeCast {
         this.port = port;
     }
 
+    /**
+     * Usually something like Chromecast-e28835678bc02247abcdef112341278f.
+     *
+     * @return The technical name of the device.
+     */
     public final String getName() {
         return name;
     }
@@ -74,10 +79,16 @@ public class ChromeCast {
         this.name = name;
     }
 
+    /**
+     * @return The IP address of the device.
+     */
     public final String getAddress() {
         return address;
     }
 
+    /**
+     * @return The TCP port number that the device is listening to.
+     */
     public final int getPort() {
         return port;
     }
@@ -90,6 +101,13 @@ public class ChromeCast {
         this.appsURL = appsURL;
     }
 
+    /**
+     * Usually "googlecast".
+     *
+     * @return The mDNS service name.
+     *
+     * @see #getRunningApp()
+     */
     public final String getApplication() {
         return application;
     }
@@ -98,14 +116,29 @@ public class ChromeCast {
         this.application = application;
     }
 
+    /**
+     * Usually something like "Living Room Chromecast".
+     *
+     * @return The name of the device as entered by the person who installed it.
+     */
     public final String getTitle() {
         return title;
     }
 
+    /**
+     * Usually something like "YouTube" or "Spotify", but could also be, say, the URL of a web page being mirrored.
+     *
+     * @return The title of the app that is currently running, or empty string in case of the backdrop.
+     */
     public final String getAppTitle() {
         return appTitle;
     }
 
+    /**
+     * Usually "Chromecast" or, if Chromecast is built into your TV, the model of your TV.
+     *
+     * @return The model of the device.
+     */
     public final String getModel() {
         return model;
     }
@@ -487,5 +520,11 @@ public class ChromeCast {
 
     public final void unregisterConnectionListener(ChromeCastConnectionEventListener listener) {
         this.eventListenerHolder.unregisterConnectionListener(listener);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ChromeCast{name: %s, title: %s, model: %s, address: %s, port: %d}",
+                this.name, this.title, this.model, this.address, this.port);
     }
 }
