@@ -15,9 +15,6 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 /**
  * Contains utility methods.
  */
@@ -29,19 +26,17 @@ final class Util {
      * Converts specified byte array in Big Endian to int.
      */
     static int fromArray(byte[] payload) {
-        ByteBuffer buffer = ByteBuffer.wrap(payload);
-        buffer.order(ByteOrder.BIG_ENDIAN);
-        return buffer.getInt();
+        return payload[0] << 24 | (payload[1] & 0xFF) << 16 | (payload[2] & 0xFF) << 8 | (payload[3] & 0xFF);
     }
 
     /**
      * Converts specified int to byte array in Big Endian.
      */
     static byte[] toArray(int value) {
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        buffer.order(ByteOrder.BIG_ENDIAN);
-        buffer.putInt(value);
-        buffer.flip();
-        return buffer.array();
+        return new byte[] {
+            (byte) (value >> 24),
+            (byte) (value >> 16),
+            (byte) (value >> 8),
+            (byte) value };
     }
 }
