@@ -211,7 +211,7 @@ Projects using library
 ----------------------
 
 * [UniversalMediaServer](https://github.com/UniversalMediaServer/UniversalMediaServer) - powerful server application that serves media to various types of receivers (including ChromeCast)
-* [chromecastplayer](https://github.com/neocdtv/chromecastplayer) - simple media player with swing UI
+
 
 License
 -------
