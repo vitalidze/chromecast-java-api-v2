@@ -211,6 +211,7 @@ Projects using library
 ----------------------
 
 * [UniversalMediaServer](https://github.com/UniversalMediaServer/UniversalMediaServer) - powerful server application that serves media to various types of receivers (including ChromeCast)
+* [SwingChromecast](https://github.com/DylanMeeus/SwingChromecast) - A graphical user interface to interact with your chromecasts. (Written in Java 8 with swing)
 
 
 License
