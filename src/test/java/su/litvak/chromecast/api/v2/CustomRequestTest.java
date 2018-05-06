@@ -15,8 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

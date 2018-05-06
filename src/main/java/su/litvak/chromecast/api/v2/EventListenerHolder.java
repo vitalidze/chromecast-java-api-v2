@@ -15,8 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
 
 import java.io.IOException;
@@ -53,7 +53,8 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
             return;
         }
 
-        final StandardResponse resp = json.has("responseType") ? this.jsonMapper.readValue(json, StandardResponse.class)
+        final StandardResponse resp = json.has("responseType")
+                ? this.jsonMapper.treeToValue(json, StandardResponse.class)
                 : null;
 
         /*
