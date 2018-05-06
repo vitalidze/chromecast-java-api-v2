@@ -125,4 +125,31 @@ public class StatusTest {
         assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
         assertEquals(0.05, volume.stepInterval, 0.001);
     }
+
+    @Test
+    public void testDeserializationPreviewFirmware() throws Exception {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/status-preview-firmware.json");
+        final StandardResponse.Status response =
+            (StandardResponse.Status) jsonMapper.readValue(jsonMSG, StandardResponse.class);
+        assertNotNull(response);
+        assertTrue(response instanceof StandardResponse.Status);
+
+        Status status = response.status;
+        assertNotNull(status);
+        assertFalse(status.activeInput);
+        assertFalse(status.standBy);
+
+        assertEquals(1, status.applications.size());
+        Application app = status.getRunningApp();
+        assertTrue(app.isIdleScreen);
+        assertFalse(app.launchedFromCloud);
+
+        Volume volume = status.volume;
+        assertNotNull(volume);
+        assertEquals(1.0, volume.level, 0.1);
+        assertFalse(volume.muted);
+        assertEquals("attenuation", volume.controlType);
+        assertEquals(Volume.DEFAULT_INCREMENT, volume.increment, 0.001);
+        assertEquals(0.05, volume.stepInterval, 0.001);
+    }
 }

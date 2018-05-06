@@ -96,6 +96,10 @@ abstract class StandardResponse implements Response {
         @JsonProperty
         final su.litvak.chromecast.api.v2.Status status;
 
+        Status() {
+            this.status = null;
+        }
+
         Status(@JsonProperty("status") su.litvak.chromecast.api.v2.Status status) {
             this.status = status;
         }
