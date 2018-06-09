@@ -21,7 +21,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * Namespace of the ChromeCast application.
  */
 public class Namespace {
-    final String name;
+    public final String name;
 
     public Namespace(@JsonProperty("name") String name) {
         this.name = name;
