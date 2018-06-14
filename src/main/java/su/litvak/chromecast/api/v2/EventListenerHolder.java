@@ -26,13 +26,18 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * Helper class for delivering spontaneous events to their listeners.
  */
-class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeCastConnectionEventListener {
+class EventListenerHolder implements
+    ChromeCastSpontaneousEventListener,
+    ChromeCastConnectionEventListener,
+    ChromeCastRawMessageListener {
 
     private final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
     private final Set<ChromeCastSpontaneousEventListener> eventListeners =
             new CopyOnWriteArraySet<ChromeCastSpontaneousEventListener>();
     private final Set<ChromeCastConnectionEventListener> eventListenersConnection =
             new CopyOnWriteArraySet<ChromeCastConnectionEventListener>();
+    private final Set<ChromeCastRawMessageListener> rawMessageListeners =
+            new CopyOnWriteArraySet<ChromeCastRawMessageListener>();
 
     EventListenerHolder() {}
 
@@ -107,6 +112,25 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
     public void connectionEventReceived(ChromeCastConnectionEvent event) {
         for (ChromeCastConnectionEventListener listener : this.eventListenersConnection) {
             listener.connectionEventReceived(event);
+        }
+    }
+
+    public void registerRawMessageListener(ChromeCastRawMessageListener listener) {
+        if (listener != null) {
+            this.rawMessageListeners.add(listener);
+        }
+    }
+
+    public void unregisterRawMessageListener(ChromeCastRawMessageListener listener) {
+        if (listener != null) {
+            this.rawMessageListeners.remove(listener);
+        }
+    }
+
+    @Override
+    public void rawMessageReceived(ChromeCastRawMessage message, Long requestId) {
+        for (ChromeCastRawMessageListener listener : this.rawMessageListeners) {
+            listener.rawMessageReceived(message, requestId);
         }
     }
 }

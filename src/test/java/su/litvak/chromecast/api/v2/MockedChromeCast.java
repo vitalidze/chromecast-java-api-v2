@@ -48,9 +48,14 @@ final class MockedChromeCast {
     final ClientThread clientThread;
     List<Application> runningApplications = new ArrayList<Application>();
     CustomHandler customHandler;
+    RawRequestHandler rawRequestHandler;
 
     interface CustomHandler {
         Response handle(JsonNode json);
+    }
+
+    interface RawRequestHandler {
+        String handle(String message);
     }
 
     MockedChromeCast() throws IOException, GeneralSecurityException {
@@ -126,6 +131,18 @@ final class MockedChromeCast {
                     StandardMessage standardMessage = jsonMapper.readValue(message.getPayloadUtf8(),
                             StandardMessage.class);
                     response = handleJSON(standardMessage);
+                } else if (rawRequestHandler != null) {
+                    String rawResponse = rawRequestHandler.handle(message.getPayloadUtf8());
+                    write(clientSocket,
+                            CastMessage.newBuilder()
+                                    .setProtocolVersion(message.getProtocolVersion())
+                                    .setSourceId(message.getDestinationId())
+                                    .setDestinationId(message.getSourceId())
+                                    .setNamespace(message.getNamespace())
+                                    .setPayloadType(CastMessage.PayloadType.STRING)
+                                    .setPayloadUtf8(rawResponse)
+                                    .build());
+                    return;
                 } else {
                     response = handleCustom(json);
                 }
@@ -186,6 +203,15 @@ final class MockedChromeCast {
                 return null;
             } else {
                 return customHandler.handle(json);
+            }
+        }
+
+        String handleRaw(String message) {
+            if (rawRequestHandler == null) {
+                logger.info("No raw request handler set");
+                return null;
+            } else {
+                return rawRequestHandler.handle(message);
             }
         }
 

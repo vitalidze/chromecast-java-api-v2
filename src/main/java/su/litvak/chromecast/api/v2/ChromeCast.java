@@ -498,6 +498,25 @@ public class ChromeCast {
     }
 
     /**
+     * <p>Sends a raw JSON request to the currently running application.</p>
+     *
+     * <p>If no application is running at the moment then exception is thrown.</p>
+     *
+     * @param namespace         request namespace
+     * @param message           request message
+     * @throws IOException
+     */
+    public final void sendRawRequest(String namespace, String message, long requestId)
+            throws IOException {
+        Status status = getStatus();
+        Application runningApp = status.getRunningApp();
+        if (runningApp == null) {
+            throw new ChromeCastException("No application is running in ChromeCast");
+        }
+        channel().sendRawRequest(runningApp.transportId, namespace, message, requestId);
+    }
+
+    /**
      * <p>Sends some generic request to the currently running application.
      * No response is expected as a result of this call.</p>
      *
@@ -525,6 +544,14 @@ public class ChromeCast {
 
     public final void unregisterConnectionListener(ChromeCastConnectionEventListener listener) {
         this.eventListenerHolder.unregisterConnectionListener(listener);
+    }
+
+    public final void registerRawMessageListener(ChromeCastRawMessageListener listener) {
+        this.eventListenerHolder.registerRawMessageListener(listener);
+    }
+
+    public final void unregisterRawMessageListener(ChromeCastRawMessageListener listener) {
+        this.eventListenerHolder.unregisterRawMessageListener(listener);
     }
 
     @Override

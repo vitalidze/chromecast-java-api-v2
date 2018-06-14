@@ -93,7 +93,7 @@ class Channel implements Closeable {
     /**
      * Processors of requests by their identifiers
      */
-    private final Map<Long, ResultProcessor<? extends Response>> requests = new ConcurrentHashMap<Long, ResultProcessor<? extends Response>>();
+    private final Map<Long, AbstractResultProcessor<?>> requests = new ConcurrentHashMap<Long, AbstractResultProcessor<?>>();
     /**
      * Single mapper object for marshalling JSON
      */
@@ -184,22 +184,30 @@ class Channel implements Closeable {
                     if (isAppEvent(parsed)) {
                         // This handles when parsed == null.
                         AppEvent event = new AppEvent(message.getNamespace(), message.getPayloadUtf8());
+                        notifyListenersOfRawMessage(message, null);
                         notifyListenersAppEvent(event);
                     } else {
                         if (parsed.has("requestId")) {
                             Long requestId = parsed.get("requestId").asLong();
-                            final ResultProcessor<? extends Response> rp = requests.remove(requestId);
+                            notifyListenersOfRawMessage(message, requestId);
+                            final AbstractResultProcessor<?> rp = requests.remove(requestId);
                             if (rp != null) {
                                 rp.put(jsonMSG);
                             } else {
                                 notifyListenersOfSpontaneousEvent(parsed);
                             }
                         } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("MEDIA_STATUS")) {
+                            notifyListenersOfRawMessage(message, null);
                             notifyListenersOfSpontaneousEvent(parsed);
                         } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PING")) {
                             write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.pong(), DEFAULT_RECEIVER_ID);
                         } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("CLOSE")) {
+                            notifyListenersOfRawMessage(message, null);
                             notifyListenersOfSpontaneousEvent(parsed);
+                        } else if (parsed.has("responseType") && parsed.get("responseType").asText().equals("PONG")) {
+                            // No notification necessary
+                        } else {
+                            notifyListenersOfRawMessage(message, null);
                         }
                     }
                 } catch (Exception e) {
@@ -221,9 +229,27 @@ class Channel implements Closeable {
         }
     }
 
-    private class ResultProcessor<T extends Response> {
-        final Class<T> responseClass;
+    private abstract class AbstractResultProcessor<T> {
         T result;
+
+        public abstract void put(String jsonMSG) throws IOException;
+
+        public T get() throws InterruptedException, TimeoutException {
+            synchronized (this) {
+                if (result != null) {
+                    return result;
+                }
+                this.wait(requestTimeout);
+                if (result == null) {
+                    throw new TimeoutException();
+                }
+                return result;
+            }
+        }
+    }
+
+    private class ResultProcessor<T extends Response> extends AbstractResultProcessor<T> {
+        final Class<T> responseClass;
 
         private ResultProcessor(Class<T> responseClass) {
             if (responseClass == null) {
@@ -238,17 +264,13 @@ class Channel implements Closeable {
                 this.notify();
             }
         }
+    }
 
-        public T get() throws InterruptedException, TimeoutException {
+    private class RawResultProcessor extends AbstractResultProcessor<String> {
+        public void put(String jsonMSG) throws IOException {
             synchronized (this) {
-                if (result != null) {
-                    return result;
-                }
-                this.wait(requestTimeout);
-                if (result == null) {
-                    throw new TimeoutException();
-                }
-                return result;
+                this.result = jsonMSG;
+                this.notify();
             }
         }
     }
@@ -392,6 +414,21 @@ class Channel implements Closeable {
         }
     }
 
+    private void sendRaw(String namespace, String message, String destinationId, long requestId) throws IOException {
+        /**
+         * Try to reconnect
+         */
+        if (isClosed()) {
+            try {
+                connect();
+            } catch (GeneralSecurityException gse) {
+                throw new ChromeCastException("Unexpected security exception", gse);
+            }
+        }
+
+        write(namespace, message, destinationId);
+    }
+
     private void write(String namespace, Message message, String destinationId) throws IOException {
         write(namespace, jsonMapper.writeValueAsString(message), destinationId);
     }
@@ -456,6 +493,12 @@ class Channel implements Closeable {
     private void notifyListenersAppEvent(AppEvent event) throws IOException {
         if (this.eventListener != null) {
             this.eventListener.deliverAppEvent(event);
+        }
+    }
+
+    private void notifyListenersOfRawMessage(CastChannel.CastMessage message, Long requestId) throws IOException {
+        if (this.eventListener != null) {
+            this.eventListener.rawMessageReceived(new ChromeCastRawMessage(message), requestId);
         }
     }
 
@@ -524,6 +567,11 @@ class Channel implements Closeable {
     public <T extends Response> T sendGenericRequest(String destinationId, String namespace, Request request, Class<T> responseClass) throws IOException {
         startSession(destinationId);
         return send(namespace, request, destinationId, responseClass);
+    }
+
+    public void sendRawRequest(String destinationId, String namespace, String message, long requestId) throws IOException {
+        startSession(destinationId);
+        sendRaw(namespace, message, destinationId, requestId);
     }
 
     @Override
