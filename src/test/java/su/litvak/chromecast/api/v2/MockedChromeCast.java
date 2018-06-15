@@ -15,9 +15,9 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.MessageLite;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import su.litvak.chromecast.api.v2.CastChannel.CastMessage;

@@ -15,7 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Implementation must be a response object, which can be serialized to JSON with Jackson library.

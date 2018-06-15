@@ -15,8 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;

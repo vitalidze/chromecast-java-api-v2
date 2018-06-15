@@ -15,8 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Utility class for creating pre-configured instances of JSON mapper.
@@ -26,7 +26,7 @@ final class JacksonHelper {
 
     static ObjectMapper createJSONMapper() {
         ObjectMapper jsonMapper = new ObjectMapper();
-        jsonMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return jsonMapper;
     }
 }

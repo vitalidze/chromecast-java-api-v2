@@ -15,7 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * <p>Identifies that a broadcast message was received from "receiver application". This message was not triggered
@@ -53,7 +53,7 @@ public class ChromeCastSpontaneousEvent {
         CLOSE(Object.class),
 
         /**
-         * Data type will be {@link org.codehaus.jackson.JsonNode}.
+         * Data type will be {@link com.fasterxml.jackson.databind.JsonNode}.
          */
         UNKNOWN(JsonNode.class);
 
