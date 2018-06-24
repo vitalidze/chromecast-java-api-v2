@@ -234,7 +234,7 @@ class Channel implements Closeable {
             }
         }
 
-        public T get() {
+        public T get() throws IOException {
             synchronized (this) {
                 if (result != null) {
                     return result;
@@ -242,7 +242,10 @@ class Channel implements Closeable {
                 try {
                     this.wait(REQUEST_TIMEOUT);
                 } catch (InterruptedException ie) {
-                    ie.printStackTrace();
+                    throw new ChromeCastException("Interrupted while waiting for response", ie);
+                }
+                if (result == null) {
+                    throw new ChromeCastException("Timeout occurred while waiting for response");
                 }
                 return result;
             }
