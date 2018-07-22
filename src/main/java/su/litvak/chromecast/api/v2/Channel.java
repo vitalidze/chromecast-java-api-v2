@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static su.litvak.chromecast.api.v2.Util.fromArray;
@@ -54,9 +55,9 @@ class Channel implements Closeable {
      */
     private static final long PING_PERIOD = 30 * 1000;
     /**
-     * How much time to wait until request is processed
+     * Default value of much time to wait until request is processed
      */
-    private static final long REQUEST_TIMEOUT = 30 * 1000;
+    private static final long DEFAULT_REQUEST_TIMEOUT = 30 * 1000;
 
     private final static String DEFAULT_RECEIVER_ID = "receiver-0";
 
@@ -106,6 +107,10 @@ class Channel implements Closeable {
      */
     private volatile boolean closed = true;
     private final Object closedSync = new Object();
+    /**
+     * How much time to wait until request is processed
+     */
+    private volatile long requestTimeout = DEFAULT_REQUEST_TIMEOUT;
 
     private class PingThread extends TimerTask {
         @Override
@@ -234,15 +239,14 @@ class Channel implements Closeable {
             }
         }
 
-        public T get() {
+        public T get() throws InterruptedException, TimeoutException {
             synchronized (this) {
                 if (result != null) {
                     return result;
                 }
-                try {
-                    this.wait(REQUEST_TIMEOUT);
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
+                this.wait(requestTimeout);
+                if (result == null) {
+                    throw new TimeoutException();
                 }
                 return result;
             }
@@ -379,6 +383,10 @@ class Channel implements Closeable {
                 throw new ChromeCastException("Application launch error: " + launchError.reason);
             }
             return response;
+        } catch (InterruptedException e) {
+            throw new ChromeCastException("Interrupted while waiting for response", e);
+        } catch (TimeoutException e) {
+            throw new ChromeCastException("Waiting for response timed out", e);
         } finally {
             requests.remove(requestId);
         }
@@ -541,5 +549,9 @@ class Channel implements Closeable {
 
     public boolean isClosed() {
         return closed;
+    }
+
+    public void setRequestTimeout(long requestTimeout) {
+        this.requestTimeout = requestTimeout;
     }
 }

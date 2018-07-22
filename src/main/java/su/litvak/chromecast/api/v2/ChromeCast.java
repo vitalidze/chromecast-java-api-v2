@@ -198,6 +198,14 @@ public class ChromeCast {
     }
 
     /**
+     * Set up how much time to wait until request is processed (in milliseconds).
+     * @param requestTimeout value in milliseconds until request times out waiting for response
+     */
+    public void setRequestTimeout(long requestTimeout) {
+        channel.setRequestTimeout(requestTimeout);
+    }
+
+    /**
      * @return current chromecast status - volume, running applications, etc.
      * @throws IOException
      */
