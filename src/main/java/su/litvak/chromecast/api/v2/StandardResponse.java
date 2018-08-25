@@ -33,7 +33,10 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "MEDIA_STATUS", value = StandardResponse.MediaStatus.class),
                @JsonSubTypes.Type(name = "CLOSE", value = StandardResponse.Close.class),
                @JsonSubTypes.Type(name = "LOAD_FAILED", value = StandardResponse.LoadFailed.class),
-               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = StandardResponse.LaunchError.class)})
+               @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = StandardResponse.LaunchError.class),
+               @JsonSubTypes.Type(name = "DEVICE_ADDED", value = StandardResponse.DeviceAdded.class),
+               @JsonSubTypes.Type(name = "DEVICE_UPDATED", value = StandardResponse.DeviceUpdated.class),
+               @JsonSubTypes.Type(name = "DEVICE_REMOVED", value = StandardResponse.DeviceRemoved.class)})
 abstract class StandardResponse implements Response {
     Long requestId;
 
@@ -118,5 +121,38 @@ abstract class StandardResponse implements Response {
     static class AppAvailability extends StandardResponse {
         @JsonProperty
         Map<String, String> availability;
+    }
+
+    /**
+     * Received when power is cycled on ChromeCast Audio device in a group.
+     */
+    static class DeviceAdded extends StandardResponse {
+        final Device device;
+
+        DeviceAdded(@JsonProperty("device") Device device) {
+            this.device = device;
+        }
+    }
+
+    /**
+     * Received when volume is changed in ChromeCast Audio group.
+     */
+    static class DeviceUpdated extends StandardResponse {
+        final Device device;
+
+        DeviceUpdated(@JsonProperty("device") Device device) {
+            this.device = device;
+        }
+    }
+
+    /**
+     * Received when power is cycled on ChromeCast Audio device in a group.
+     */
+    static class DeviceRemoved extends StandardResponse {
+        final String deviceId;
+
+        DeviceRemoved(@JsonProperty("deviceId") String deviceId) {
+            this.deviceId = deviceId;
+        }
     }
 }
