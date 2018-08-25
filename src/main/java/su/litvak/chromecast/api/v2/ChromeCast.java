@@ -271,6 +271,16 @@ public class ChromeCast {
     }
 
     /**
+     * <p>Stops the session with the given identifier.</p>
+     *
+     * @param sessionId    session identifier
+     * @throws IOException
+     */
+    public final void stopSession(String sessionId) throws IOException {
+        channel().stop(sessionId);
+    }
+
+    /**
      * @param level volume level from 0 to 1 to set
      */
     public final void setVolume(float level) throws IOException {
