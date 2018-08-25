@@ -34,6 +34,10 @@ public final class ChromeCastRawMessage {
         return this.message.getPayloadUtf8();
     }
 
+    public byte[] getPayloadBinary() {
+        return this.message.getPayloadBinary().toByteArray();
+    }
+
     public String getNamespace() {
         return this.message.getNamespace();
     }
