@@ -40,7 +40,7 @@ public class Volume {
     public final String controlType;
 
     public Volume() {
-        level = new Float(-1);
+        level = -1f;
         muted = false;
         increment = DEFAULT_INCREMENT;
         stepInterval = DEFAULT_INCREMENT.doubleValue();
