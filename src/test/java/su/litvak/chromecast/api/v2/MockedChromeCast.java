@@ -81,7 +81,7 @@ final class MockedChromeCast {
                     handle(read(clientSocket));
                 }
             } catch (IOException ioex) {
-                ioex.printStackTrace();
+                logger.warn("Error while handling: {}", ioex.toString());
             } finally {
                 if (clientSocket != null) {
                     try {
