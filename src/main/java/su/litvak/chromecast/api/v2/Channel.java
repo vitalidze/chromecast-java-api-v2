@@ -66,6 +66,10 @@ class Channel implements Closeable {
     private static final JsonSubTypes.Type[] STANDARD_RESPONSE_TYPES =
             StandardResponse.class.getAnnotation(JsonSubTypes.class).value();
 
+    private static void warn(String message, Exception ex) {
+        LOG.warn("{}, caused by {}", message, ex.toString());
+    }
+
     /**
      * Single socket instance for transfers
      */
@@ -118,7 +122,7 @@ class Channel implements Closeable {
             try {
                 write("urn:x-cast:com.google.cast.tp.heartbeat", StandardMessage.ping(), DEFAULT_RECEIVER_ID);
             } catch (IOException ioex) {
-                LOG.warn("Error while sending 'PING'", ioex);
+                warn("Error while sending 'PING'", ioex);
             }
         }
     }
@@ -150,15 +154,15 @@ class Channel implements Closeable {
                         LOG.warn("Received unexpected {} message", message.getPayloadType());
                     }
                 } catch (InvalidProtocolBufferException ipbe) {
-                    LOG.warn("Error while processing protobuf", ipbe);
+                    warn("Error while processing protobuf", ipbe);
                 } catch (JsonProcessingException jpe) {
-                    LOG.warn("Error while processing json", jpe);
+                    warn("Error while processing json", jpe);
                 } catch (IOException ioex) {
                     if (stop) {
-                        LOG.warn("Got IOException while reading due to stream being closed (stop=true)");
+                        warn("Got IOException while reading due to stream being closed (stop=true)", ioex);
                         continue;
                     }
-                    LOG.warn("Error while reading", ioex);
+                    warn("Error while reading", ioex);
                     String temp;
                     if (message != null &&  message.getPayloadUtf8() != null) {
                         temp = message.getPayloadUtf8();
@@ -169,10 +173,10 @@ class Channel implements Closeable {
                     try {
                         close();
                     } catch (IOException e) {
-                        LOG.warn("Error while closing channel", ioex);
+                        warn("Error while closing channel", ioex);
                     }
                 } catch (Exception e) {
-                    LOG.warn("Unknown error while reading", e);
+                    warn("Unknown error while reading", e);
                     continue;
                 }
 
@@ -203,7 +207,7 @@ class Channel implements Closeable {
                         }
                     }
                 } catch (Exception e) {
-                    LOG.warn("Error while handling", e);
+                    warn("Error while handling", e);
                 }
             }
         }
