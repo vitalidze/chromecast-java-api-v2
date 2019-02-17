@@ -34,8 +34,11 @@ public class MediaStatus {
      *
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.PlayerState">
      *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.PlayerState</a>
+     * @see <a
+     *      href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.ExtendedPlayerState">
+     *     https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.ExtendedPlayerState</a>
      */
-    public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED }
+    public enum PlayerState { IDLE, BUFFERING, PLAYING, PAUSED, LOADING }
 
     /**
      * @see <a href="https://developers.google.com/cast/docs/reference/receiver/cast.receiver.media#.repeatMode">
