@@ -16,6 +16,7 @@
 package su.litvak.chromecast.api.v2;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
 
@@ -53,8 +54,16 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
             return;
         }
 
-        final StandardResponse resp = json.has("responseType") ? this.jsonMapper.readValue(json, StandardResponse.class)
-                : null;
+        StandardResponse resp;
+        if (json.has("responseType")) {
+            try {
+                resp = this.jsonMapper.readValue(json, StandardResponse.class);
+            } catch (JsonMappingException jme) {
+                resp = null;
+            }
+        } else {
+            resp = null;
+        }
 
         /*
          * The documentation only mentions MEDIA_STATUS as being a possible spontaneous event.

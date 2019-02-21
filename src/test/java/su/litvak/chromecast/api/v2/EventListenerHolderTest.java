@@ -15,6 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
@@ -183,5 +184,21 @@ public class EventListenerHolderTest {
         assertEquals(SpontaneousEventType.CLOSE, event.getType());
 
         assertEquals(1, emittedEvents.size());
+    }
+
+    @Test
+    public void itHandlesTimeTickEvent() throws Exception {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/timetick.json")
+                .replaceFirst("\"type\"", "\"responseType\"");
+
+        JsonNode jsonNode = jsonMapper.readTree(jsonMSG);
+        underTest.deliverEvent(jsonNode);
+
+        assertEquals(1, emittedEvents.size());
+        ChromeCastSpontaneousEvent event = emittedEvents.get(0);
+
+        assertEquals(SpontaneousEventType.UNKNOWN, event.getType());
+        assertEquals(jsonMapper.writeValueAsString(jsonNode),
+                jsonMapper.writeValueAsString(event.getData(JsonNode.class)));
     }
 }
