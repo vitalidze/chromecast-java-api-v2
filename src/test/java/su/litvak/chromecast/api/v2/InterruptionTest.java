@@ -15,7 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
