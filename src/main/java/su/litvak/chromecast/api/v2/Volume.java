@@ -15,8 +15,8 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 
@@ -27,7 +27,7 @@ public class Volume {
     static final Float DEFAULT_INCREMENT = 0.05f;
     static final String DEFAULT_CONTROL_TYPE = "attenuation";
     @JsonProperty
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public final Float level;
     @JsonProperty
     public final boolean muted;

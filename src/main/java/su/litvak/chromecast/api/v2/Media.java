@@ -16,8 +16,8 @@
 package su.litvak.chromecast.api.v2;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,25 +90,25 @@ public class Media {
     }
 
     @JsonProperty
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public final Map<String, Object> metadata;
 
     @JsonProperty("contentId")
     public final String url;
 
     @JsonProperty
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public final Double duration;
 
     @JsonProperty
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public final StreamType streamType;
 
     @JsonProperty
     public final String contentType;
 
     @JsonProperty
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public final Map<String, Object> customData;
 
     @JsonIgnore
