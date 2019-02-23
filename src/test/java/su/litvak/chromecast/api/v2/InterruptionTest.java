@@ -125,7 +125,7 @@ public class InterruptionTest {
         };
         cast.setRequestTimeout(100L);
         thrown.expect(ChromeCastException.class);
-        thrown.expectCause(CoreMatchers.is(TimeoutException.class));
+        thrown.expectCause(CoreMatchers.isA(TimeoutException.class));
         thrown.expectMessage("Waiting for response timed out");
         cast.send("", new Custom(), Custom.class);
     }
