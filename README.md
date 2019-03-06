@@ -25,7 +25,7 @@ Or to `build.gradle` (`mavenCentral()` repository should be included in appropri
 ```groovy
 dependencies {
 // ...
-    runtime 'su.litvak.chromecast:api-v2:0.10.6'
+    compile 'su.litvak.chromecast:api-v2:0.10.6'
 // ...
 }
 ```
