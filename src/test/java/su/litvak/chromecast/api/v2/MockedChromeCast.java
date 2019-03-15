@@ -27,6 +27,7 @@ import su.litvak.chromecast.api.v2.CastChannel.DeviceAuthMessage;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;

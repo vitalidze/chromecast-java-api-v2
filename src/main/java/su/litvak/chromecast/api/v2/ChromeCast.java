@@ -17,6 +17,7 @@ package su.litvak.chromecast.api.v2;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
