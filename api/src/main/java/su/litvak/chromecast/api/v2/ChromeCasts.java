@@ -15,9 +15,10 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceListener;
+import su.litvak.chromecast.mdns.api.MulticastDNS;
+import su.litvak.chromecast.mdns.api.MulticastDNSFactory;
+import su.litvak.chromecast.mdns.api.MulticastDNSServiceInfo;
+import su.litvak.chromecast.mdns.api.MulticastDNSServiceListener;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,7 +33,8 @@ public final class ChromeCasts {
     private static final ChromeCasts INSTANCE = new ChromeCasts();
     private final MyServiceListener listener = new MyServiceListener();
 
-    private JmDNS mDNS;
+    private MulticastDNSFactory mDNSFactory;
+    private MulticastDNS mDNS;
 
     private final List<ChromeCastsListener> listeners = new ArrayList<ChromeCastsListener>();
     private final List<ChromeCast> chromeCasts = Collections.synchronizedList(new ArrayList<ChromeCast>());
@@ -50,11 +52,12 @@ public final class ChromeCasts {
     /** Hidden service listener to receive callbacks.
      * Is hidden to avoid messing with it.
      */
-    private class MyServiceListener implements ServiceListener {
+    private class MyServiceListener implements MulticastDNSServiceListener {
         @Override
-        public void serviceAdded(ServiceEvent se) {
-            if (se.getInfo() != null) {
-                ChromeCast device = new ChromeCast(mDNS, se.getInfo().getName());
+        public void serviceAdded(MulticastDNS multicastDNS, String serviceType, String serviceName) {
+            if (serviceType != null && serviceName != null) {
+                MulticastDNSServiceInfo serviceInfo =  multicastDNS.getServiceInfo(serviceType, serviceName);
+                ChromeCast device = new ChromeCast(serviceInfo, serviceName);
                 chromeCasts.add(device);
                 for (ChromeCastsListener nextListener : listeners) {
                     nextListener.newChromeCastDiscovered(device);
@@ -63,14 +66,14 @@ public final class ChromeCasts {
         }
 
         @Override
-        public void serviceRemoved(ServiceEvent se) {
-            if (ChromeCast.SERVICE_TYPE.equals(se.getType())) {
+        public void serviceRemoved(MulticastDNS multicastDNS, String serviceType, String serviceName) {
+            if (ChromeCast.SERVICE_TYPE.equals(serviceType)) {
                 // We have a ChromeCast device unregistering
                 List<ChromeCast> copy = get();
                 ChromeCast deviceRemoved = null;
                 // Probably better keep a map to better lookup devices
                 for (ChromeCast device : copy) {
-                    if (device.getName().equals(se.getInfo().getName())) {
+                    if (device.getName().equals(serviceName)) {
                         deviceRemoved = device;
                         chromeCasts.remove(device);
                         break;
@@ -83,19 +86,14 @@ public final class ChromeCasts {
                 }
             }
         }
-
-        @Override
-        public void serviceResolved(ServiceEvent se) {
-            // intentionally blank
-        }
     }
 
     private void doStartDiscovery(InetAddress addr) throws IOException {
         if (mDNS == null) {
             if (addr != null) {
-                mDNS = JmDNS.create(addr);
+                mDNS = mDNSFactory.create(addr);
             } else {
-                mDNS = JmDNS.create();
+                mDNS = mDNSFactory.create();
             }
             mDNS.addServiceListener(ChromeCast.SERVICE_TYPE, listener);
         }

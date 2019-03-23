@@ -15,8 +15,7 @@
  */
 package su.litvak.chromecast.api.v2;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
+import su.litvak.chromecast.mdns.api.MulticastDNSServiceInfo;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -45,9 +44,9 @@ public class ChromeCast {
     private String appTitle;
     private String model;
 
-    ChromeCast(JmDNS mDNS, String name) {
+    ChromeCast(MulticastDNSServiceInfo serviceInfo, String name) {
         this.name = name;
-        ServiceInfo serviceInfo = mDNS.getServiceInfo(SERVICE_TYPE, name);
+
         this.address = serviceInfo.getInet4Addresses()[0].getHostAddress();
         this.port = serviceInfo.getPort();
         this.appsURL = serviceInfo.getURLs().length == 0 ? null : serviceInfo.getURLs()[0];
