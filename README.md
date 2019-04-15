@@ -206,6 +206,7 @@ Useful links
 * [CastV2 media player implementation in Node.js](https://github.com/thibauts/node-castv2-client)
 * [Library for Python 2 and 3 to communicate with the Google Chromecast](https://github.com/balloob/pychromecast)
 * [CastV2 API protocol POC implementation in Python](https://github.com/minektur/chromecast-python-poc)
+* [Most recent .proto file for CastV2 protocol](https://github.com/chromium/chromium/blob/master/components/cast_channel/proto/cast_channel.proto)
 
 Projects using library
 ----------------------
