@@ -19,11 +19,12 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static su.litvak.chromecast.api.v2.Util.getContentType;
+import static su.litvak.chromecast.api.v2.Util.getMediaTitle;
 
 /**
  * ChromeCast device - main object used for interaction with ChromeCast dongle.
@@ -405,21 +406,6 @@ public class ChromeCast {
         channel().seek(getTransportId(runningApp), runningApp.sessionId, mediaStatus.mediaSessionId, time);
     }
 
-    private String getContentType(String url) {
-        HttpURLConnection connection = null;
-        try {
-            connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.connect();
-            return connection.getContentType();
-        } catch (IOException e) {
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return null;
-    }
-
     /**
      * <p>Loads and starts playing media in specified URL</p>
      *
@@ -430,7 +416,7 @@ public class ChromeCast {
      * @throws IOException
      */
     public final MediaStatus load(String url) throws IOException {
-        return load(url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.')), null, url, null);
+        return load(getMediaTitle(url), null, url, getContentType(url));
     }
 
     /**

@@ -15,6 +15,11 @@
  */
 package su.litvak.chromecast.api.v2;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Contains utility methods.
  */
@@ -38,5 +43,41 @@ final class Util {
             (byte) (value >> 16),
             (byte) (value >> 8),
             (byte) value };
+    }
+
+    static String getContentType(String url) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.connect();
+            return connection.getContentType();
+        } catch (IOException e) {
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return null;
+    }
+
+    static String getMediaTitle(String url) {
+        try {
+            URL urlObj = new URL(url);
+            String mediaTitle;
+            String path = urlObj.getPath();
+            int lastIndexOfSlash = path.lastIndexOf('/');
+            if (lastIndexOfSlash >= 0 && lastIndexOfSlash + 1 < url.length()) {
+                mediaTitle = path.substring(lastIndexOfSlash + 1);
+                int lastIndexOfDot = mediaTitle.lastIndexOf('.');
+                if (lastIndexOfDot > 0) {
+                    mediaTitle = mediaTitle.substring(0, lastIndexOfDot);
+                }
+            } else {
+                mediaTitle = path;
+            }
+            return mediaTitle.isEmpty() ? url : mediaTitle;
+        } catch (MalformedURLException mfu) {
+            return url;
+        }
     }
 }
