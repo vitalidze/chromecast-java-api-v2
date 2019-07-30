@@ -72,8 +72,21 @@ class EventListenerHolder implements ChromeCastSpontaneousEventListener, ChromeC
          * see: https://developers.google.com/cast/docs/reference/messages#MediaMess
          */
         if (resp instanceof StandardResponse.MediaStatus) {
-            for (final MediaStatus ms : ((StandardResponse.MediaStatus) resp).statuses) {
-                spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.MEDIA_STATUS, ms));
+            StandardResponse.MediaStatus mediaStatusResponse = (StandardResponse.MediaStatus) resp;
+            // it may be a single media status event
+            if (mediaStatusResponse.statuses == null) {
+                if (json.has("media")) {
+                    try {
+                        MediaStatus ms = jsonMapper.treeToValue(json, MediaStatus.class);
+                        spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.MEDIA_STATUS, ms));
+                    } catch (JsonMappingException jme) {
+                        // ignored
+                    }
+                }
+            } else {
+                for (final MediaStatus ms : mediaStatusResponse.statuses) {
+                    spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.MEDIA_STATUS, ms));
+                }
             }
         } else if (resp instanceof StandardResponse.Status) {
             spontaneousEventReceived(new ChromeCastSpontaneousEvent(SpontaneousEventType.STATUS,

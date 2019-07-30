@@ -22,10 +22,12 @@ import org.junit.Before;
 import org.junit.Test;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent.SpontaneousEventType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class EventListenerHolderTest {
     private final ObjectMapper jsonMapper = JacksonHelper.createJSONMapper();
@@ -200,5 +202,25 @@ public class EventListenerHolderTest {
         assertEquals(SpontaneousEventType.UNKNOWN, event.getType());
         assertEquals(jsonMapper.writeValueAsString(jsonNode),
                 jsonMapper.writeValueAsString(event.getData(JsonNode.class)));
+    }
+
+    @Test
+    public void itHandlesSingleMediaStatusEvent() throws IOException {
+        final String jsonMSG = FixtureHelper.fixtureAsString("/mediaStatus-single.json")
+                .replaceFirst("\"type\"", "\"responseType\"");
+
+        JsonNode jsonNode = jsonMapper.readTree(jsonMSG);
+        underTest.deliverEvent(jsonNode);
+
+        assertEquals(1, emittedEvents.size());
+        ChromeCastSpontaneousEvent event = emittedEvents.get(0);
+
+        assertEquals(SpontaneousEventType.MEDIA_STATUS, event.getType());
+        MediaStatus mediaStatus = event.getData(MediaStatus.class);
+        assertNotNull(mediaStatus);
+        assertEquals(0, mediaStatus.mediaSessionId);
+        assertNotNull(mediaStatus.media);
+        assertEquals(Media.StreamType.NONE, mediaStatus.media.streamType);
+        assertEquals(MediaStatus.PlayerState.IDLE, mediaStatus.playerState);
     }
 }
