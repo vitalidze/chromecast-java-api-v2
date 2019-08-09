@@ -166,7 +166,7 @@ final class MockedChromeCast {
                 return new StandardResponse.Status(status());
             } else if (message instanceof StandardRequest.Launch) {
                 StandardRequest.Launch launch = (StandardRequest.Launch) message;
-                runningApplications.add(new Application(launch.appId, launch.appId, "SESSION_ID", "",
+                runningApplications.add(new Application(launch.appId, "iconUrl", launch.appId, "SESSION_ID", "",
                         false, false, "", Collections.<Namespace>emptyList()));
                 StandardResponse response = new StandardResponse.Status(status());
                 response.setRequestId(launch.getRequestId());
