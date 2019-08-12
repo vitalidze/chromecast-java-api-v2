@@ -18,7 +18,11 @@ package su.litvak.chromecast.api.v2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class StatusTest {
 
@@ -139,7 +143,8 @@ public class StatusTest {
         assertFalse(app.launchedFromCloud);
         assertEquals("CC32E753", app.id);
         assertEquals("Spotify", app.name);
-        assertEquals("https://lh3.googleusercontent.com/HOX9yqNu6y87Chb1lHYqhKVTQW43oFAFFe2ojx94yCLh0yMzgygTrM0RweAexApRWqq6UahgrWYimVgK", app.iconUrl);
+        assertEquals("https://lh3.googleusercontent.com/HOX9yqNu6y87Chb1lHYqhK"
+                     + "VTQW43oFAFFe2ojx94yCLh0yMzgygTrM0RweAexApRWqq6UahgrWYimVgK", app.iconUrl);
         assertEquals(6, app.namespaces.size());
         assertEquals("urn:x-cast:com.google.cast.debugoverlay", app.namespaces.get(0).name);
         assertEquals("urn:x-cast:com.google.cast.cac", app.namespaces.get(1).name);
