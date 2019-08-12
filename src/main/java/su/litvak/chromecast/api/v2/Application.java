@@ -26,6 +26,7 @@ import java.util.List;
  */
 public class Application {
     public final String id;
+    public final String iconUrl;
     public final String name;
     public final String sessionId;
     public final String statusText;
@@ -35,6 +36,7 @@ public class Application {
     public final List<Namespace> namespaces;
 
     public Application(@JsonProperty("appId") String id,
+                       @JsonProperty("iconUrl") String iconUrl,
                        @JsonProperty("displayName") String name,
                        @JsonProperty("sessionId") String sessionId,
                        @JsonProperty("statusText") String statusText,
@@ -43,6 +45,7 @@ public class Application {
                        @JsonProperty("transportId") String transportId,
                        @JsonProperty("namespaces") List<Namespace> namespaces) {
         this.id = id;
+        this.iconUrl = iconUrl;
         this.name = name;
         this.sessionId = sessionId;
         this.statusText = statusText;
