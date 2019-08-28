@@ -92,6 +92,8 @@ public final class ChromeCasts {
 
     private void doStartDiscovery(InetAddress addr) throws IOException {
         if (mDNS == null) {
+            chromeCasts.clear();
+
             if (addr != null) {
                 mDNS = JmDNS.create(addr);
             } else {
