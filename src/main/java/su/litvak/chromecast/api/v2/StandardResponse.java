@@ -31,6 +31,7 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "GET_APP_AVAILABILITY", value = StandardResponse.AppAvailability.class),
                @JsonSubTypes.Type(name = "INVALID_REQUEST", value = StandardResponse.Invalid.class),
                @JsonSubTypes.Type(name = "MEDIA_STATUS", value = StandardResponse.MediaStatus.class),
+               @JsonSubTypes.Type(name = "MULTIZONE_STATUS", value = StandardResponse.MultizoneStatus.class),
                @JsonSubTypes.Type(name = "CLOSE", value = StandardResponse.Close.class),
                @JsonSubTypes.Type(name = "LOAD_FAILED", value = StandardResponse.LoadFailed.class),
                @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = StandardResponse.LaunchError.class),
@@ -121,6 +122,18 @@ abstract class StandardResponse implements Response {
     static class AppAvailability extends StandardResponse {
         @JsonProperty
         Map<String, String> availability;
+    }
+
+    /**
+     * Multi-Zone status for the case when there are multiple ChromeCast devices in different zones (rooms).
+     */
+    static class MultizoneStatus extends StandardResponse {
+        @JsonProperty
+        final su.litvak.chromecast.api.v2.MultizoneStatus status;
+
+        MultizoneStatus(@JsonProperty("status") su.litvak.chromecast.api.v2.MultizoneStatus status) {
+            this.status = status;
+        }
     }
 
     /**
