@@ -464,12 +464,12 @@ class Channel implements Closeable {
     }
 
     public Status getStatus() throws IOException {
-        StandardResponse.Status status = sendStandard("urn:x-cast:com.google.cast.receiver", StandardRequest.status(), "receiver-0");
+        StandardResponse.Status status = sendStandard("urn:x-cast:com.google.cast.receiver", StandardRequest.status(), DEFAULT_RECEIVER_ID);
         return status == null ? null : status.status;
     }
 
     public boolean isAppAvailable(String appId) throws IOException {
-        StandardResponse.AppAvailability availability = sendStandard("urn:x-cast:com.google.cast.receiver", StandardRequest.appAvailability(appId), "receiver-0");
+        StandardResponse.AppAvailability availability = sendStandard("urn:x-cast:com.google.cast.receiver", StandardRequest.appAvailability(appId), DEFAULT_RECEIVER_ID);
         return availability != null && "APP_AVAILABLE".equals(availability.availability.get(appId));
     }
 
