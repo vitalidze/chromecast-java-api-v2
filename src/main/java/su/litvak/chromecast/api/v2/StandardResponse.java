@@ -33,6 +33,7 @@ import java.util.Map;
                @JsonSubTypes.Type(name = "MEDIA_STATUS", value = StandardResponse.MediaStatus.class),
                @JsonSubTypes.Type(name = "MULTIZONE_STATUS", value = StandardResponse.MultizoneStatus.class),
                @JsonSubTypes.Type(name = "CLOSE", value = StandardResponse.Close.class),
+               @JsonSubTypes.Type(name = "LOAD_CANCELLED", value = StandardResponse.LoadCancelled.class),
                @JsonSubTypes.Type(name = "LOAD_FAILED", value = StandardResponse.LoadFailed.class),
                @JsonSubTypes.Type(name = "LAUNCH_ERROR", value = StandardResponse.LaunchError.class),
                @JsonSubTypes.Type(name = "DEVICE_ADDED", value = StandardResponse.DeviceAdded.class),
@@ -65,6 +66,11 @@ abstract class StandardResponse implements Response {
      * Request to 'Close' connection.
      */
     static class Close extends StandardResponse {}
+
+    /**
+     * Identifies that loading of media has been cancelled.
+     */
+    static class LoadCancelled extends StandardResponse {}
 
     /**
      * Identifies that loading of media has failed.

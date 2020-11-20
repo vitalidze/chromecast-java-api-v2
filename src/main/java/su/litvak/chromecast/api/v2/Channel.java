@@ -380,7 +380,7 @@ class Channel implements Closeable {
             if (response instanceof StandardResponse.Invalid) {
                 StandardResponse.Invalid invalid = (StandardResponse.Invalid) response;
                 throw new ChromeCastException("Invalid request: " + invalid.reason);
-            } else if (response instanceof StandardResponse.LoadFailed) {
+            } else if (response instanceof StandardResponse.LoadCancelled || response instanceof StandardResponse.LoadFailed) {
                 throw new ChromeCastException("Unable to load media");
             } else if (response instanceof StandardResponse.LaunchError) {
                 StandardResponse.LaunchError launchError = (StandardResponse.LaunchError) response;
