@@ -432,15 +432,10 @@ public class ChromeCast {
      * @throws IOException
      */
     public final MediaStatus load(String mediaTitle, String thumb, String url, String contentType) throws IOException {
-        Status status = getStatus();
-        Application runningApp = status.getRunningApp();
-        if (runningApp == null) {
-            throw new ChromeCastException("No application is running in ChromeCast");
-        }
         Map<String, Object> metadata = new HashMap<String, Object>(2);
         metadata.put("title", mediaTitle);
         metadata.put("thumb", thumb);
-        return channel().load(getTransportId(runningApp), runningApp.sessionId, new Media(url,
+        return load(new Media(url,
                 contentType == null ? getContentType(url) : contentType, null, null, null,
                 metadata, null, null), true, 0d, null);
     }
@@ -457,6 +452,25 @@ public class ChromeCast {
      * @throws IOException
      */
     public final MediaStatus load(final Media media) throws IOException {
+        return load(media, true, 0d, null);
+    }
+
+    /**
+     * <p>Loads and starts playing specified media</p>
+     *
+     * <p>If no application is running at the moment then exception is thrown.</p>
+     *
+     * @param media The media to load and play.
+     *              See <a href="https://developers.google.com/cast/docs/reference/messages#Load">
+     *                  https://developers.google.com/cast/docs/reference/messages#Load</a> for more details.
+     * @param autoplay whether the media should start playing when loaded
+     * @param currentTime seconds since beginning of content
+     * @param customData Application-specific data
+     * @return The new media status that resulted from loading the media.
+     * @throws IOException
+     */
+    public final MediaStatus load(final Media media, boolean autoplay, double currentTime,
+            Object customData) throws IOException {
         Status status = getStatus();
         Application runningApp = status.getRunningApp();
         if (runningApp == null) {
@@ -469,7 +483,8 @@ public class ChromeCast {
         } else {
             mediaToPlay = media;
         }
-        return channel().load(getTransportId(runningApp), runningApp.sessionId, mediaToPlay, true, 0d, null);
+        return channel().load(getTransportId(runningApp), runningApp.sessionId, mediaToPlay, autoplay, currentTime,
+                customData);
     }
 
     /**

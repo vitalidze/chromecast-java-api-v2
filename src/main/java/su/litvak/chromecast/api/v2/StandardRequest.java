@@ -17,8 +17,6 @@ package su.litvak.chromecast.api.v2;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 /**
  * Parent class for transport object representing messages sent TO ChromeCast device.
  */
@@ -91,17 +89,12 @@ abstract class StandardRequest extends StandardMessage implements Request {
         @JsonProperty
         final Object customData;
 
-        Load(String sessionId, Media media, boolean autoplay, double currentTime,
-             final Map<String, String> customData) {
+        Load(String sessionId, Media media, boolean autoplay, double currentTime, Object customData) {
             this.sessionId = sessionId;
             this.media = media;
             this.autoplay = autoplay;
             this.currentTime = currentTime;
-
-            this.customData = customData == null ? null : new Object() {
-                @JsonProperty
-                Map<String, String> payload = customData;
-            };
+            this.customData = customData;
         }
     }
 
@@ -180,7 +173,7 @@ abstract class StandardRequest extends StandardMessage implements Request {
     }
 
     static Load load(String sessionId, Media media, boolean autoplay, double currentTime,
-                     Map<String, String> customData) {
+                     Object customData) {
         return new Load(sessionId, media, autoplay, currentTime, customData);
     }
 
